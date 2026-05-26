@@ -11,8 +11,8 @@ class MatchGameScreen extends StatefulWidget {
 }
 
 class _MatchGameScreenState extends State<MatchGameScreen> {
-  late List<_MatchItem> _kanjiItems;
-  late List<_MatchItem> _meaningItems;
+  late List<Kanji> _batch;
+  late List<Kanji> _shuffledMeanings;
   int? _selectedKanjiIndex;
   int? _selectedMeaningIndex;
   int _matchedCount = 0;
@@ -20,6 +20,9 @@ class _MatchGameScreenState extends State<MatchGameScreen> {
   Set<int> _matchedKanji = {};
   Set<int> _matchedMeaning = {};
   bool _gameComplete = false;
+  int? _wrongKanjiIndex;
+  int? _wrongMeaningIndex;
+  bool _showWrong = false;
 
   @override
   void initState() {
@@ -28,10 +31,9 @@ class _MatchGameScreenState extends State<MatchGameScreen> {
   }
 
   void _startGame() {
-    final shuffled = List.from(widget.pool)..shuffle();
-    final batch = shuffled.take(10).toList();
-    _kanjiItems = batch.map((k) => _MatchItem(id: k.id, display: k.character, meaning: k.meaningVi)).toList();
-    _meaningItems = List.from(_kanjiItems)..shuffle(Random());
+    final shuffled = List<Kanji>.from(widget.pool)..shuffle();
+    _batch = shuffled.take(8).toList();
+    _shuffledMeanings = List<Kanji>.from(_batch)..shuffle(Random());
     _selectedKanjiIndex = null;
     _selectedMeaningIndex = null;
     _matchedCount = 0;
@@ -39,26 +41,29 @@ class _MatchGameScreenState extends State<MatchGameScreen> {
     _matchedKanji = {};
     _matchedMeaning = {};
     _gameComplete = false;
+    _showWrong = false;
+    _wrongKanjiIndex = null;
+    _wrongMeaningIndex = null;
   }
 
   void _onKanjiTap(int index) {
-    if (_matchedKanji.contains(index) || _gameComplete) return;
+    if (_matchedKanji.contains(index) || _gameComplete || _showWrong) return;
     setState(() => _selectedKanjiIndex = index);
     _checkMatch();
   }
 
   void _onMeaningTap(int index) {
-    if (_matchedMeaning.contains(index) || _gameComplete) return;
+    if (_matchedMeaning.contains(index) || _gameComplete || _showWrong) return;
     setState(() => _selectedMeaningIndex = index);
     _checkMatch();
   }
 
   void _checkMatch() {
     if (_selectedKanjiIndex == null || _selectedMeaningIndex == null) return;
-    final kanjiItem = _kanjiItems[_selectedKanjiIndex!];
-    final meaningItem = _meaningItems[_selectedMeaningIndex!];
+    final kanji = _batch[_selectedKanjiIndex!];
+    final meaningKanji = _shuffledMeanings[_selectedMeaningIndex!];
 
-    if (kanjiItem.id == meaningItem.id) {
+    if (kanji.id == meaningKanji.id) {
       setState(() {
         _matchedKanji.add(_selectedKanjiIndex!);
         _matchedMeaning.add(_selectedMeaningIndex!);
@@ -66,14 +71,20 @@ class _MatchGameScreenState extends State<MatchGameScreen> {
         _selectedKanjiIndex = null;
         _selectedMeaningIndex = null;
       });
-      if (_matchedCount >= _kanjiItems.length) {
+      if (_matchedCount >= _batch.length) {
         setState(() => _gameComplete = true);
       }
     } else {
-      _wrongCount++;
       setState(() {
+        _wrongKanjiIndex = _selectedKanjiIndex;
+        _wrongMeaningIndex = _selectedMeaningIndex;
+        _wrongCount++;
+        _showWrong = true;
         _selectedKanjiIndex = null;
         _selectedMeaningIndex = null;
+      });
+      Future.delayed(const Duration(milliseconds: 600), () {
+        if (mounted) setState(() { _showWrong = false; _wrongKanjiIndex = null; _wrongMeaningIndex = null; });
       });
     }
   }
@@ -93,84 +104,145 @@ class _MatchGameScreenState extends State<MatchGameScreen> {
 
   Widget _buildGame() {
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12),
       child: Column(
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Đúng: $_matchedCount / ${_kanjiItems.length}',
-                  style: const TextStyle(color: Colors.green, fontSize: 16, fontWeight: FontWeight.bold)),
-              Text('Sai: $_wrongCount',
-                  style: TextStyle(color: _wrongCount > 0 ? Colors.red : Colors.white38, fontSize: 16)),
+              Row(children: [
+                const Icon(Icons.check_circle, color: Colors.green, size: 18),
+                const SizedBox(width: 4),
+                Text('$_matchedCount/${_batch.length}', style: const TextStyle(color: Colors.green, fontSize: 16, fontWeight: FontWeight.bold)),
+              ]),
+              Row(children: [
+                const Icon(Icons.cancel, color: Colors.red, size: 18),
+                const SizedBox(width: 4),
+                Text('$_wrongCount', style: TextStyle(color: _wrongCount > 0 ? Colors.red : Colors.white38, fontSize: 16)),
+              ]),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           LinearProgressIndicator(
-            value: _matchedCount / _kanjiItems.length,
+            value: _matchedCount / _batch.length,
             backgroundColor: Colors.white12,
             color: const Color(0xFFE94560),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 4),
+          const Text('Chọn 1 chữ bên trái → 1 nghĩa bên phải', style: TextStyle(color: Colors.white54, fontSize: 12)),
+          const SizedBox(height: 12),
           Expanded(
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // LEFT: Kanji column
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: List.generate(_kanjiItems.length, (i) {
-                      final matched = _matchedKanji.contains(i);
-                      final selected = _selectedKanjiIndex == i;
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 6),
-                        child: GestureDetector(
-                          onTap: matched ? null : () => _onKanjiTap(i),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                            decoration: BoxDecoration(
-                              color: matched ? Colors.green.withValues(alpha: 0.2) : selected ? const Color(0xFFE94560).withValues(alpha: 0.3) : const Color(0xFF16213E),
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(color: matched ? Colors.green : selected ? const Color(0xFFE94560) : const Color(0xFF0F3460), width: matched || selected ? 2 : 1),
-                            ),
-                            child: Center(child: Text(_kanjiItems[i].display, style: TextStyle(fontSize: 28, color: matched ? Colors.green : Colors.white, fontWeight: FontWeight.bold))),
-                          ),
-                        ),
-                      );
-                    }),
+                    children: List.generate(_batch.length, (i) => _buildKanjiItem(i)),
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 8),
+                // RIGHT: Meaning column
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: List.generate(_meaningItems.length, (i) {
-                      final matched = _matchedMeaning.contains(i);
-                      final selected = _selectedMeaningIndex == i;
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 6),
-                        child: GestureDetector(
-                          onTap: matched ? null : () => _onMeaningTap(i),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-                            decoration: BoxDecoration(
-                              color: matched ? Colors.green.withValues(alpha: 0.2) : selected ? const Color(0xFF0F3460).withValues(alpha: 0.5) : const Color(0xFF16213E),
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(color: matched ? Colors.green : selected ? const Color(0xFF0F3460) : const Color(0xFFE94560).withValues(alpha: 0.5), width: matched || selected ? 2 : 1),
-                            ),
-                            child: Center(child: Text(_meaningItems[i].display, style: TextStyle(fontSize: 14, color: matched ? Colors.green : Colors.white, fontWeight: FontWeight.w600), textAlign: TextAlign.center)),
-                          ),
-                        ),
-                      );
-                    }),
+                    children: List.generate(_shuffledMeanings.length, (i) => _buildMeaningItem(i)),
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 8),
-          const Text('Chọn 1 chữ bên trái → 1 nghĩa bên phải', style: TextStyle(color: Colors.white54, fontSize: 13)),
         ],
+      ),
+    );
+  }
+
+  Widget _buildKanjiItem(int i) {
+    final matched = _matchedKanji.contains(i);
+    final selected = _selectedKanjiIndex == i;
+    final isWrong = _showWrong && _wrongKanjiIndex == i;
+    Color bg, border;
+    if (matched) {
+      bg = Colors.green.withValues(alpha: 0.15);
+      border = Colors.green;
+    } else if (isWrong) {
+      bg = Colors.red.withValues(alpha: 0.25);
+      border = Colors.red;
+    } else if (selected) {
+      bg = const Color(0xFFE94560).withValues(alpha: 0.25);
+      border = const Color(0xFFE94560);
+    } else {
+      bg = const Color(0xFF16213E);
+      border = const Color(0xFF0F3460);
+    }
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 5),
+      child: GestureDetector(
+        onTap: matched ? null : () => _onKanjiTap(i),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          decoration: BoxDecoration(
+            color: bg,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: border, width: matched || selected || isWrong ? 2.5 : 1),
+          ),
+          child: Center(
+            child: Text(
+              _batch[i].character,
+              style: TextStyle(
+                fontSize: 26, fontWeight: FontWeight.bold,
+                color: matched ? Colors.green : isWrong ? Colors.red : Colors.white,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMeaningItem(int i) {
+    final matched = _matchedMeaning.contains(i);
+    final selected = _selectedMeaningIndex == i;
+    final isWrong = _showWrong && _wrongMeaningIndex == i;
+    Color bg, border;
+    if (matched) {
+      bg = Colors.green.withValues(alpha: 0.15);
+      border = Colors.green;
+    } else if (isWrong) {
+      bg = Colors.red.withValues(alpha: 0.25);
+      border = Colors.red;
+    } else if (selected) {
+      bg = const Color(0xFF0F3460).withValues(alpha: 0.5);
+      border = const Color(0xFFE94560);
+    } else {
+      bg = const Color(0xFF16213E);
+      border = const Color(0xFF0F3460);
+    }
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 5),
+      child: GestureDetector(
+        onTap: matched ? null : () => _onMeaningTap(i),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
+          decoration: BoxDecoration(
+            color: bg,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: border, width: matched || selected || isWrong ? 2.5 : 1),
+          ),
+          child: Center(
+            child: Text(
+              _shuffledMeanings[i].meaningVi,
+              style: TextStyle(
+                fontSize: 13, fontWeight: FontWeight.w600,
+                color: matched ? Colors.green : isWrong ? Colors.red : Colors.white,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -199,11 +271,4 @@ class _MatchGameScreenState extends State<MatchGameScreen> {
       ),
     );
   }
-}
-
-class _MatchItem {
-  final int id;
-  final String display;
-  final String meaning;
-  const _MatchItem({required this.id, required this.display, required this.meaning});
 }
