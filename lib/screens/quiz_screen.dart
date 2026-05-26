@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import '../data/kanji_data.dart';
 import '../database/db.dart';
@@ -68,7 +69,7 @@ class _QuizScreenState extends State<QuizScreen> {
       }
     });
 
-    KanjiDatabase.saveProgress(_quizItems[_currentIndex].id, isCorrect);
+    if (!kIsWeb) KanjiDatabase.saveProgress(_quizItems[_currentIndex].id, isCorrect);
   }
 
   void _nextQuestion() {

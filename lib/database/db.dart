@@ -1,6 +1,7 @@
-import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:path/path.dart';
+import 'dart:io' show Platform;
 
 class KanjiDatabase {
   static Database? _database;
@@ -8,6 +9,7 @@ class KanjiDatabase {
 
   static void _initFactory() {
     if (_initialized) return;
+    if (kIsWeb) { _initialized = true; return; }
     if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
       sqfliteFfiInit();
       databaseFactory = databaseFactoryFfi;
@@ -16,6 +18,7 @@ class KanjiDatabase {
   }
 
   static Future<Database> get database async {
+    if (kIsWeb) throw UnsupportedError('Database not available on web');
     if (_database != null) return _database!;
     _initFactory();
     _database = await _initDatabase();

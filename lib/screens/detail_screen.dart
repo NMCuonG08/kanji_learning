@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import '../models/kanji.dart';
 import '../database/db.dart';
@@ -24,6 +25,7 @@ class _DetailScreenState extends State<DetailScreen> {
   }
 
   Future<void> _loadStatus() async {
+    if (kIsWeb) return;
     final progress = await KanjiDatabase.getAllProgress();
     if (mounted && progress.containsKey(widget.kanji.id)) {
       setState(() {
@@ -33,7 +35,7 @@ class _DetailScreenState extends State<DetailScreen> {
   }
 
   Future<void> _setStatus(String status) async {
-    await KanjiDatabase.setStatus(widget.kanji.id, status);
+    if (!kIsWeb) await KanjiDatabase.setStatus(widget.kanji.id, status);
     setState(() => _status = status);
   }
 
