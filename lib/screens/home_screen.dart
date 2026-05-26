@@ -5,6 +5,8 @@ import '../database/db.dart';
 import 'quiz_screen.dart';
 import 'detail_screen.dart';
 import 'grammar_screen.dart';
+import 'vocabulary_screen.dart';
+import 'match_game_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -53,7 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: Scaffold(
         backgroundColor: const Color(0xFF1A1A2E),
         appBar: AppBar(
@@ -65,6 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
             tabs: [
               Tab(text: '漢字', icon: Icon(Icons.translate)),
               Tab(text: '文法', icon: Icon(Icons.menu_book)),
+              Tab(text: '語彙', icon: Icon(Icons.list_alt)),
             ],
             indicatorColor: Color(0xFFE94560),
             labelColor: Colors.white,
@@ -77,6 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   _buildKanjiTab(),
                   GrammarScreen(progress: _progress),
+                  const VocabularyScreen(),
                 ],
               ),
       ),
@@ -150,56 +154,55 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildActions(int dueCount) {
-    return Row(
+    return Column(
       children: [
-        Expanded(
-          child: ElevatedButton.icon(
-            onPressed: dueCount == 0
-                ? null
-                : () async {
-                    final list = _dueKanji..shuffle();
-                    final batch = list.take(10).toList();
-                    await Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => QuizScreen(kanjiList: batch, title: 'Học mới ($dueCount)'),
-                    ),
-                    );
-                    _loadProgress();
-                  },
-            icon: const Icon(Icons.school),
-            label: Text('Học (${dueCount > 0 ? dueCount : 0})'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFE94560),
-              foregroundColor: Colors.white,
-              disabledBackgroundColor: Colors.grey.shade800,
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        Row(
+          children: [
+            Expanded(
+              child: ElevatedButton.icon(
+                onPressed: dueCount == 0
+                    ? null
+                    : () async {
+                        final list = _dueKanji..shuffle();
+                        final batch = list.take(10).toList();
+                        await Navigator.push(context, MaterialPageRoute(builder: (_) => QuizScreen(kanjiList: batch, title: 'Học mới ($dueCount)')));
+                        _loadProgress();
+                      },
+                icon: const Icon(Icons.school),
+                label: Text('Học (${dueCount > 0 ? dueCount : 0})', style: const TextStyle(fontSize: 13)),
+                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFE94560), foregroundColor: Colors.white, disabledBackgroundColor: Colors.grey.shade800, padding: const EdgeInsets.symmetric(vertical: 14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+              ),
             ),
-          ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: ElevatedButton.icon(
+                onPressed: _reviewableKanji.isEmpty
+                    ? null
+                    : () async {
+                        final list = _reviewableKanji..shuffle();
+                        final batch = list.take(10).toList();
+                        await Navigator.push(context, MaterialPageRoute(builder: (_) => QuizScreen(kanjiList: batch, title: 'Ôn tập')));
+                        _loadProgress();
+                      },
+                icon: const Icon(Icons.replay),
+                label: const Text('Ôn tập', style: TextStyle(fontSize: 13)),
+                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0F3460), foregroundColor: Colors.white, disabledBackgroundColor: Colors.grey.shade800, padding: const EdgeInsets.symmetric(vertical: 14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+              ),
+            ),
+          ],
         ),
-        const SizedBox(width: 12),
-        Expanded(
+        const SizedBox(height: 10),
+        SizedBox(
+          width: double.infinity,
           child: ElevatedButton.icon(
-            onPressed: _reviewableKanji.isEmpty
-                ? null
-                : () async {
-                    final list = _reviewableKanji..shuffle();
-                    final batch = list.take(10).toList();
-                    await Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => QuizScreen(kanjiList: batch, title: 'Ôn tập')),
-                    );
-                    _loadProgress();
-                  },
-            icon: const Icon(Icons.replay),
-            label: const Text('Ôn tập'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF0F3460),
-              foregroundColor: Colors.white,
-              disabledBackgroundColor: Colors.grey.shade800,
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            ),
+            onPressed: () async {
+              final pool = List<Kanji>.from(kanjiList)..shuffle();
+              await Navigator.push(context, MaterialPageRoute(builder: (_) => MatchGameScreen(pool: pool)));
+              _loadProgress();
+            },
+            icon: const Icon(Icons.extension),
+            label: const Text('Game Nối Từ'),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.purple, foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
           ),
         ),
       ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/kanji.dart';
+import '../database/db.dart';
 import '../services/tts_service.dart';
 
 class DetailScreen extends StatefulWidget {
@@ -13,10 +14,27 @@ class DetailScreen extends StatefulWidget {
 }
 
 class _DetailScreenState extends State<DetailScreen> {
+  String _status = 'new';
+
   @override
   void initState() {
     super.initState();
     TtsService.init();
+    _loadStatus();
+  }
+
+  Future<void> _loadStatus() async {
+    final progress = await KanjiDatabase.getAllProgress();
+    if (mounted && progress.containsKey(widget.kanji.id)) {
+      setState(() {
+        _status = progress[widget.kanji.id]!['status'] as String? ?? 'new';
+      });
+    }
+  }
+
+  Future<void> _setStatus(String status) async {
+    await KanjiDatabase.setStatus(widget.kanji.id, status);
+    setState(() => _status = status);
   }
 
   @override
@@ -75,6 +93,40 @@ class _DetailScreenState extends State<DetailScreen> {
             ),
             const SizedBox(height: 20),
             _buildMasteryBar(),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () => _setStatus('learning'),
+                    icon: const Icon(Icons.school, size: 18),
+                    label: const Text('Đang học'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: _status == 'learning' ? Colors.orange : const Color(0xFF16213E),
+                      foregroundColor: Colors.white,
+                      side: BorderSide(color: _status == 'learning' ? Colors.orange : Colors.white24),
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () => _setStatus('learned'),
+                    icon: const Icon(Icons.check_circle, size: 18),
+                    label: const Text('Đã học'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: _status == 'learned' ? Colors.green : const Color(0xFF16213E),
+                      foregroundColor: Colors.white,
+                      side: BorderSide(color: _status == 'learned' ? Colors.green : Colors.white24),
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    ),
+                  ),
+                ),
+              ],
+            ),
             const SizedBox(height: 20),
             _buildInfoRow('Ý nghĩa', k.meaningVi),
             _buildInfoRow('音読み (On)', k.onyomi.isEmpty ? '—' : k.onyomi),
