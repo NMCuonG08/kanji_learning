@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import '../data/kanji_data.dart';
 import '../models/kanji.dart';
@@ -27,10 +26,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _loadProgress() async {
-    if (kIsWeb) {
-      setState(() { _isLoading = false; });
-      return;
-    }
     final progress = await KanjiDatabase.getAllProgress();
     setState(() {
       _progress = progress;

@@ -96,6 +96,7 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
               : ListView.builder(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   itemCount: filtered.length,
+                  cacheExtent: 800,
                   itemBuilder: (context, index) => _buildVocabCard(filtered[index]),
                 ),
         ),
