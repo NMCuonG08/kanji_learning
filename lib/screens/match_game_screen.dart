@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import '../models/kanji.dart';
+import '../services/tts_service.dart';
 
 class MatchGameScreen extends StatefulWidget {
   final List<Kanji> pool;
@@ -27,6 +28,7 @@ class _MatchGameScreenState extends State<MatchGameScreen> {
   @override
   void initState() {
     super.initState();
+    TtsService.init();
     _startGame();
   }
 
@@ -48,6 +50,7 @@ class _MatchGameScreenState extends State<MatchGameScreen> {
 
   void _onKanjiTap(int index) {
     if (_matchedKanji.contains(index) || _gameComplete || _showWrong) return;
+    TtsService.speak(_batch[index].onyomi);
     setState(() => _selectedKanjiIndex = index);
     _checkMatch();
   }
@@ -132,25 +135,34 @@ class _MatchGameScreenState extends State<MatchGameScreen> {
           const Text('Chọn 1 chữ bên trái → 1 nghĩa bên phải', style: TextStyle(color: Colors.white54, fontSize: 12)),
           const SizedBox(height: 12),
           Expanded(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // LEFT: Kanji column
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: List.generate(_batch.length, (i) => _buildKanjiItem(i)),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                // RIGHT: Meaning column
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: List.generate(_shuffledMeanings.length, (i) => _buildMeaningItem(i)),
-                  ),
-                ),
-              ],
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final availableHeight = constraints.maxHeight;
+                final itemHeight = (availableHeight - (_batch.length - 1) * 5) / _batch.length;
+                return Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: List.generate(_batch.length, (i) => Padding(
+                          padding: EdgeInsets.only(bottom: i < _batch.length - 1 ? 5 : 0),
+                          child: SizedBox(height: itemHeight, child: _buildKanjiItem(i)),
+                        )),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: List.generate(_shuffledMeanings.length, (i) => Padding(
+                          padding: EdgeInsets.only(bottom: i < _shuffledMeanings.length - 1 ? 5 : 0),
+                          child: SizedBox(height: itemHeight, child: _buildMeaningItem(i)),
+                        )),
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
           ),
         ],
@@ -176,25 +188,22 @@ class _MatchGameScreenState extends State<MatchGameScreen> {
       bg = const Color(0xFF16213E);
       border = const Color(0xFF0F3460);
     }
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 5),
-      child: GestureDetector(
-        onTap: matched ? null : () => _onKanjiTap(i),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          decoration: BoxDecoration(
-            color: bg,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: border, width: matched || selected || isWrong ? 2.5 : 1),
-          ),
-          child: Center(
-            child: Text(
-              _batch[i].character,
-              style: TextStyle(
-                fontSize: 26, fontWeight: FontWeight.bold,
-                color: matched ? Colors.green : isWrong ? Colors.red : Colors.white,
-              ),
+    return GestureDetector(
+      onTap: matched ? null : () => _onKanjiTap(i),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        decoration: BoxDecoration(
+          color: bg,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: border, width: matched || selected || isWrong ? 2.5 : 1),
+        ),
+        child: Center(
+          child: Text(
+            _batch[i].character,
+            style: TextStyle(
+              fontSize: 28, fontWeight: FontWeight.bold,
+              color: matched ? Colors.green : isWrong ? Colors.red : Colors.white,
             ),
           ),
         ),
@@ -220,27 +229,24 @@ class _MatchGameScreenState extends State<MatchGameScreen> {
       bg = const Color(0xFF16213E);
       border = const Color(0xFF0F3460);
     }
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 5),
-      child: GestureDetector(
-        onTap: matched ? null : () => _onMeaningTap(i),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 6),
-          decoration: BoxDecoration(
-            color: bg,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: border, width: matched || selected || isWrong ? 2.5 : 1),
-          ),
-          child: Center(
-            child: Text(
-              _shuffledMeanings[i].meaningVi,
-              style: TextStyle(
-                fontSize: 13, fontWeight: FontWeight.w600,
-                color: matched ? Colors.green : isWrong ? Colors.red : Colors.white,
-              ),
-              textAlign: TextAlign.center,
+    return GestureDetector(
+      onTap: matched ? null : () => _onMeaningTap(i),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 6),
+        decoration: BoxDecoration(
+          color: bg,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: border, width: matched || selected || isWrong ? 2.5 : 1),
+        ),
+        child: Center(
+          child: Text(
+            _shuffledMeanings[i].meaningVi,
+            style: TextStyle(
+              fontSize: 15, fontWeight: FontWeight.w600,
+              color: matched ? Colors.green : isWrong ? Colors.red : Colors.white,
             ),
+            textAlign: TextAlign.center,
           ),
         ),
       ),
