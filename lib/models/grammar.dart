@@ -19,3 +19,23 @@ class GrammarPoint {
     required this.jlptLevel,
   });
 }
+
+class GrammarQuestion {
+  final int id;
+  final int lesson;
+  final String question;
+  final String translation;
+  final List<String> options;
+  final int correctOptionIndex;
+  final String explanation;
+
+  const GrammarQuestion({
+    required this.id,
+    required this.lesson,
+    required this.question,
+    required this.translation,
+    required this.options,
+    required this.correctOptionIndex,
+    required this.explanation,
+  });
+}

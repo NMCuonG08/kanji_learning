@@ -7,6 +7,7 @@ import 'detail_screen.dart';
 import 'grammar_screen.dart';
 import 'vocabulary_screen.dart';
 import 'match_game_screen.dart';
+import 'listening_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -55,7 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3,
+      length: 4,
       child: Scaffold(
         backgroundColor: const Color(0xFF1A1A2E),
         appBar: AppBar(
@@ -68,6 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Tab(text: '漢字', icon: Icon(Icons.translate)),
               Tab(text: '文法', icon: Icon(Icons.menu_book)),
               Tab(text: '語彙', icon: Icon(Icons.list_alt)),
+              Tab(text: 'Luyện nghe', icon: Icon(Icons.headphones)),
             ],
             indicatorColor: Color(0xFFE94560),
             labelColor: Colors.white,
@@ -81,6 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   _buildKanjiTab(),
                   GrammarScreen(progress: _progress),
                   const VocabularyScreen(),
+                  const ListeningScreen(),
                 ],
               ),
       ),

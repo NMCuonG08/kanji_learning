@@ -20,7 +20,7 @@ Future<Database> _getDb() async {
   final dbPath = await getDatabasesPath();
   _database = await openDatabase(
     join(dbPath, 'kanji_learning.db'),
-    version: 3,
+    version: 5,
     onCreate: (db, version) async {
       await db.execute('''
         CREATE TABLE progress(
@@ -33,6 +33,18 @@ Future<Database> _getDb() async {
           status TEXT DEFAULT 'new'
         )
       ''');
+      await db.execute('''
+        CREATE TABLE vocab_progress(
+          vocabId INTEGER PRIMARY KEY,
+          lastCorrectAt TEXT
+        )
+      ''');
+      await db.execute('''
+        CREATE TABLE listening_progress(
+          questionId INTEGER PRIMARY KEY,
+          completedAt TEXT
+        )
+      ''');
     },
     onUpgrade: (db, oldVersion, newVersion) async {
       if (oldVersion < 2) {
@@ -41,10 +53,27 @@ Future<Database> _getDb() async {
       if (oldVersion < 3) {
         await db.execute("ALTER TABLE progress ADD COLUMN status TEXT DEFAULT 'new'");
       }
+      if (oldVersion < 4) {
+        await db.execute('''
+          CREATE TABLE vocab_progress(
+            vocabId INTEGER PRIMARY KEY,
+            lastCorrectAt TEXT
+          )
+        ''');
+      }
+      if (oldVersion < 5) {
+        await db.execute('''
+          CREATE TABLE listening_progress(
+            questionId INTEGER PRIMARY KEY,
+            completedAt TEXT
+          )
+        ''');
+      }
     },
   );
   return _database!;
 }
+
 
 Future<void> dbSetStatus(int kanjiId, String status) async {
   final db = await _getDb();
@@ -105,4 +134,48 @@ Future<Map<int, Map<String, dynamic>>> dbGetAllProgress() async {
 Future<void> dbResetAllProgress() async {
   final db = await _getDb();
   await db.delete('progress');
+}
+
+Future<void> dbSaveVocabProgress(int vocabId) async {
+  final db = await _getDb();
+  final now = DateTime.now().toIso8601String();
+  await db.insert('vocab_progress', {
+    'vocabId': vocabId,
+    'lastCorrectAt': now,
+  }, conflictAlgorithm: ConflictAlgorithm.replace);
+}
+
+Future<Map<int, String>> dbGetVocabProgress() async {
+  final db = await _getDb();
+  final List<Map<String, dynamic>> rows = await db.query('vocab_progress');
+  final result = <int, String>{};
+  for (final row in rows) {
+    result[row['vocabId'] as int] = row['lastCorrectAt'] as String;
+  }
+  return result;
+}
+
+Future<void> dbResetVocabProgress() async {
+  final db = await _getDb();
+  await db.delete('vocab_progress');
+}
+
+Future<void> dbSaveListeningProgress(int questionId) async {
+  final db = await _getDb();
+  final now = DateTime.now().toIso8601String();
+  await db.insert('listening_progress', {
+    'questionId': questionId,
+    'completedAt': now,
+  }, conflictAlgorithm: ConflictAlgorithm.replace);
+}
+
+Future<List<int>> dbGetListeningProgress() async {
+  final db = await _getDb();
+  final List<Map<String, dynamic>> rows = await db.query('listening_progress');
+  return rows.map((row) => row['questionId'] as int).toList();
+}
+
+Future<void> dbResetListeningProgress() async {
+  final db = await _getDb();
+  await db.delete('listening_progress');
 }

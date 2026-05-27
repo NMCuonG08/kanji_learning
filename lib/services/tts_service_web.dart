@@ -1,5 +1,5 @@
 @JS()
-library tts_web;
+library;
 
 import 'dart:js_interop';
 
@@ -21,12 +21,12 @@ extension type SpeechSynthesis._(JSObject _) implements JSObject {
 
 Future<void> ttsInit() async {}
 
-Future<void> ttsSpeak(String text) async {
+Future<void> ttsSpeak(String text, {double? rate}) async {
   if (text.isEmpty) return;
   _synth.cancel();
   final u = SpeechSynthesisUtterance(text);
   u.lang = 'ja-JP';
-  u.rate = 0.9;
+  u.rate = rate ?? 0.9;
   _synth.speak(u);
 }
 

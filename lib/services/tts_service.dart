@@ -4,6 +4,6 @@ import 'tts_service_stub.dart'
 
 class TtsService {
   static Future<void> init() => ttsInit();
-  static Future<void> speak(String text) => ttsSpeak(text);
+  static Future<void> speak(String text, {double? rate}) => ttsSpeak(text, rate: rate);
   static Future<void> stop() => ttsStop();
 }

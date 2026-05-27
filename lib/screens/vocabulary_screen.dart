@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../data/vocab_data.dart';
 import '../models/vocab.dart';
 import '../services/tts_service.dart';
+import '../database/db.dart';
+import 'vocab_match_game_screen.dart';
 
 class VocabularyScreen extends StatefulWidget {
   const VocabularyScreen({super.key});
@@ -66,6 +68,41 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
             ),
           ),
         ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          child: SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () async {
+                final progress = await KanjiDatabase.getVocabProgress();
+                final now = DateTime.now();
+                final eligible = vocabList.where((v) {
+                  if (!progress.containsKey(v.id)) return true;
+                  final lastCorrect = DateTime.parse(progress[v.id]!);
+                  return now.difference(lastCorrect).inHours >= 72; // 3 days
+                }).toList();
+
+                final pool = eligible.length >= 10 ? eligible : vocabList;
+                if (!context.mounted) return;
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => VocabMatchGameScreen(pool: pool),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.extension),
+              label: const Text('Game Nối Từ Vựng'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.purple,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 4),
         SizedBox(
           height: 36,
           child: ListView(
@@ -130,6 +167,13 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         child: Row(
           children: [
+            IconButton(
+              onPressed: () => TtsService.speak(v.reading),
+              icon: const Icon(Icons.volume_up, color: Colors.white54, size: 20),
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+            ),
+            const SizedBox(width: 8),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -146,12 +190,6 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
                   Text(v.partOfSpeech, style: const TextStyle(fontSize: 11, color: Colors.white38)),
                 ],
               ),
-            ),
-            IconButton(
-              onPressed: () => TtsService.speak(v.reading),
-              icon: const Icon(Icons.volume_up, color: Colors.white54, size: 20),
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
             ),
           ],
         ),

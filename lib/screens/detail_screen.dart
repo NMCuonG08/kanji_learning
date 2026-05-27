@@ -61,19 +61,6 @@ class _DetailScreenState extends State<DetailScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(
-                  width: 180,
-                  height: 180,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF16213E),
-                    borderRadius: BorderRadius.circular(24),
-                    border: Border.all(color: const Color(0xFFE94560), width: 3),
-                  ),
-                  child: Center(
-                    child: Text(k.character, style: const TextStyle(fontSize: 100, color: Colors.white)),
-                  ),
-                ),
-                const SizedBox(width: 12),
                 Column(
                   children: [
                     IconButton(
@@ -88,6 +75,19 @@ class _DetailScreenState extends State<DetailScreen> {
                       style: IconButton.styleFrom(backgroundColor: const Color(0xFF16213E)),
                     ),
                   ],
+                ),
+                const SizedBox(width: 12),
+                Container(
+                  width: 180,
+                  height: 180,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF16213E),
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(color: const Color(0xFFE94560), width: 3),
+                  ),
+                  child: Center(
+                    child: Text(k.character, style: const TextStyle(fontSize: 100, color: Colors.white)),
+                  ),
                 ),
               ],
             ),
@@ -188,6 +188,11 @@ class _DetailScreenState extends State<DetailScreen> {
               ),
               child: Row(
                 children: [
+                  IconButton(
+                    onPressed: () => TtsService.speak(ex.reading),
+                    icon: const Icon(Icons.volume_up, color: Colors.white54, size: 20),
+                  ),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -197,10 +202,6 @@ class _DetailScreenState extends State<DetailScreen> {
                         Text(ex.meaningVi, style: const TextStyle(color: Color(0xFFE94560), fontSize: 14)),
                       ],
                     ),
-                  ),
-                  IconButton(
-                    onPressed: () => TtsService.speak(ex.reading),
-                    icon: const Icon(Icons.volume_up, color: Colors.white54, size: 20),
                   ),
                 ],
               ),
