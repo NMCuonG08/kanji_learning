@@ -262,20 +262,37 @@ class _ListeningQuizScreenState extends State<ListeningQuizScreen> {
               decoration: BoxDecoration(
                 color: const Color(0xFF16213E),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: const Color(0xFF0F3460), width: 1.5),
+                border: Border.all(color: const Color(0xFFE94560).withValues(alpha: 0.4), width: 1.5),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
                     'Ngữ cảnh (Bối cảnh):',
-                    style: TextStyle(color: Color(0xFFE94560), fontSize: 13, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: Colors.white70, fontSize: 12),
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 4),
                   Text(
                     q.situationVi,
-                    style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
+                    style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w600),
                   ),
+                  const SizedBox(height: 12),
+                  const Text(
+                    'Câu hỏi (Yêu cầu đề bài):',
+                    style: TextStyle(color: Color(0xFFE94560), fontSize: 13, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    q.questionTextJa,
+                    style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  if (_getQuestionTranslation(q.questionTextJa).isNotEmpty) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      _getQuestionTranslation(q.questionTextJa),
+                      style: const TextStyle(color: Colors.white54, fontSize: 14, fontStyle: FontStyle.italic),
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -368,6 +385,7 @@ class _ListeningQuizScreenState extends State<ListeningQuizScreen> {
                       ),
                     ],
                   ),
+                  _buildPlaybackTimeline(),
                 ],
               ),
             ),
@@ -531,6 +549,111 @@ class _ListeningQuizScreenState extends State<ListeningQuizScreen> {
               ),
             ],
           ],
+        ),
+      ),
+    );
+  }
+
+  String _getQuestionTranslation(String questionJa) {
+    if (questionJa.contains('学生はこれから何をしますか')) {
+      return 'Học sinh sẽ làm gì tiếp theo?';
+    } else if (questionJa.contains('二人はこれから何を買いますか')) {
+      return 'Hai người sẽ mua gì tiếp theo?';
+    } else if (questionJa.contains('男の子はどの傘を持って行きますか')) {
+      return 'Cậu bé sẽ mang chiếc ô nào đi?';
+    } else if (questionJa.contains('コピーを何枚しますか')) {
+      return 'Người đàn ông sẽ photo bao nhiêu bản?';
+    } else if (questionJa.contains('どうして今日のパーティーに来ませんか')) {
+      return 'Tại sao người đàn ông không đến bữa tiệc hôm nay?';
+    } else if (questionJa.contains('何を注文しますか')) {
+      return 'Người đàn ông sẽ gọi món gì?';
+    } else if (questionJa.contains('駅までどうやって行きますか')) {
+      return 'Người phụ nữ sẽ đi đến ga bằng cách nào?';
+    } else if (questionJa.contains('何時に会いますか')) {
+      return 'Ngày mai hai người sẽ gặp nhau lúc mấy giờ?';
+    } else if (questionJa.contains('ペンを借りたいです')) {
+      return 'Muốn mượn bút. Sẽ nói gì?';
+    } else if (questionJa.contains('会社から帰ります')) {
+      return 'Ra về từ công ty. Sẽ nói gì với mọi người?';
+    } else if (questionJa.contains('写真を撮ってほしいです')) {
+      return 'Muốn được chụp ảnh giúp. Sẽ nói gì?';
+    } else if (questionJa.contains('友だちの家に入ります')) {
+      return 'Vào nhà bạn chơi. Sẽ nói gì trước khi vào?';
+    } else if (questionJa.contains('この荷物、重いですね')) {
+      return 'Lắng nghe và chọn phản xạ phù hợp với: "Hành lý này nặng nhỉ."';
+    } else if (questionJa.contains('図書館まで歩いてどのくらいかかりますか')) {
+      return 'Lắng nghe và chọn phản xạ phù hợp với: "Từ đây đi bộ đến thư viện mất bao lâu?"';
+    } else if (questionJa.contains('お昼ご飯、もう食べましたか')) {
+      return 'Lắng nghe và chọn phản xạ phù hợp với: "Cơm trưa bạn đã ăn chưa?"';
+    } else if (questionJa.contains('田中さんはいますか')) {
+      return 'Lắng nghe và chọn phản xạ phù hợp với: "Có anh Tanaka ở đó không?"';
+    }
+    return '';
+  }
+
+  Widget _buildPlaybackTimeline() {
+    if (_sequence.isEmpty) return const SizedBox();
+
+    return Container(
+      margin: const EdgeInsets.only(top: 16),
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+      decoration: BoxDecoration(
+        color: Colors.black26,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(_sequence.length, (index) {
+            final item = _sequence[index];
+            final isActive = _isPlaying && _currentSeqIndex == index;
+            final isPast = _isPlaying && _currentSeqIndex > index;
+
+            Color textColor = Colors.white38;
+            Color bgColor = Colors.transparent;
+            BorderSide border = const BorderSide(color: Colors.white10);
+
+            if (isActive) {
+              textColor = Colors.white;
+              bgColor = const Color(0xFFE94560);
+              border = const BorderSide(color: Color(0xFFE94560), width: 1.5);
+            } else if (isPast) {
+              textColor = Colors.white70;
+              bgColor = const Color(0xFF0F3460).withValues(alpha: 0.4);
+              border = BorderSide.none;
+            }
+
+            return Container(
+              margin: const EdgeInsets.symmetric(horizontal: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: bgColor,
+                borderRadius: BorderRadius.circular(8),
+                border: border != BorderSide.none ? Border.all(color: border.color, width: border.width) : null,
+              ),
+              child: Row(
+                children: [
+                  if (isActive) ...[
+                    const SizedBox(
+                      width: 10,
+                      height: 10,
+                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                    ),
+                    const SizedBox(width: 6),
+                  ],
+                  Text(
+                    '${index + 1}. ${item.label}',
+                    style: TextStyle(
+                      color: textColor,
+                      fontSize: 12,
+                      fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
         ),
       ),
     );
