@@ -12,8 +12,9 @@ class MatchGameScreen extends StatefulWidget {
 }
 
 class _MatchGameScreenState extends State<MatchGameScreen> {
-  late List<Kanji> _batch;
-  late List<Kanji> _shuffledMeanings;
+  String? _gameMode; // null = select mode, 'meaning' = Kanji-Meaning, 'reading' = Kanji-Reading
+  List<Kanji> _batch = [];
+  List<Kanji> _shuffledMeanings = [];
   int? _selectedKanjiIndex;
   int? _selectedMeaningIndex;
   int _matchedCount = 0;
@@ -29,7 +30,6 @@ class _MatchGameScreenState extends State<MatchGameScreen> {
   void initState() {
     super.initState();
     TtsService.init();
-    _startGame();
   }
 
   void _startGame() {
@@ -87,7 +87,13 @@ class _MatchGameScreenState extends State<MatchGameScreen> {
         _selectedMeaningIndex = null;
       });
       Future.delayed(const Duration(milliseconds: 600), () {
-        if (mounted) setState(() { _showWrong = false; _wrongKanjiIndex = null; _wrongMeaningIndex = null; });
+        if (mounted) {
+          setState(() {
+            _showWrong = false;
+            _wrongKanjiIndex = null;
+            _wrongMeaningIndex = null;
+          });
+        }
       });
     }
   }
@@ -97,11 +103,173 @@ class _MatchGameScreenState extends State<MatchGameScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFF1A1A2E),
       appBar: AppBar(
-        title: const Text('Game Nối Từ', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(
+          _gameMode == 'meaning'
+              ? 'Game Nối Ý Nghĩa'
+              : _gameMode == 'reading'
+                  ? 'Game Nối Cách Đọc'
+                  : 'Game Nối Kanji',
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
         backgroundColor: const Color(0xFF16213E),
         foregroundColor: Colors.white,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            if (_gameMode != null && !_gameComplete) {
+              setState(() => _gameMode = null);
+            } else {
+              Navigator.pop(context);
+            }
+          },
+        ),
       ),
-      body: _gameComplete ? _buildResult() : _buildGame(),
+      body: _gameMode == null
+          ? _buildSelectionScreen()
+          : (_gameComplete ? _buildResult() : _buildGame()),
+    );
+  }
+
+  Widget _buildSelectionScreen() {
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFFE94560).withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+                border: Border.all(color: const Color(0xFFE94560).withValues(alpha: 0.3), width: 2),
+              ),
+              child: const Icon(
+                Icons.extension,
+                size: 64,
+                color: Color(0xFFE94560),
+              ),
+            ),
+            const SizedBox(height: 24),
+            const Text(
+              'Game Nối Từ Kanji',
+              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white, letterSpacing: 0.5),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Chọn chế độ chơi ôn tập để bắt đầu thử thách ghép cặp',
+              style: TextStyle(fontSize: 14, color: Colors.white60),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 40),
+            _buildModeCard(
+              title: 'Kanji ↔ Ý nghĩa',
+              subtitle: 'Ghép nối chữ Kanji với nghĩa Tiếng Việt tương ứng để củng cố ngữ nghĩa.',
+              icon: Icons.g_translate_rounded,
+              gradient: const LinearGradient(
+                colors: [Color(0xFFE94560), Color(0xFF9B1B30)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              onTap: () {
+                setState(() {
+                  _gameMode = 'meaning';
+                  _startGame();
+                });
+              },
+            ),
+            const SizedBox(height: 16),
+            _buildModeCard(
+              title: 'Kanji ↔ Cách đọc',
+              subtitle: 'Ghép nối chữ Kanji với phát âm Onyomi (Katakana) và Kunyomi (Hiragana).',
+              icon: Icons.record_voice_over_rounded,
+              gradient: const LinearGradient(
+                colors: [Colors.purple, Color(0xFF5E17EB)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              onTap: () {
+                setState(() {
+                  _gameMode = 'reading';
+                  _startGame();
+                });
+              },
+            ),
+            const SizedBox(height: 40),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text(
+                'Quay lại trang chính',
+                style: TextStyle(color: Colors.white54, fontSize: 15, decoration: TextDecoration.underline),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildModeCard({
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required Gradient gradient,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          gradient: gradient,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: const [
+            BoxShadow(
+              color: Colors.black26,
+              blurRadius: 10,
+              offset: Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            color: Colors.black.withValues(alpha: 0.15),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white24,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, size: 32, color: Colors.white),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(fontSize: 12, color: Colors.white70, height: 1.4),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right, color: Colors.white70),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -131,8 +299,13 @@ class _MatchGameScreenState extends State<MatchGameScreen> {
             backgroundColor: Colors.white12,
             color: const Color(0xFFE94560),
           ),
-          const SizedBox(height: 4),
-          const Text('Chọn 1 chữ bên trái → 1 nghĩa bên phải', style: TextStyle(color: Colors.white54, fontSize: 12)),
+          const SizedBox(height: 6),
+          Text(
+            _gameMode == 'meaning'
+                ? 'Chọn 1 chữ bên trái → 1 nghĩa tiếng Việt bên phải'
+                : 'Chọn 1 chữ bên trái → 1 cách đọc bên phải',
+            style: const TextStyle(color: Colors.white54, fontSize: 12),
+          ),
           const SizedBox(height: 12),
           Expanded(
             child: LayoutBuilder(
@@ -229,6 +402,21 @@ class _MatchGameScreenState extends State<MatchGameScreen> {
       bg = const Color(0xFF16213E);
       border = const Color(0xFF0F3460);
     }
+
+    String displayText = '';
+    if (_gameMode == 'meaning') {
+      displayText = _shuffledMeanings[i].meaningVi;
+    } else if (_gameMode == 'reading') {
+      final parts = <String>[];
+      if (_shuffledMeanings[i].onyomi.isNotEmpty) {
+        parts.add('On: ${_shuffledMeanings[i].onyomi}');
+      }
+      if (_shuffledMeanings[i].kunyomi.isNotEmpty) {
+        parts.add('Kun: ${_shuffledMeanings[i].kunyomi}');
+      }
+      displayText = parts.isNotEmpty ? parts.join('\n') : '---';
+    }
+
     return GestureDetector(
       onTap: matched ? null : () => _onMeaningTap(i),
       child: AnimatedContainer(
@@ -241,10 +429,12 @@ class _MatchGameScreenState extends State<MatchGameScreen> {
         ),
         child: Center(
           child: Text(
-            _shuffledMeanings[i].meaningVi,
+            displayText,
             style: TextStyle(
-              fontSize: 15, fontWeight: FontWeight.w600,
+              fontSize: _gameMode == 'reading' ? 11 : 15,
+              fontWeight: FontWeight.w600,
               color: matched ? Colors.green : isWrong ? Colors.red : Colors.white,
+              height: 1.2,
             ),
             textAlign: TextAlign.center,
           ),
@@ -272,6 +462,22 @@ class _MatchGameScreenState extends State<MatchGameScreen> {
             child: const Text('Chơi lại', style: TextStyle(fontSize: 16)),
           ),
           const SizedBox(height: 12),
+          ElevatedButton(
+            onPressed: () => setState(() {
+              _gameMode = null;
+            }),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF0F3460),
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 32),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: const BorderSide(color: Color(0xFFE94560), width: 1),
+              ),
+            ),
+            child: const Text('Đổi chế độ', style: TextStyle(fontSize: 16)),
+          ),
+          const SizedBox(height: 16),
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('Về trang chính', style: TextStyle(color: Colors.white54))),
         ],
       ),
