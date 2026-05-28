@@ -20,7 +20,7 @@ Future<Database> _getDb() async {
   final dbPath = await getDatabasesPath();
   _database = await openDatabase(
     join(dbPath, 'kanji_learning.db'),
-    version: 5,
+    version: 6,
     onCreate: (db, version) async {
       await db.execute('''
         CREATE TABLE progress(
@@ -45,6 +45,12 @@ Future<Database> _getDb() async {
           completedAt TEXT
         )
       ''');
+      await db.execute('''
+        CREATE TABLE grammar_progress(
+          questionId INTEGER PRIMARY KEY,
+          completedAt TEXT
+        )
+      ''');
     },
     onUpgrade: (db, oldVersion, newVersion) async {
       if (oldVersion < 2) {
@@ -64,6 +70,14 @@ Future<Database> _getDb() async {
       if (oldVersion < 5) {
         await db.execute('''
           CREATE TABLE listening_progress(
+            questionId INTEGER PRIMARY KEY,
+            completedAt TEXT
+          )
+        ''');
+      }
+      if (oldVersion < 6) {
+        await db.execute('''
+          CREATE TABLE grammar_progress(
             questionId INTEGER PRIMARY KEY,
             completedAt TEXT
           )
@@ -178,4 +192,24 @@ Future<List<int>> dbGetListeningProgress() async {
 Future<void> dbResetListeningProgress() async {
   final db = await _getDb();
   await db.delete('listening_progress');
+}
+
+Future<void> dbSaveGrammarProgress(int questionId) async {
+  final db = await _getDb();
+  final now = DateTime.now().toIso8601String();
+  await db.insert('grammar_progress', {
+    'questionId': questionId,
+    'completedAt': now,
+  }, conflictAlgorithm: ConflictAlgorithm.replace);
+}
+
+Future<List<int>> dbGetGrammarProgress() async {
+  final db = await _getDb();
+  final List<Map<String, dynamic>> rows = await db.query('grammar_progress');
+  return rows.map((row) => row['questionId'] as int).toList();
+}
+
+Future<void> dbResetGrammarProgress() async {
+  final db = await _getDb();
+  await db.delete('grammar_progress');
 }

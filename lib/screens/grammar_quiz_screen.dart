@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/grammar.dart';
 import '../data/grammar_quiz_data.dart';
+import '../database/db.dart';
 
 class GrammarQuizScreen extends StatefulWidget {
   const GrammarQuizScreen({super.key});
@@ -10,27 +11,41 @@ class GrammarQuizScreen extends StatefulWidget {
 }
 
 class _GrammarQuizScreenState extends State<GrammarQuizScreen> {
-  late List<GrammarQuestion> _quizQuestions;
+  List<GrammarQuestion> _quizQuestions = [];
   int _currentIndex = 0;
   int? _selectedOptionIndex;
   bool _isAnswered = false;
   int _score = 0;
   bool _quizComplete = false;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _startQuiz();
+    _loadAndStartQuiz();
   }
 
-  void _startQuiz() {
-    final shuffled = List<GrammarQuestion>.from(grammarQuestions)..shuffle();
-    _quizQuestions = shuffled.take(10).toList();
-    _currentIndex = 0;
-    _selectedOptionIndex = null;
-    _isAnswered = false;
-    _score = 0;
-    _quizComplete = false;
+  Future<void> _loadAndStartQuiz() async {
+    setState(() => _isLoading = true);
+    
+    final completedIds = await KanjiDatabase.getGrammarProgress();
+    var pool = grammarQuestions.where((q) => !completedIds.contains(q.id)).toList();
+    
+    if (pool.length < 5) {
+      pool = List<GrammarQuestion>.from(grammarQuestions);
+    }
+    
+    final shuffled = List<GrammarQuestion>.from(pool)..shuffle();
+    
+    setState(() {
+      _quizQuestions = shuffled.take(10).toList();
+      _currentIndex = 0;
+      _selectedOptionIndex = null;
+      _isAnswered = false;
+      _score = 0;
+      _quizComplete = false;
+      _isLoading = false;
+    });
   }
 
   void _onOptionTap(int index) {
@@ -38,8 +53,10 @@ class _GrammarQuizScreenState extends State<GrammarQuizScreen> {
     setState(() {
       _selectedOptionIndex = index;
       _isAnswered = true;
-      if (index == _quizQuestions[_currentIndex].correctOptionIndex) {
+      final q = _quizQuestions[_currentIndex];
+      if (index == q.correctOptionIndex) {
         _score++;
+        KanjiDatabase.saveGrammarProgress(q.id);
       }
     });
   }
@@ -65,7 +82,9 @@ class _GrammarQuizScreenState extends State<GrammarQuizScreen> {
         backgroundColor: const Color(0xFF16213E),
         foregroundColor: Colors.white,
       ),
-      body: _quizComplete ? _buildResult() : _buildQuiz(),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator(color: Color(0xFFE94560)))
+          : (_quizComplete ? _buildResult() : _buildQuiz()),
     );
   }
 
@@ -243,7 +262,7 @@ class _GrammarQuizScreenState extends State<GrammarQuizScreen> {
             ),
             const SizedBox(height: 32),
             ElevatedButton(
-              onPressed: () => setState(() => _startQuiz()),
+              onPressed: _loadAndStartQuiz,
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFE94560),
                 foregroundColor: Colors.white,

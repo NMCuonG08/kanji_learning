@@ -160,3 +160,32 @@ Future<void> dbResetListeningProgress() async {
   final prefs = await SharedPreferences.getInstance();
   await prefs.remove(_webListeningDbKey);
 }
+
+// === Grammar Progress ===
+const String _webGrammarDbKey = 'grammar_progress';
+
+Future<void> dbSaveGrammarProgress(int questionId) async {
+  final progress = await dbGetGrammarProgress();
+  if (!progress.contains(questionId)) {
+    progress.add(questionId);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_webGrammarDbKey, jsonEncode(progress));
+  }
+}
+
+Future<List<int>> dbGetGrammarProgress() async {
+  final prefs = await SharedPreferences.getInstance();
+  final String? jsonStr = prefs.getString(_webGrammarDbKey);
+  if (jsonStr == null) return [];
+  try {
+    final List<dynamic> decoded = jsonDecode(jsonStr);
+    return decoded.cast<int>();
+  } catch (e) {
+    return [];
+  }
+}
+
+Future<void> dbResetGrammarProgress() async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.remove(_webGrammarDbKey);
+}

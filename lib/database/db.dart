@@ -15,4 +15,8 @@ class KanjiDatabase {
   static Future<void> saveListeningProgress(int questionId) => dbSaveListeningProgress(questionId);
   static Future<List<int>> getListeningProgress() => dbGetListeningProgress();
   static Future<void> resetListeningProgress() => dbResetListeningProgress();
+
+  static Future<void> saveGrammarProgress(int questionId) => dbSaveGrammarProgress(questionId);
+  static Future<List<int>> getGrammarProgress() => dbGetGrammarProgress();
+  static Future<void> resetGrammarProgress() => dbResetGrammarProgress();
 }

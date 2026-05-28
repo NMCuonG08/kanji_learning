@@ -11,3 +11,7 @@ Future<void> dbResetVocabProgress() async {}
 Future<void> dbSaveListeningProgress(int questionId) async {}
 Future<List<int>> dbGetListeningProgress() async => [];
 Future<void> dbResetListeningProgress() async {}
+
+Future<void> dbSaveGrammarProgress(int questionId) async {}
+Future<List<int>> dbGetGrammarProgress() async => [];
+Future<void> dbResetGrammarProgress() async {}

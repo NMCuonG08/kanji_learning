@@ -33,8 +33,13 @@ class _ListeningScreenState extends State<ListeningScreen> {
   }
 
   List<ListeningQuestion> get _filteredQuestions {
-    if (_selectedFilter == 'all') return listeningQuestions;
-    return listeningQuestions.where((q) => q.taskType == _selectedFilter).toList();
+    var list = listeningQuestions;
+    if (_selectedFilter == 'uncompleted') {
+      list = list.where((q) => !_completedIds.contains(q.id)).toList();
+    } else if (_selectedFilter != 'all') {
+      list = list.where((q) => q.taskType == _selectedFilter).toList();
+    }
+    return list;
   }
 
   String _getTaskTypeText(String type) {
@@ -153,6 +158,7 @@ class _ListeningScreenState extends State<ListeningScreen> {
   Widget _buildFilterBar() {
     final filters = [
       {'key': 'all', 'label': 'Tất cả'},
+      {'key': 'uncompleted', 'label': 'Chưa làm'},
       {'key': 'task1', 'label': 'Mondai 1'},
       {'key': 'task2', 'label': 'Mondai 2'},
       {'key': 'task3', 'label': 'Mondai 3'},
