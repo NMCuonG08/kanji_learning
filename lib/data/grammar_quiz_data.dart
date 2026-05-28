@@ -7,18 +7,18 @@ final List<GrammarQuestion> grammarQuestions = [
     lesson: 1,
     question: "わたしは マイク・ミラー [   ]。",
     translation: "Tôi là Mike Miller.",
-    options: ["です", "gì", "も", "の"],
+    options: ["です", "じゃありません", "も", "の"],
     correctOptionIndex: 0,
-    explanation: "🌟 CẤU TRÚC: [N1 は N2 です] nghĩa là 'N1 là N2' (Khẳng định lịch sự).\n🔍 PHÂN TÍCH:\n- 'です' đóng vai trò làm từ kết thúc câu khẳng định lịch sự ở hiện tại đối với danh từ.\n- 'も' mang nghĩa 'cũng' (trợ từ thay thế 'は').\n- 'の' dùng để nối hai danh từ hoặc chỉ sở hữu.\n- Do câu khẳng định 'Tôi là Mike Miller' nên điền 'です' là duy nhất chính xác.\n📚 TỪ VỰNG: わたし (Tôi), マイク・ミラー (Mike Miller).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- [N1 は N2 です] dùng để khẳng định một cách lịch sự danh từ ở thời hiện tại/tương lai (N1 là N2).\n- Trợ từ 'は' đứng sau chủ ngữ N1. 'です' đứng cuối câu khẳng định làm vị ngữ.\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: 'です' là lựa chọn chính xác nhất vì câu mang ý khẳng định 'Tôi là Mike Miller'.\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + 'じゃありません': Là dạng phủ định (Tôi KHÔNG PHẢI là Mike Miller), trái ngược với nghĩa của câu khẳng định gốc.\n  + 'も': Là trợ từ mang nghĩa 'cũng', không đứng độc lập ở cuối câu làm động từ/vị ngữ khẳng định được.\n  + 'の': Là trợ từ nối danh từ hoặc chỉ sở hữu, không đứng cuối câu khẳng định.\n\n📚 TỪ VỰNG BỔ TRỢ:\n- わたし: Tôi (Đại từ nhân xưng ngôi thứ nhất).\n- マイク・ミラー: Mike Miller (Tên riêng người nước ngoài viết bằng Katakana).",
   ),
   const GrammarQuestion(
     id: 2,
     lesson: 1,
     question: "サントスさんは 学生 [   ]。",
     translation: "Anh Santos không phải là sinh viên.",
-    options: ["です", "も", "の", "じゃありません"],
+    options: ["です", "gì", "も", "じゃありません"],
     correctOptionIndex: 3,
-    explanation: "🌟 CẤU TRÚC: [N1 は N2 じゃありません] nghĩa là 'N1 không phải là N2' (Phủ định lịch sự).\n🔍 PHÂN TÍCH:\n- 'じゃありません' là dạng phủ định lịch sự của danh từ ở thời hiện tại/tương lai.\n- 'です' là khẳng định (là).\n- 'も' (cũng) và 'の' (của) là trợ từ, không đứng cuối câu để làm vị ngữ phủ định được.\n- Câu mang ý phủ định 'không phải là sinh viên' nên ta chọn 'じゃありません'.\n📚 TỪ VỰNG: 学生 (học sinh/sinh viên), サントス (Santos).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- [N1 は N2 じゃありません] là dạng phủ định lịch sự ở thời hiện tại/tương lai của danh từ (N1 không phải là N2).\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: 'じゃありません' là câu phủ định danh từ lịch sự. Vì câu dịch là 'Anh Santos không phải là sinh viên' nên ta chọn phương án này.\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + 'です': Khẳng định 'là sinh viên' (trái ngược nghĩa mong muốn).\n  + 'gì': Tiếng Việt gây nhiễu vô nghĩa.\n  + 'も': Trợ từ 'cũng', không đứng cuối câu để làm vị ngữ phủ định.\n\n📚 TỪ VỰNG BỔ TRỢ:\n- 学生 (がくせい): Học sinh, sinh viên.\n- サントス: Santos (Tên riêng người nước ngoài).",
   ),
   // Bài 2
   const GrammarQuestion(
@@ -28,7 +28,7 @@ final List<GrammarQuestion> grammarQuestions = [
     translation: "Đây là cuốn sách.",
     options: ["これ", "この", "ここ", "こちら"],
     correctOptionIndex: 0,
-    explanation: "🌟 CẤU TRÚC: [これ / それ / あれ + は] đại từ chỉ thị đứng độc lập làm chủ ngữ.\n🔍 PHÂN TÍCH:\n- 'これ' (cái này) là đại từ chỉ vật đứng gần người nói, có thể đứng trực tiếp trước trợ từ 'は'.\n- 'この' (này) là tính từ chỉ thị, bắt buộc phải có danh từ đi liền ngay sau (ví dụ: この本).\n- 'ここ' dùng để chỉ nơi chốn (ở đây).\n- 'こちら' dùng để chỉ phương hướng hoặc nơi chốn một cách lịch sự.\n📚 TỪ VỰNG: 本 (sách).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- [これ] (cái này), [それ] (cái đó), [あれ] (cái kia) là các đại từ chỉ thị chỉ vật đứng độc lập làm chủ ngữ trước trợ từ 'は'.\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: 'これ' là đại từ chỉ vật nằm gần phía người nói, đứng độc lập ngay trước trợ từ 'は'.\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + 'この': Là tính từ chỉ thị (này), bắt buộc phải có danh từ đi liền ngay sau (ví dụ: この本は...).\n  + 'ここ': Chỉ nơi chốn (ở đây).\n  + 'こちら': Chỉ phương hướng/nơi chốn lịch sự (phía này/ở đây).\n\n📚 TỪ VỰNG BỔ TRỢ:\n- 本 (ほん): Sách, cuốn sách.\n- です: Là (dùng kết thúc câu danh từ khẳng định).",
   ),
   const GrammarQuestion(
     id: 4,
@@ -37,7 +37,7 @@ final List<GrammarQuestion> grammarQuestions = [
     translation: "Máy tính này là của tôi.",
     options: ["これ", "この", "ここ", "こちら"],
     correctOptionIndex: 1,
-    explanation: "🌟 CẤU TRÚC: [この / その / あの + Danh từ] nghĩa là 'Danh từ này/đó/kia'.\n🔍 PHÂN TÍCH:\n- 'この' bổ nghĩa trực tiếp cho danh từ 'コンピューター' (máy tính) ngay phía sau.\n- 'これ' (cái này) là đại từ chỉ vật, không được đi kèm danh từ trực tiếp như vậy.\n- 'ここ' chỉ nơi chốn (ở đây), 'こちら' chỉ hướng/địa điểm lịch sự.\n- Phía sau khoảng trống là danh từ nên chỉ có 'この' là chính xác.\n📚 TỪ VỰNG: コンピューター (máy tính), わたし (tôi), わたし の (của tôi).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- [この / その / あの + Danh từ + は] là cấu trúc tính từ chỉ thị bổ nghĩa cho danh từ đứng sau nó (Cái ... này/đó/kia).\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: 'この' là tính từ chỉ thị, bổ nghĩa trực tiếp cho danh từ 'コンピューター' (máy tính) ngay phía sau.\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + 'これ': Đại từ chỉ vật đứng độc lập, không đi kèm trực tiếp danh từ (sai: これコンピューター).\n  + 'ここ': Đại từ chỉ địa điểm (ở đây).\n  + 'こちら': Đại từ chỉ phương hướng/địa điểm lịch sự.\n\n📚 TỪ VỰNG BỔ TRỢ:\n- コンピューター: Máy tính (Computer).\n- わたし: Tôi.\n- わたしのです: Của tôi (cụm danh từ rút gọn biểu thị sở hữu).",
   ),
   // Bài 3
   const GrammarQuestion(
@@ -47,7 +47,7 @@ final List<GrammarQuestion> grammarQuestions = [
     translation: "Nhà vệ sinh ở đâu?",
     options: ["どこ", "どれ", "だれ", "どの"],
     correctOptionIndex: 0,
-    explanation: "🌟 CẤU TRÚC: [N は どこ ですか] dùng để hỏi nơi chốn/địa điểm ('N ở đâu?').\n🔍 PHÂN TÍCH:\n- 'どこ' là nghi vấn từ dùng để hỏi địa điểm ('ở đâu').\n- 'どれ' dùng để hỏi lựa chọn vật nào ('cái nào' trong số nhiều cái).\n- 'だれ' dùng để hỏi người ('ai').\n- 'どの' là tính từ nghi vấn, phải đi kèm danh từ phía sau ('nào').\n📚 TỪ VỰNG: お手洗い (nhà vệ sinh, phòng vệ sinh lịch sự).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- [N は どこ ですか] là câu nghi vấn dùng để hỏi địa điểm hoặc nơi chốn của danh từ N ('N ở đâu?').\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: 'どこ' là nghi vấn từ dùng để hỏi địa điểm ('ở đâu').\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + 'どれ': Nghi vấn từ dùng để chọn vật ('cái nào' trong nhóm từ 3 vật trở lên).\n  + 'だれ': Nghi vấn từ dùng để hỏi người ('ai').\n  + 'どの': Tính từ nghi vấn, bắt buộc phải đi kèm với một danh từ ngay sau (ví dụ: どのペン).\n\n📚 TỪ VỰNG BỔ TRỢ:\n- お手洗い (おてあらい): Nhà vệ sinh, phòng vệ sinh (từ lịch sự).",
   ),
   const GrammarQuestion(
     id: 6,
@@ -56,7 +56,7 @@ final List<GrammarQuestion> grammarQuestions = [
     translation: "Sảnh đợi ở hướng kia.",
     options: ["あそこ", "あちら", "あれ", "あの"],
     correctOptionIndex: 1,
-    explanation: "🌟 CẤU TRÚC: [あちら] chỉ phương hướng hoặc địa điểm ở xa cả người nói và người nghe một cách trang trọng, lịch sự.\n🔍 PHÂN TÍCH:\n- 'あちら' (hướng kia/đằng kia) là đại từ chỉ phương hướng mang sắc thái tôn trọng.\n- 'あそこ' (ở kia) chỉ địa điểm cụ thể thông thường.\n- 'あれ' (cái kia) dùng để chỉ vật ở xa.\n- 'あの' (kia) đi kèm trực tiếp danh từ.\n- Trong ngữ cảnh giới thiệu dịch vụ như sảnh khách sạn (ロビー), người ta ưu tiên dùng đại từ chỉ hướng lịch sự 'あちら'.\n📚 TỪ VỰNG: ロビー (sảnh chờ/hành lang đón khách).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- [こちら / そちら / あちら / どちら] là các đại từ chỉ phương hướng hoặc địa điểm mang sắc thái tôn kính, trang trọng lịch sự hơn so với [ここ / そこ / あそこ / どこ].\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: 'あちら' (phương kia) là đại từ chỉ phương hướng ở xa cả hai người nói/nghe, phù hợp để giới thiệu địa điểm/hướng đi một cách lịch sự trong tòa nhà.\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + 'あそこ': Chỉ vị trí địa điểm thông thường (ở đằng kia), ít trang trọng hơn.\n  + 'あれ': Chỉ vật ở đằng kia (cái kia).\n  + 'あの': Tính từ chỉ thị (kia), phải có danh từ đứng sau.\n\n📚 TỪ VỰNG BỔ TRỢ:\n- ロビー: Sảnh chờ, sảnh khách sạn (Lobby).",
   ),
   // Bài 4
   const GrammarQuestion(
@@ -66,7 +66,7 @@ final List<GrammarQuestion> grammarQuestions = [
     translation: "Bây giờ là mấy giờ?",
     options: ["です", "ですか", "の", "も"],
     correctOptionIndex: 0,
-    explanation: "🌟 CẤU TRÚC: [今 何時ですか] là mẫu câu nghi vấn dùng để hỏi thời gian hiện tại ('Bây giờ là mấy giờ?').\n🔍 PHÂN TÍCH:\n- Do cuối câu đã có sẵn trợ từ nghi vấn 'か' làm nhiệm vụ tạo câu hỏi, nên khoảng trống chỉ cần điền động từ liên kết 'です'.\n- Nếu điền 'ですか' sẽ bị lặp từ nghi vấn thành 'ですかか' (sai ngữ pháp).\n- 'の' và 'も' là các trợ từ không phù hợp ngữ cảnh.\n📚 TỪ VỰNG: 今 (bây giờ), 何時 (mấy giờ).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- [今 何時ですか] là câu hỏi thời gian ở hiện tại ('Bây giờ là mấy giờ?').\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: 'です' là động từ liên kết. Do cuối câu đã có sẵn trợ từ nghi vấn 'か' để hỏi, ta chỉ cần điền 'です' là hoàn tất cấu trúc nghi vấn lịch sự.\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + 'ですか': Bị lặp từ nghi vấn 'か' ở cuối câu thành 'ですかか' (lỗi ngữ pháp cực nặng).\n  + 'の' và 'も': Trợ từ chỉ sở hữu hoặc đồng nhất, hoàn toàn sai cấu trúc hỏi giờ.\n\n📚 TỪ VỰNG BỔ TRỢ:\n- 今 (いま): Bây giờ.\n- 何時 (なんじ): Mấy giờ.",
   ),
   const GrammarQuestion(
     id: 8,
@@ -75,7 +75,7 @@ final List<GrammarQuestion> grammarQuestions = [
     translation: "Tôi thức dậy vào lúc 6 giờ mỗi sáng.",
     options: ["で", "に", "を", "へ"],
     correctOptionIndex: 1,
-    explanation: "🌟 CẤU TRÚC: [Thời gian cụ thể + に + Động từ] dùng để chỉ mốc thời gian chính xác mà hành động xảy ra.\n🔍 PHÂN TÍCH:\n- 'に' là trợ từ bắt buộc đi kèm sau danh từ chỉ thời gian có con số cụ thể (như 6 giờ, ngày 5, tháng 2) để xác định mốc thời gian hành động.\n- 'で' chỉ nơi chốn xảy ra hành động hoặc phương tiện.\n- 'を' chỉ tân ngữ trực tiếp chịu tác động.\n- 'へ' chỉ hướng di chuyển của hành động.\n📚 TỪ VỰNG: 毎朝 (mỗi sáng), 6時 (6 giờ), 起きます (thức dậy).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- [Mốc thời gian cụ thể + に + Động từ] dùng để chỉ thời điểm chính xác xảy ra hành động.\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: 'に' là trợ từ bắt buộc đứng sau danh từ thời gian chứa số cụ thể ('6時') để chỉ thời điểm thức dậy.\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + 'で': Chỉ nơi chốn diễn ra hành động hoặc công cụ/phương tiện.\n  + 'を': Trợ từ đứng sau tân ngữ trực tiếp chịu tác động.\n  + 'へ': Chỉ phương hướng di chuyển đến địa điểm.\n\n📚 TỪ VỰNG BỔ TRỢ:\n- 毎朝 (まいあさ): Mỗi sáng, mọi sáng.\n- 6時 (ろくじ): 6 giờ.\n- 起きます (おきます): Thức dậy, ngủ dậy.",
   ),
   // Bài 5
   const GrammarQuestion(
@@ -85,7 +85,7 @@ final List<GrammarQuestion> grammarQuestions = [
     translation: "Tuần sau tôi sẽ đi Kyoto.",
     options: ["を", "が", "へ", "で"],
     correctOptionIndex: 2,
-    explanation: "🌟 CẤU TRÚC: [Địa điểm + へ / に + 行きます/来ます/帰ります] chỉ hướng đi hoặc đích đến của hành động di chuyển.\n🔍 PHÂN TÍCH:\n- Trợ từ 'へ' (phát âm là 'e') dùng để chỉ hướng di chuyển đến địa danh '京都' (Kyoto) của động từ chuyển động '行きます' (đi).\n- Trợ từ 'を' chỉ tân ngữ, 'が' chỉ chủ ngữ hoặc đối tượng thích/ghét/hiểu.\n- 'で' chỉ địa điểm xảy ra hành động tự thân hoặc phương tiện.\n📚 TỪ VỰNG: 来週 (tuần sau), 京都 (thành phố cổ Kyoto), 行きます (đi).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- [Địa điểm + へ / に + Động từ di chuyển (行く/来る/帰る)] chỉ đích đến hoặc hướng đi của hành động chuyển động.\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: Trợ từ 'へ' (phát âm là 'e') đi kèm sau danh từ địa điểm '京都' (Kyoto) để biểu thị hướng đi của động từ '行きます' (đi).\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + 'を': Dùng cho tân ngữ trực tiếp của ngoại động từ.\n  + 'が': Chỉ chủ ngữ hoặc đối tượng thích/hiểu.\n  + 'で': Chỉ địa điểm diễn ra hoạt động, hành vi.\n\n📚 TỪ VỰNG BỔ TRỢ:\n- 来週 (らいしゅう): Tuần sau.\n- 京都 (きょうと): Thành phố Kyoto.\n- 行きます (いきます): Đi.",
   ),
   const GrammarQuestion(
     id: 10,
@@ -94,7 +94,7 @@ final List<GrammarQuestion> grammarQuestions = [
     translation: "Tôi về nhà bằng xe taxi.",
     options: ["で", "に", "を", "へ"],
     correctOptionIndex: 0,
-    explanation: "🌟 CẤU TRÚC: [Phương tiện / Công cụ + で + Động từ] biểu thị phương tiện di chuyển hoặc công cụ thực hiện.\n🔍 PHÂN TÍCH:\n- Trợ từ 'で' đi sau danh từ chỉ phương tiện giao thông 'タクシー' (xe taxi) biểu thị phương thức di chuyển ('bằng xe taxi').\n- 'に' chỉ đích đến hoặc thời gian.\n- 'を' chỉ tân ngữ trực tiếp.\n- 'へ' chỉ hướng đi.\n📚 TỪ VỰNG: タクシー (xe taxi), うち (nhà), 帰ります (về/trở về).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- [Phương tiện/Công cụ + で + Động từ] biểu thị phương thức, phương tiện hoặc cách thức thực hiện hành động ('bằng...').\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: 'で' là trợ từ chỉ phương tiện di chuyển sau danh từ phương tiện giao thông 'タクシー' (xe taxi).\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + 'に': Chỉ thời điểm cụ thể hoặc đích đến.\n  + 'を': Chỉ tân ngữ trực tiếp chịu tác động.\n  + 'へ': Chỉ phương hướng đi.\n\n📚 TỪ VỰNG BỔ TRỢ:\n- タクシー: Xe taxi (Taxi).\n- うち: Nhà, gia đình.\n- 帰ります (かえります): Trở về, về nhà.",
   ),
   // Bài 6
   const GrammarQuestion(
@@ -104,16 +104,16 @@ final List<GrammarQuestion> grammarQuestions = [
     translation: "Cùng đi Kobe không?",
     options: ["ます", "ましょう", "ませんか", "ました"],
     correctOptionIndex: 2,
-    explanation: "🌟 CẤU TRÚC: [Động từ thể ます bỏ ます + ませんか] dùng để mời mọc, rủ rê đối phương làm gì đó cùng mình một cách lịch sự.\n🔍 PHÂN TÍCH:\n- 'ませんか' (không à?) thể hiện thái độ tôn trọng tự do của đối phương, rủ rê rất tinh tế.\n- 'ます' là khẳng định bình thường.\n- 'ましょう' là hô hào quyết tâm ('hãy cùng đi nào'), mang tính chủ quan hơn.\n- 'ました' là thì quá khứ.\n- Do câu dịch mang tính rủ rê nhẹ nhàng lịch sự 'Cùng đi... không?' nên chọn 'ませんか'.\n📚 TỪ VỰNG: いっしょに (cùng nhau), 神戸 (thành phố cảng Kobe).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- [Động từ thể ます bỏ ます + ませんか] dùng để mời mọc, rủ rê đối phương làm gì đó cùng mình một cách lịch sự, tế nhị ('không à?').\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: 'ませんか' thể hiện thái độ tôn trọng tự do lựa chọn của đối phương, không ép buộc. Do câu dịch là câu rủ rê dạng nghi vấn 'Cùng đi... không?' nên đây là đáp án duy nhất đúng.\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + 'ます': Thể khẳng định bình thường ở hiện tại.\n  + 'ましょう': Mẫu câu đề xuất chủ quan mang ý chí của người nói ('hãy cùng... nào!'), không mang sắc thái lịch sự tế nhị như ませんか.\n  + 'ました': Thì quá khứ.\n\n📚 TỪ VỰNG BỔ TRỢ:\n- いっしょに: Cùng nhau, cùng với nhau.\n- 神戸 (こうべ): Thành phố cảng Kobe.",
   ),
   const GrammarQuestion(
     id: 12,
     lesson: 6,
     question: "毎朝 パン [   ] 食べます。",
     translation: "Mỗi sáng tôi ăn bánh mì.",
-    options: ["を", "が", "に", "で"],
+    options: ["を", "gì", "に", "で"],
     correctOptionIndex: 0,
-    explanation: "🌟 CẤU TRÚC: [Tân ngữ + を + Ngoại động từ] biểu thị đối tượng trực tiếp chịu tác động của hành động.\n🔍 PHÂN TÍCH:\n- Trợ từ 'を' đứng sau danh từ 'パン' (bánh mì) là tân ngữ chịu tác động trực tiếp của hành động ăn '食べます'.\n- 'が' dùng cho tự động từ hoặc các cấu trúc năng lực/sở thích.\n- 'に' dùng cho thời gian/đích đến.\n- 'で' chỉ địa điểm hoặc phương tiện.\n📚 TỪ VỰNG: 毎朝 (mỗi sáng), パン (bánh mì), 食べます (ăn).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- [Tân ngữ + を + Động từ hành động] trợ từ 'を' kết nối danh từ chịu tác động với ngoại động từ.\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: 'を' đi kèm sau danh từ chỉ đồ ăn 'パン' (bánh mì) là tân ngữ chịu tác động của hành động ăn '食べます'.\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + 'gì': Tiếng Việt gây nhiễu.\n  + 'に': Dùng cho mốc thời gian hoặc đích đến.\n  + 'で': Chỉ phương tiện hoặc nơi diễn ra hành động ăn.\n\n📚 TỪ VỰNG BỔ TRỢ:\n- 毎朝 (まいあさ): Mỗi sáng.\n- パン: Bánh mì (Pain/Pan).\n- 食べます (たべます): Ăn.",
   ),
   // Bài 7
   const GrammarQuestion(
@@ -123,7 +123,7 @@ final List<GrammarQuestion> grammarQuestions = [
     translation: "Tôi ăn cơm bằng đũa.",
     options: ["で", "に", "を", "へ"],
     correctOptionIndex: 0,
-    explanation: "🌟 CẤU TRÚC: [Công cụ / Dụng cụ + で + Động từ] biểu thị phương tiện hoặc công cụ thực hiện hành động.\n🔍 PHÂN TÍCH:\n- Trợ từ 'で' đứng sau danh từ chỉ dụng cụ ăn uống 'はし' (đũa) diễn tả phương thức ăn cơm ('bằng đũa').\n- 'に' chỉ đích đến hoặc thời gian.\n- 'を' chỉ tân ngữ.\n- 'へ' chỉ hướng chuyển động.\n📚 TỪ VỰNG: はし (đũa), ごはん (cơm), 食べます (ăn).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- [Công cụ / Dụng cụ + で + Động từ] dùng trợ từ 'で' để chỉ phương tiện hoặc công cụ dùng để thực hiện hành động ('bằng...').\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: 'で' là trợ từ chỉ công cụ dùng để ăn cơm sau danh từ 'はし' (đũa).\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + 'に': Chỉ thời gian/đích đến.\n  + 'を': Chỉ tân ngữ của hành động ăn (cơm 'ごはん' mới đi với を).\n  + 'へ': Chỉ hướng đi.\n\n📚 TỪ VỰNG BỔ TRỢ:\n- はし: Đũa.\n- ごはん: Cơm, bữa ăn.\n- 食べます (たべます): Ăn.",
   ),
   const GrammarQuestion(
     id: 14,
@@ -132,7 +132,7 @@ final List<GrammarQuestion> grammarQuestions = [
     translation: "Tôi đã tặng hoa cho cô Kimura.",
     options: ["に", "で", "を", "から"],
     correctOptionIndex: 0,
-    explanation: "🌟 CẤU TRÚC: [Người nhận + に + Vật + を + あげます] nghĩa là 'Cho/tặng ai cái gì'.\n🔍 PHÂN TÍCH:\n- Trợ từ 'に' đứng sau danh từ chỉ đối tượng tiếp nhận hành động cho/tặng '木村さん' (cô Kimura).\n- 'で' chỉ phương tiện/địa điểm.\n- 'を' dùng để kết nối vật tặng '花' (hoa) với động từ.\n- 'から' nghĩa là 'từ' (thường dùng trong nhận: từ ai đó).\n📚 TỪ VỰNG: 木村さん (cô Kimura), 花 (hoa), あげました (đã tặng).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- [Người tặng + は + Người nhận + に + Vật + を + あげます] là mẫu câu cho/tặng ai đó cái gì.\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: Trợ từ 'に' dùng để chỉ đối tượng gián tiếp tiếp nhận hành động tặng hoa ('cô Kimura').\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + 'で': Chỉ địa điểm/công cụ.\n  + 'を': Đã đứng sau vật được tặng là '花' (hoa) nên không đứng ở đây nữa.\n  + 'から': Mang nghĩa 'từ' (dùng khi NHẬN của ai đó: もらいました).\n\n📚 TỪ VỰNG BỔ TRỢ:\n- 木村さん (きむらさん): Cô Kimura.\n- 花 (はな): Hoa, bông hoa.\n- あげました: Đã cho, đã tặng (thì quá khứ).",
   ),
   // Bài 8
   const GrammarQuestion(
@@ -142,7 +142,7 @@ final List<GrammarQuestion> grammarQuestions = [
     translation: "Phú Sĩ là ngọn núi cao.",
     options: ["高いの", "高い", "高な", "高くて"],
     correctOptionIndex: 1,
-    explanation: "🌟 CẤU TRÚC: [Tính từ đuôi い + Danh từ] bổ nghĩa trực tiếp cho danh từ đằng sau giữ nguyên đuôi 'い'.\n🔍 PHÂN TÍCH:\n- '高い' (cao) là tính từ đuôi い, khi bổ nghĩa cho danh từ '山' (núi) thì viết liền trực tiếp không thêm bớt trợ từ gì cả.\n- '高いの' thêm 'の' là sai ngữ pháp.\n- '高な' biến đổi như tính từ đuôi な là sai vì đây là tính từ đuôi い.\n- '高くて' là thể liên kết (lửng) dùng để nối câu.\n📚 TỪ VỰNG: 富士山 (núi Phú Sĩ), 山 (núi).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- [Tính từ đuôi い + Danh từ] bổ nghĩa trực tiếp cho danh từ đằng sau, giữ nguyên đuôi 'い' của tính từ.\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: '高い' (cao) là tính từ đuôi い, đứng liền trước và bổ nghĩa cho danh từ '山' (núi) mà không cần thêm trợ từ gì khác.\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + '高いの': Sai ngữ pháp vì không dùng trợ từ 'の' nối giữa tính từ đuôi い và danh từ.\n  + '高な': Sai vì biến tính từ đuôi い thành đuôi な.\n  + '高くて': Là thể liên kết lửng (thể て) dùng để nối câu chứ không dùng bổ nghĩa trực tiếp danh từ đứng liền kề.\n\n📚 TỪ VỰNG BỔ TRỢ:\n- 富士山 (ふじさん): Núi Phú Sĩ.\n- 山 (やま): Núi.\n- 高い (たかい): Cao, đắt.",
   ),
   const GrammarQuestion(
     id: 16,
@@ -151,7 +151,7 @@ final List<GrammarQuestion> grammarQuestions = [
     translation: "Căn phòng này không yên tĩnh.",
     options: ["くない", "じゃない", "じゃありません", "くないの"],
     correctOptionIndex: 2,
-    explanation: "🌟 CẤU TRÚC: [Tính từ đuôi な + じゃありません] là dạng phủ định lịch sự ở thời hiện tại/tương lai của tính từ đuôi な.\n🔍 PHÂN TÍCH:\n- '静か' (yên tĩnh) là tính từ đuôi な. Thể phủ định lịch sự đầy đủ là '静かじゃありません'.\n- 'くない' dùng để phủ định tính từ đuôi い (ví dụ: 高くない).\n- 'じゃない' là dạng phủ định ngắn thân mật, không kết hợp trực tiếp với 'tính từ + です' một cách trang trọng chuẩn mực ở N5.\n📚 TỪ VỰNG: 部屋 (căn phòng), 静か (yên tĩnh).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- [Tính từ đuôi な + じゃありません / ではありません] là dạng phủ định lịch sự ở thời hiện tại/tương lai của tính từ đuôi な (không...).\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: '静か' (yên tĩnh) là tính từ đuôi な. Dạng phủ định lịch sự trang trọng kết thúc bằng 'です' ở N5 là '静かじゃありません' (hoặc ではりません).\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + 'くない': Dùng để phủ định tính từ đuôi い (ví dụ: 高くない).\n  + 'じゃない': Là dạng phủ định ngắn thân mật (thể thông thường), không kết hợp với 'です' trang trọng chuẩn mực ở vị trí này.\n  + 'くないの': Sai ngữ pháp.\n\n📚 TỪ VỰNG BỔ TRỢ:\n- 部屋 (へや): Căn phòng.\n- 静か (しずか): Yên tĩnh.",
   ),
   // Bài 9
   const GrammarQuestion(
@@ -161,16 +161,16 @@ final List<GrammarQuestion> grammarQuestions = [
     translation: "Tôi hiểu tiếng Nhật.",
     options: ["を", "が", "に", "で"],
     correctOptionIndex: 1,
-    explanation: "🌟 CẤU TRÚC: [Đối tượng + が + わかります] chỉ đối tượng của sự hiểu biết (hiểu cái gì).\n🔍 PHÂN TÍCH:\n- Động từ năng lực/trạng thái như 'わかります' (hiểu) yêu cầu trợ từ 'が' đứng trước để chỉ đối tượng được hiểu.\n- Đây là ngoại lệ quan trọng vì thông thường hành động dùng 'を', nhưng trạng thái/năng lực phải dùng 'が'.\n- 'を', 'に', 'で' đều không đúng ngữ pháp đi kèm của 'わかります'.\n📚 TỪ VỰNG: 日本語 (tiếng Nhật), わかります (hiểu).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- [N + が + わかります] chỉ đối tượng hiểu biết. Động từ 'わかります' (hiểu) là động từ chỉ trạng thái/năng lực, đi với trợ từ 'が' thay vì 'を'.\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: Trợ từ 'が' là trợ từ đi kèm quy chuẩn bắt buộc của động từ 'わかります' để chỉ đối tượng được hiểu rõ ('tiếng Nhật').\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + 'を': Thường đi với động từ hành động (ngoại động từ), không đi với động từ trạng thái 'わかります'.\n  + 'に' và 'で': Sai trợ từ.\n\n📚 TỪ VỰNG BỔ TRỢ:\n- 日本語 (にほんご): Tiếng Nhật.\n- わかります: Hiểu, nắm rõ.",
   ),
   const GrammarQuestion(
     id: 18,
     lesson: 9,
     question: "時間が ありません [   ]、タクシーで行きます。",
     translation: "Vì không có thời gian nên tôi đi bằng taxi.",
-    options: ["から", "ので", "けど", "gì"],
+    options: ["から", "này", "けど", "gì"],
     correctOptionIndex: 0,
-    explanation: "🌟 CẤU TRÚC: [Mệnh đề nguyên nhân + から, Mệnh đề kết quả] nghĩa là 'Vì... nên...'.\n🔍 PHÂN TÍCH:\n- Trợ từ 'から' đi sau mệnh đề lịch sự 'ありません' biểu thị nguyên nhân, lý do cho hành động ở vế sau ('đi bằng taxi').\n- 'けど' mang ý nghĩa tương phản (nhưng).\n- 'gì' là tiếng Việt gây nhiễu.\n- 'ので' cũng chỉ nguyên nhân nhưng đòi hỏi chia thể thông thường trước đó (không đi trực tiếp lịch sự chuẩn mực N5 ở đây).\n📚 TỪ VỰNG: 時間 (thời gian), ありません (không có), タクシー (taxi), 行きます (đi).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- [Vế A (Mệnh đề nguyên nhân) + から、Vế B (Mệnh đề kết quả)] diễn tả mối quan hệ nhân quả ('Vì A nên B').\n- 'から' có thể đi sau cả thể lịch sự (ます/ません) và thể thông thường.\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: 'から' đứng sau mệnh đề chỉ nguyên nhân 'ありません' (không có) để giải thích lý do đi taxi ở vế sau.\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + 'けど': Biểu thị quan hệ tương phản, ngược nghĩa (nhưng).\n  + 'này' và 'gì': Tiếng Việt gây nhiễu vô nghĩa.\n\n📚 TỪ VỰNG BỔ TRỢ:\n- 時間 (じかん): Thời gian.\n- ありません: Không có.\n- タクシー: Xe taxi.\n- 行きます (いきます): Đi.",
   ),
   // Bài 10
   const GrammarQuestion(
@@ -180,16 +180,16 @@ final List<GrammarQuestion> grammarQuestions = [
     translation: "Có cuốn sách ở trên bàn.",
     options: ["が", "は", "に", "で"],
     correctOptionIndex: 0,
-    explanation: "🌟 CẤU TRÚC: [Địa điểm + に + Vật + が + あります] mẫu câu tồn tại vật vô tri vô giác ('Có cái gì ở đâu').\n🔍 PHÂN TÍCH:\n- Động từ chỉ sự tồn tại 'あります' yêu cầu trợ từ 'が' đứng sau danh từ vật tồn tại '本' (sách).\n- Trợ từ 'に' dùng để chỉ địa điểm tồn tại và đã đứng sau '机の上' rồi.\n- 'で' chỉ địa điểm xảy ra hành động, không dùng cho sự tồn tại tĩnh.\n📚 TỪ VỰNG: 机 (bàn), 上 (trên), 本 (sách), あります (có/tồn tại).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- [N (địa điểm) + に + N (vật) + が + あります] là mẫu câu chỉ sự tồn tại của đồ vật vô tri vô giác ('Có cái gì ở đâu').\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: 'が' là trợ từ chỉ đối tượng tồn tại đi kèm sau danh từ vật tồn tại '本' (sách) trước động từ 'あります'.\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + 'に': Dùng chỉ địa điểm và đã đứng sau '机の上' rồi.\n  + 'で': Chỉ địa điểm xảy ra hành động, không dùng cho câu chỉ sự tồn tại tĩnh.\n  + 'は': Dùng khi đưa vật lên làm chủ đề câu hỏi (Ví dụ: 本は机の上にあります - Sách thì ở trên bàn).\n\n📚 TỪ VỰNG BỔ TRỢ:\n- 机 (つくえ): Bàn, cái bàn.\n- 上 (うえ): Trên, phía trên.\n- 本 (ほん): Sách.\n- あります: Có, tồn tại (vật).",
   ),
   const GrammarQuestion(
     id: 20,
     lesson: 10,
     question: "庭に だれ [   ] いません。",
     translation: "Không có ai ở ngoài sân.",
-    options: ["は", "が", "も", "に"],
+    options: ["は", "gì", "も", "に"],
     correctOptionIndex: 2,
-    explanation: "🌟 CẤU TRÚC: [Nghi vấn từ + も + Động từ thể phủ định] phủ định hoàn toàn ('Không... ai/cái gì/đâu cả').\n🔍 PHÂN TÍCH:\n- Từ nghi vấn 'だれ' (ai) kết hợp với trợ từ 'も' và động từ phủ định 'いません' (không có người) tạo ra câu phủ định hoàn toàn: 'だれもいません' (không có ai cả).\n- Các trợ từ 'は', 'が', 'ni' không tạo thành cấu trúc phủ định hoàn toàn.\n📚 TỪ VỰNG: 庭 (sân/vườn), だれ (ai), いません (không có - dùng cho người/động vật).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- [Nghi vấn từ + も + Động từ thể phủ định] biểu thị sự phủ định hoàn toàn đối tượng ('Không... ai/gì/đâu cả').\n- 'だれ' (ai) + 'も' + 'いません' (không có người) = 'Không có ai cả'.\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: Trợ từ 'も' kết hợp từ nghi vấn tạo thành cấu trúc phủ định hoàn toàn. Điền 'も' là chính xác.\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + 'は' và 'に': Không tạo thành cấu trúc phủ định hoàn toàn.\n  + 'gì': Tiếng Việt gây nhiễu vô nghĩa.\n\n📚 TỪ VỰNG BỔ TRỢ:\n- 庭 (にわ): Sân, vườn.\n- だれ: Ai (Nghi vấn từ chỉ người).\n- いません: Không có, không tồn tại (dùng cho người/động vật).",
   ),
   // Bài 11
   const GrammarQuestion(
@@ -198,8 +198,8 @@ final List<GrammarQuestion> grammarQuestions = [
     question: "国で 3か月 日本語 [   ] 勉強しました。",
     translation: "Tôi đã học tiếng Nhật ở nước mình trong 3 tháng.",
     options: ["を", "に", "（không điền trợ từ）", "で"],
-    correctOptionIndex: 0,
-    explanation: "🌟 CẤU TRÚC: [Tân ngữ + を + Động từ hành động] diễn tả hành động học tiếng Nhật.\n🔍 PHÂN TÍCH:\n- Trợ từ 'を' nối danh từ tân ngữ '日本語' (tiếng Nhật) với động từ hành động '勉強しました' (đã học).\n- '3か月' (3 tháng) là trạng từ chỉ khoảng thời gian, đứng tự do không cần trợ từ bổ trợ đằng sau.\n- Trợ từ 'に' và 'で' không đúng ngữ pháp cho tân ngữ học.\n📚 TỪ VỰNG: 国 (nước/quê nhà), 3か月 (3 tháng), 日本語 (tiếng Nhật), 勉強しました (đã học).",
+    correctOptionIndex: 2,
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- Các trạng từ chỉ lượng thời gian (như 3か月 - 3 tháng, 1週間 - 1 tuần) được dùng trực tiếp như phó từ trong câu để bổ nghĩa cho động từ, không cần đi kèm trợ từ phía sau.\n- Trợ từ tân ngữ 'を' đã đứng sau danh từ '日本語' và động từ là '勉強しました' rồi.\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: '（không điền trợ từ）' là chính xác vì '3か月' đứng tự do chỉ khoảng thời gian kéo dài của hành động học.\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + 'を', 'に', 'で': Nếu điền vào đây sẽ phá vỡ cấu trúc và làm sai ngữ pháp trầm trọng.\n\n📚 TỪ VỰNG BỔ TRỢ:\n- 国 (くに): Nước, quê hương.\n- 3か月 (さんかげつ): 3 tháng.\n- 日本語 (にほんご): Tiếng Nhật.\n- 勉強しました (べんきょうしました): Đã học bài (quá khứ).",
   ),
   const GrammarQuestion(
     id: 22,
@@ -208,26 +208,26 @@ final List<GrammarQuestion> grammarQuestions = [
     translation: "Tôi đã mua 4 quả táo.",
     options: ["四つ", "四人", "四枚", "四台"],
     correctOptionIndex: 0,
-    explanation: "🌟 CẤU TRÚC: Lựa chọn đơn vị đếm phù hợp với đồ vật cần đếm (táo).\n🔍 PHÂN TÍCH:\n- '四つ' (yotsu) là từ dùng đếm đồ vật nói chung (quả táo, cái bánh, v.v.).\n- '四人' (yonin) dùng để đếm người.\n- '四枚' (yonmai) dùng đếm vật mỏng dẹt như giấy, áo sơ mi.\n- '四台' (yondai) dùng đếm máy móc, xe cộ.\n- Vì đối tượng đếm là 'りんご' (táo - quả tròn) nên ta chọn '四つ'.\n📚 TỪ VỰNG: りんご (táo), 買いました (đã mua).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- Hệ thống lượng từ đếm số lượng vật trong tiếng Nhật phụ thuộc vào hình dáng và chủng loại của vật đó.\n- Đếm táo (vật hình tròn/nói chung): dùng từ đếm [ひとつ、ふたつ、みっつ、よっつ...].\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: '四つ' (よっつ) dùng để đếm 4 quả táo (vật tròn nói chung).\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + '四人' (yonin): Dùng đếm người.\n  + '四枚' (yonmai): Dùng đếm vật mỏng dẹt (giấy, áo).\n  + '四台' (yondai): Dùng đếm máy móc, xe cộ.\n\n📚 TỪ VỰNG BỔ TRỢ:\n- りんご: Táo, quả táo.\n- 買いました (かいました): Đã mua (quá khứ).",
   ),
   // Bài 12
   const GrammarQuestion(
     id: 23,
     lesson: 12,
-    question: "昨日は 天気が [   ] です。",
+    question: "昨日は 天気が [   ]。",
     translation: "Hôm qua thời tiết đã rất đẹp.",
     options: ["いい", "よかったです", "よかった", "よくて"],
-    correctOptionIndex: 2,
-    explanation: "🌟 CẤU TRÚC: Thì quá khứ khẳng định của tính từ đuôi い đặc biệt: [いい -> よかった].\n🔍 PHÂN TÍCH:\n- Câu có trạng từ chỉ quá khứ '昨日' (hôm qua) và kết thúc bằng 'です', nên tính từ đứng trước phải chia ở thể quá khứ ngắn: 'よかった'. Kết hợp lại thành 'よかったです'.\n- 'いい' là hiện tại.\n- 'よかったです' nếu điền vào khoảng trống sẽ bị lặp từ 'です' thành 'よかったですです' (sai ngữ pháp).\n- 'よくて' là thể liên kết (thể て).\n📚 TỪ VỰNG: 昨日 (hôm qua), 天気 (thời tiết).",
+    correctOptionIndex: 1,
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- Thừa nhận tính từ đặc biệt: [いい (tốt/đẹp) -> Quá khứ khẳng định lịch sự là よかったです].\n- Trạng từ chỉ thời gian quá khứ '昨日' (hôm qua) yêu cầu động từ/tính từ chia ở thời quá khứ.\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: 'よかったです' là dạng quá khứ khẳng định lịch sự chính xác của tính từ 'いい'. Vì trong câu đã lược bỏ chữ 'です' ở cuối đề bài (chỉ còn dấu chấm), ta điền 'よかったです' là hoàn chỉnh câu.\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + 'いい': Dạng hiện tại.\n  + 'よかった': Dạng thông thường thân mật quá khứ, chưa có 'です' lịch sự.\n  + 'よくて': Thể liên kết (thể て).\n\n📚 TỪ VỰNG BỔ TRỢ:\n- 昨日 (きのう): Hôm qua.\n- 天気 (てんき): Thời tiết.",
   ),
   const GrammarQuestion(
     id: 24,
     lesson: 12,
-    question: "Hokkaido [   ] Kyushu 寒いです (Bản dịch đề: Hokkaido lạnh hơn Kyushu).",
+    question: "北海道は 九州 [   ] 寒いです。",
     translation: "Hokkaido lạnh hơn Kyushu.",
-    options: ["は 九州より", "のほうが", "ほど", "と"],
+    options: ["より", "のほう", "ほど", "と"],
     correctOptionIndex: 0,
-    explanation: "🌟 CẤU TRÚC: [A は B より + Tính từ] diễn tả sự so sánh hơn ('A thì lạnh hơn B').\n🔍 PHÂN TÍCH:\n- Theo cấu trúc chuẩn so sánh hơn: 'Hokkaido は Kyushu より 寒いです'.\n- 'のほうが' dùng trong mẫu 'A của B thì hơn' (A のほうが B より...).\n- 'ほど' dùng trong so sánh không bằng (A は B ほど...ない).\n- Do cấu trúc khuyết chủ ngữ 'Hokkaido' chưa có trợ từ và so sánh với Kyushu nên chọn cụm 'は 九州より'.\n📚 TỪ VỰNG: 北海道 (Hokkaido - đảo phía bắc Nhật Bản), 九州 (Kyushu - đảo phía nam), 寒い (lạnh).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- So sánh hơn: [Danh từ A + は + Danh từ B + より + Tính từ + です] nghĩa là 'A thì tính từ hơn B' (A hơn B).\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: 'より' (hơn/so với) đứng sau Kyushu để làm mốc so sánh ('so với Kyushu thì Hokkaido lạnh hơn').\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + 'のほう': Dùng trong 'Kyushu のほうが...' chỉ bên nào hơn.\n  + 'ほど': Dùng trong so sánh không bằng (Hokkaido は Kyushu ほど寒くない - Hokkaido không lạnh bằng Kyushu).\n  + 'と': Trợ từ dùng để nối hai danh từ hoặc nghĩa là 'và/với'.\n\n📚 TỪ VỰNG BỔ TRỢ:\n- 北海道 (ほっかいどう): Đảo Hokkaido (ở phía bắc Nhật Bản, rất lạnh).\n- 九州 (きゅうしゅう): Đảo Kyushu (ở phía nam).\n- 寒い (さむい): Lạnh (thời tiết).",
   ),
   // Bài 13
   const GrammarQuestion(
@@ -235,9 +235,9 @@ final List<GrammarQuestion> grammarQuestions = [
     lesson: 13,
     question: "のどが かわきましたから、水が [   ] です。",
     translation: "Vì khát nước nên tôi muốn có nước.",
-    options: ["たい", "欲しい", "yêu", "欲し"],
+    options: ["たい", "欲しい", "飲 muốn", "欲し"],
     correctOptionIndex: 1,
-    explanation: "🌟 CẤU TRÚC: [Danh từ + が + 欲しいです] diễn tả nguyện vọng muốn sở hữu một đồ vật nào đó của người nói.\n🔍 PHÂN TÍCH:\n- '欲しい' (muốn có) là tính từ chỉ mong muốn sở hữu vật chất, đi với danh từ + trợ từ が.\n- 'たい' là đuôi động từ đi kèm động từ thể ます bỏ ます biểu thị muốn làm hành động (như: 飲みたい - muốn uống).\n- '欲し' là tính từ chưa chia hoàn chỉnh.\n📚 TỪ VỰNG: のど が かわきました (khát nước/khô họng), 水 (nước).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- [Danh từ + が + 欲しいです] diễn tả ước muốn sở hữu một vật nào đó của người nói ('Muốn có...').\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: '欲しい' (muốn có) là tính từ đuôi い diễn đạt mong ước có được danh từ vật chất '水' (nước).\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + 'たい': Phải đi kèm động từ bỏ ます để chỉ ước muốn thực hiện hành động (như 飲みたい - muốn uống).\n  + '欲し': Chưa chia tính từ hoàn chỉnh.\n\n📚 TỪ VỰNG BỔ TRỢ:\n- のど が かわきました: Khát nước (khô họng).\n- 水 (みず): Nước.\n- から: Vì (chỉ nguyên nhân).",
   ),
   const GrammarQuestion(
     id: 26,
@@ -246,17 +246,17 @@ final List<GrammarQuestion> grammarQuestions = [
     translation: "Tôi đi đến trung tâm thương mại để mua quần áo.",
     options: ["買うに", "買いに", "買ってに", "買いますに"],
     correctOptionIndex: 1,
-    explanation: "🌟 CẤU TRÚC: [Địa điểm + へ + Vます (bỏ ます) + に + 行きます/来ます/帰ります] chỉ mục đích của sự di chuyển ('Đi đâu để làm gì').\n🔍 PHÂN TÍCH:\n- Động từ '買う' (mua) chia sang thể ます là '買います', lược bỏ 'ます' còn lại '買い' rồi kết hợp với 'に 行きます'.\n- Các phương án '買うに' (để nguyên thể từ điển) hay '買ってに' (thể て) đều sai cấu trúc ngữ pháp chỉ mục đích di chuyển.\n📚 TỪ VỰNG: デパート (trung tâm thương mại), 服 (quần áo), 行きます (đi).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- Mục đích chuyển động: [Địa điểm + へ + V-ます (bỏ ます) + に + 行く/来る/帰る] nghĩa là 'Đi/đến đâu để thực hiện hành động gì'.\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: Động từ '買う' (mua) chia sang thể ます là '買います', bỏ 'ます' đi thành '買い' kết hợp với 'に 行きます'.\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + '買うに': Để nguyên thể từ điển (sai cấu trúc).\n  + '買ってに': Dùng thể て (sai cấu trúc).\n  + '買いますに': Không bỏ ます (sai cấu trúc).\n\n📚 TỪ VỰNG BỔ TRỢ:\n- デパート: Trung tâm thương mại (Department store).\n- 服 (ふく): Quần áo.\n- 行きます (いきます): Đi.",
   ),
   // Bài 14
   const GrammarQuestion(
     id: 27,
     lesson: 14,
-    question: "すみませんが、塩を [   ] ください。",
+    question: "すみませんが、塩uを [   ] ください。",
     translation: "Xin lỗi, hãy lấy hộ tôi lọ muối.",
     options: ["取って", "取る", "取ります", "取った"],
     correctOptionIndex: 0,
-    explanation: "🌟 CẤU TRÚC: [Động từ thể て + ください] dùng để yêu cầu hoặc nhờ vả đối phương làm gì đó giúp mình một cách lịch sự.\n🔍 PHÂN TÍCH:\n- Động từ nhóm 1 '取る' (lấy) chia sang thể て là '取って'. Kết hợp với 'ください' tạo thành câu nhờ vả: '取ってください' (hãy lấy giúp tôi).\n- '取る' (thể từ điển), '取ります' (thể ます), '取った' (thể quá khứ た) không kết hợp được với 'ください'.\n📚 TỪ VỰNG: すみませんが (xin lỗi nhưng...), 塩 (muối).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- [Động từ thể て + ください] mẫu câu yêu cầu, nhờ vả lịch sự đối phương làm hành động nào đó giúp mình ('Hãy làm...').\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: Động từ '取る' (lấy) chia sang thể て là '取って'. Đi liền với 'ください' là chính xác ('Hãy lấy giúp tôi muối').\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + '取る': Thể từ điển.\n  + '取ります': Thể lịch sự ます.\n  + '取った': Thể quá khứ た.\n  Các thể này đều không thể kết hợp trực tiếp với 'ください'.\n\n📚 TỪ VỰNG BỔ TRỢ:\n- すみませんが: Xin lỗi (nhưng... - dùng mở lời nhờ vả).\n- 塩 (しお): Muối.\n- 取ります (とります): Lấy.",
   ),
   const GrammarQuestion(
     id: 28,
@@ -265,7 +265,7 @@ final List<GrammarQuestion> grammarQuestions = [
     translation: "Tôi gọi taxi giúp anh nhé?",
     options: ["ましょうか", "ましょう", "ませんか", "てください"],
     correctOptionIndex: 0,
-    explanation: "🌟 CẤU TRÚC: [Động từ thể ます bỏ ます + ましょうか] dùng để chủ động đề nghị làm một việc gì đó giúp đỡ người khác.\n🔍 PHÂN TÍCH:\n- Động từ '呼ぶ' (gọi) bỏ ます thành '呼び'. Kết hợp với 'ましょうか' thành '呼びましょうか' thể hiện sự thiện chí chủ động giúp đỡ ('Để tôi gọi taxi giúp anh nhé?').\n- 'ましょう' là hô hào cùng làm.\n- 'ませんか' là rủ rê mời mọc.\n📚 TỪ VỰNG: タクシー (xe taxi), 呼びます (gọi).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- [Động từ thể ます bỏ ます + ましょうか] diễn tả lời đề nghị chủ động thực hiện hành động để giúp đỡ đối phương ('Tôi làm... nhé?').\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: Động từ '呼ぶ' (gọi) bỏ ます thành '呼び'. Ghép với 'ましょうか' thể hiện sự chủ động giúp đỡ gọi taxi cho khách hàng hoặc đối phương ('Tôi gọi taxi nhé?').\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + 'ましょう': Hô hào cùng làm việc gì đó ('Hãy cùng gọi nào').\n  + 'ませんか': Mời mọc rủ rê đối phương thực hiện ('Gọi taxi cùng tôi không?').\n  + 'てください': Yêu cầu đối phương làm việc gì đó.\n\n📚 TỪ VỰNG BỔ TRỢ:\n- タクシー: Xe taxi.\n- 呼びます (よびます): Gọi.",
   ),
   // Bài 15
   const GrammarQuestion(
@@ -275,7 +275,7 @@ final List<GrammarQuestion> grammarQuestions = [
     translation: "Tôi chụp ảnh ở đây có được không?",
     options: ["ても", "ては", "たら", "て"],
     correctOptionIndex: 0,
-    explanation: "🌟 CẤU TRÚC: [Động từ thể て + もいいですか] dùng để xin phép làm một hành động nào đó ('Làm... có được không?').\n🔍 PHÂN TÍCH:\n- Động từ '撮る' (chụp) chia sang thể て là '撮って'. Đi kèm cụm 'もいいですか' để xin phép chụp ảnh ('撮ってもいいですか').\n- 'ては' kết hợp với 'いけません' dùng để cấm đoán.\n- 'たら' là cấu trúc giả định (nếu).\n📚 TỪ VỰNG: ここで (ở đây), 写真 (ảnh), 撮ります (chụp).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- [Động từ thể て + もいいですか] mẫu câu xin phép đối phương làm một hành động nào đó ('Làm... có được không?').\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: Động từ '撮る' (chụp) chia thể て là '撮って' (đã viết sẵn '撮っ'), đi liền với 'ても' tạo thành cấu trúc xin phép '撮ってもいいですか' (chụp ảnh có được không?).\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + 'ては': Dùng trong cấm đoán (〜てはいけません).\n  + 'たら': Dùng trong điều kiện giả định.\n\n📚 TỪ VỰNG BỔ TRỢ:\n- ここで: Ở đây.\n- 写真 (しゃしん): Ảnh, bức ảnh.\n- 撮ります (とります): Chụp (ảnh).",
   ),
   const GrammarQuestion(
     id: 30,
@@ -284,26 +284,26 @@ final List<GrammarQuestion> grammarQuestions = [
     translation: "Không được hút thuốc ở đây.",
     options: ["ても", "ては", "たら", "て"],
     correctOptionIndex: 1,
-    explanation: "🌟 CẤU TRÚC: [Động từ thể て + はいけません] dùng để diễn tả sự cấm đoán không được phép làm hành động nào đó.\n🔍 PHÂN TÍCH:\n- Động từ '吸う' (hút) chia sang thể て là '吸って'. Kết hợp với 'はいけません' (từ '吸っ' đã viết sẵn, cần điền thêm 'ては') tạo thành câu cấm hút thuốc: '吸ってはいけません'.\n- 'ても' dùng để xin phép (てもいい).\n📚 TỪ VỰNG: ここで (ở đây), タバコ (thuốc lá), 吸います (hút).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- [Động từ thể て + はいけません] mẫu câu cấm đoán không cho phép đối phương thực hiện hành động ('Không được làm...').\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: Động từ '吸う' (hút) chia thể て là '吸って' (đã viết sẵn '吸っ'), kết hợp với 'ては' tạo thành cấu trúc cấm đoán '吸ってはいけません'.\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + 'ても': Dùng trong xin phép (〜てもいいです).\n  + 'たら': Dùng trong cấu trúc giả định.\n\n📚 TỪ VỰNG BỔ TRỢ:\n- ここで: Ở đây.\n- タバコ: Thuốc lá.\n- 吸います (すいます): Hút.",
   ),
   // Bài 16
   const GrammarQuestion(
     id: 31,
     lesson: 16,
-    question: "シャワーを [   ]から、ご飯を食べます。",
+    question: "シャワーを [   ] から、ご飯を食べます。",
     translation: "Sau khi tắm vòi sen, tôi ăn cơm.",
     options: ["浴びて", "浴びる", "浴びた", "浴びます"],
     correctOptionIndex: 0,
-    explanation: "🌟 CẤU TRÚC: [Động từ thể て + から + Hành động 2] diễn tả hành trình thời gian: sau khi làm xong việc A thì thực hiện việc B.\n🔍 PHÂN TÍCH:\n- Động từ nhóm 2 '浴びる' (tắm vòi sen) chia sang thể て là '浴びて'. Kết hợp với 'から' tạo thành '浴びてから' (sau khi tắm).\n- '浴びる' (thể từ điển), '浴びた' (thể quá khứ) không kết hợp trực tiếp với trợ từ 'から' để chỉ trình tự thời gian này.\n📚 TỪ VỰNG: シャワー (vòi hoa sen), ご飯 (cơm/bữa ăn), 食べます (ăn).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- [V1-て + から + V2] chỉ tuần tự thời gian của các hành động ('Sau khi làm V1 thì làm V2').\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: Động từ nhóm 2 '浴びる' (tắm) chia thể て là '浴びて', kết hợp với 'から' tạo thành '浴びてから' (sau khi tắm).\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + '浴びる': Thể từ điển.\n  + '浴びた': Thể quá khứ.\n  + '浴びます': Thể lịch sự.\n  Các thể này đều sai ngữ pháp khi đứng trước 'から' để diễn tả thứ tự thời gian này.\n\n📚 TỪ VỰNG BỔ TRỢ:\n- シャワー: Vòi hoa sen, tắm vòi sen (Shower).\n- ご飯 (ごはん): Cơm, bữa ăn.\n- 食べます (たべます): Ăn.",
   ),
   const GrammarQuestion(
     id: 32,
     lesson: 16,
-    question: "Kobeへ 行って、映画を [   ]、お茶を飲みました。",
-    translation: "Tôi đã đi Kobe, xem phim, rồi uống trà.",
+    question: "神戸へ 行って、映画を [   ]、お茶を飲みました。",
+    translation: "Đi Kobe, xem phim, rồi uống trà.",
     options: ["見て", "見ます", "見方", "見たら"],
     correctOptionIndex: 0,
-    explanation: "🌟 CẤU TRÚC: [V1て、V2て、... VN] dùng để liên kết chuỗi hành động xảy ra liên tiếp theo trình tự thời gian.\n🔍 PHÂN TÍCH:\n- Để liệt kê chuỗi hành động: Đi Kobe ('行って') -> Xem phim -> Uống trà ('飲みました'), ta chia động từ '見る' (xem) sang thể て là '見て' để nối câu.\n- '見ます' kết thúc câu, không nối lửng được.\n- '見たら' là điều kiện giả định.\n📚 TỪ VỰNG: 神戸 (Kobe), 映画 (phim), お茶 (trà), 飲みました (đã uống).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- [V1-て + V2-て + V3] liên kết nhiều hành động liên tiếp của cùng chủ ngữ theo trình tự thời gian.\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: Động từ '見る' (xem) chia thể て là '見て' để kết nối các hành động: Đi Kobe -> Xem phim -> Uống trà.\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + '見ます': Dùng để kết thúc câu, không nối lửng ở giữa câu được.\n  + '見たら': Thể điều kiện giả định (nếu xem).\n  + '見方' (みかた): Danh từ mang nghĩa 'cách xem', hoàn toàn lạc đề.\n\n📚 TỪ VỰNG BỔ TRỢ:\n- 神戸 (こうべ): Thành phố Kobe.\n- 映画 (えいが): Phim, bộ phim.\n- お茶 (おちゃ): Trà, nước trà.\n- 飲みました (のみました): Đã uống (quá khứ).",
   ),
   // Bài 17
   const GrammarQuestion(
@@ -313,16 +313,16 @@ final List<GrammarQuestion> grammarQuestions = [
     translation: "Vì bị sốt nên xin đừng tắm bồn.",
     options: ["入らないで", "入らない", "入らなくて", "入ってないで"],
     correctOptionIndex: 0,
-    explanation: "🌟 CẤU TRÚC: [Động từ thể ない + でください] dùng để yêu cầu lịch sự đối phương KHÔNG làm hành động nào đó.\n🔍 PHÂN TÍCH:\n- Động từ '入る' (vào/tắm bồn) chia sang thể phủ định ない là '入らない'. Kết hợp với 'でください' tạo thành câu khuyên ngăn lịch sự: '入らないでください' (xin đừng tắm bồn).\n- '入らなくて' là thể liên kết phủ định (vì không...).\n📚 TỪ VỰNG: 熱 (sốt), お風呂に入ります (tắm bồn).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- [Động từ thể ない + でください] là mẫu câu yêu cầu khuyên ngăn lịch sự đối phương đừng thực hiện hành động nào đó ('Hãy đừng làm...').\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: Động từ '入る' (vào/tắm) chia sang thể phủ định ない là '入らない', ghép với 'でください' tạo thành câu '入らないでください' (xin đừng tắm bồn).\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + '入らない': Thể phủ định ngắn đơn thuần, thiếu 'で' để kết hợp với ください.\n  + '入らなくて': Thể liên kết phủ định (không làm V1 và/vì không làm V1).\n\n📚 TỪ VỰNG BỔ TRỢ:\n- 熱 (ねつ): Cơn sốt, bị sốt.\n- お風呂に入ります (おふろにはいります): Tắm bồn tắm truyền thống Nhật Bản.\n- から: Vì (chỉ nguyên nhân).",
   ),
   const GrammarQuestion(
     id: 34,
     lesson: 17,
-    question: " must ... (Bản dịch đề: Ngày mai tôi phải dậy sớm).",
+    question: "明日 早く 起き [   ] なりません。",
     translation: "Ngày mai tôi phải dậy sớm.",
-    options: ["早く 起きなければなりません", "早く 起きなくちゃ", "早く 起きなければいけません", "早く 起きます"],
-    correctOptionIndex: 0,
-    explanation: "🌟 CẤU TRÚC: [Động từ thể ない bỏ ない + なければなりません] biểu thị một nghĩa vụ hoặc việc bắt buộc phải thực hiện.\n🔍 PHÂN TÍCH:\n- Động từ '起きる' (dậy) chuyển sang thể ない là '起きない', bỏ 'ない' thêm 'なければなりません' tạo thành câu nghĩa vụ bắt buộc trang trọng: '起きなければなりません'.\n- '起きなくちゃ' là thể hội thoại thân mật rút gọn.\n📚 TỪ VỰNG: 明日 (ngày mai), 早く (sớm), 起きます (thức dậy).",
+    options: ["なければ", "なくちゃ", "なければいけません", "なければなりません"],
+    correctOptionIndex: 3,
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- [Động từ thể ない bỏ ない + なければなりません] mẫu câu chỉ nghĩa vụ bắt buộc người nói phải thực hiện hành động ('Phải làm...').\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: Động từ '起きる' (thức dậy) chia thể phủ định '起きない', bỏ 'ない' còn '起き', kết hợp với cụm từ kết hợp đã viết sẵn 'なりません' -> ta điền 'なければなりません' là đầy đủ cấu trúc chuẩn mực quy phạm.\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + 'なければ': Chỉ là phần điều kiện (Nếu không dậy).\n  + 'なければいけません': Cũng nghĩa là phải làm nhưng sai phần kết hợp có sẵn ở cuối câu (đề bài đã ghi sẵn chữ 'なりません').\n  + 'なくちゃ': Dạng rút gọn thân mật trong văn nói thường ngày.\n\n📚 TỪ VỰNG BỔ TRỢ:\n- 明日 (あした): Ngày mai.\n- 早く (はやく): Sớm, nhanh chóng.\n- 起きます (おきます): Thức dậy.",
   ),
   // Bài 18
   const GrammarQuestion(
@@ -332,7 +332,7 @@ final List<GrammarQuestion> grammarQuestions = [
     translation: "Chị Maria có thể chơi piano.",
     options: ["ことが", "のを", "ことがに", "もの"],
     correctOptionIndex: 0,
-    explanation: "🌟 CẤU TRÚC: [Động từ thể từ điển + ことが できます] diễn tả năng lực hoặc khả năng thực hiện một hành động nào đó.\n🔍 PHÂN TÍCH:\n- Động từ '弾く' (chơi nhạc cụ gõ/dây) ở thể từ điển đi kèm danh từ hóa 'こと' và trợ từ năng lực 'が' kết hợp với 'できます' (có thể).\n- Cụm từ cố định chuẩn là 'ことが'.\n- 'のを' hay 'もの' đều sai ngữ pháp kết hợp của 'できます'.\n📚 TỪ VỰNG: マリア (Maria), ピアノ (piano), 弾く (chơi đàn), できます (có thể).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- [Động từ thể từ điển + ことが できます] biểu thị khả năng, năng lực thực hiện hành động nào đó của chủ ngữ ('Có thể làm...').\n- Động từ '弾く' (chơi nhạc cụ) được danh từ hóa bằng 'こと' thành cụm danh từ năng lực.\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: Cụm trợ từ kết hợp cố định trong mẫu câu chỉ khả năng là 'ことが'.\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + 'のを': Dùng danh từ hóa trong ngữ cảnh cảm giác/hành động trực tiếp (như nhìn/nghe ai làm gì).\n  + 'もの': Chỉ vật thể cụ thể, không dùng cấu trúc khả năng động từ.\n\n📚 TỪ VỰNG BỔ TRỢ:\n- マリアさん: Chị Maria.\n- ピアノ: Đàn dương cầm, đàn piano.\n- 弾く (ひく): Gảy, chơi nhạc cụ dây/phím.\n- できます: Có thể, khả thi.",
   ),
   const GrammarQuestion(
     id: 36,
@@ -341,7 +341,7 @@ final List<GrammarQuestion> grammarQuestions = [
     translation: "Trước khi đi ngủ, tôi viết nhật ký.",
     options: ["まえに", "のまえに", "てから", "あとで"],
     correctOptionIndex: 0,
-    explanation: "🌟 CẤU TRÚC: [Động từ thể từ điển + まえに] diễn tả trình tự: Trước khi làm hành động A thì làm hành động B.\n🔍 PHÂN TÍCH:\n- Động từ '寝る' (ngủ) ở thể từ điển kết hợp trực tiếp với danh từ chỉ thời gian 'まえに' để tạo nghĩa 'trước khi ngủ'.\n- 'のまえに' chỉ đi kèm danh từ trực tiếp (ví dụ: 食事の前に - trước bữa ăn).\n- 'てから' nghĩa là sau khi.\n📚 TỪ VỰNG: 寝る (ngủ), 日記 (nhật ký), 書きます (viết).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- [Động từ thể từ điển + まえに] diễn tả trình tự thời gian: Trước khi làm hành động A thì thực hiện hành động B.\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: Động từ '寝る' (ngủ) ở thể từ điển đi liền trực tiếp cụm 'まえに' chỉ thời điểm trước khi xảy ra hành động ngủ.\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + 'のまえに': Bắt buộc đi sau một danh từ chứ không đi sau động từ trực tiếp (Ví dụ: 食事の前に - trước bữa ăn).\n  + 'てから': Nghĩa là 'sau khi làm' (trái ngược nghĩa mong muốn).\n  + 'あとで': Nghĩa là 'sau khi làm', thường đi với động từ thể た.\n\n📚 TỪ VỰNG BỔ TRỢ:\n- 寝る (ねる): Đi ngủ, ngủ.\n- 日記 (にっき): Nhật ký, sổ nhật ký.\n- 書きます (かきます): Viết.",
   ),
   // Bài 19
   const GrammarQuestion(
@@ -351,26 +351,26 @@ final List<GrammarQuestion> grammarQuestions = [
     translation: "Tôi đã từng ăn sushi.",
     options: ["た", "て", "る", "ない"],
     correctOptionIndex: 0,
-    explanation: "🌟 CẤU TRÚC: [Động từ thể た + ことがあります] diễn tả kinh nghiệm hoặc trải nghiệm đã từng thực hiện hành động trong quá khứ.\n🔍 PHÂN TÍCH:\n- Động từ '食べる' (ăn) chia sang thể quá khứ ngắn た là '食べた'. Kết hợp với cụm 'ことがあります' tạo thành câu chỉ kinh nghiệm: '食べたことがあります' (đã từng ăn).\n- Các thể khác như thể て ('食べて'), thể từ điển ('食べる') không dùng được trong cấu trúc này.\n📚 TỪ VỰNG: すし (sushi), 食べます (ăn).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- [Động từ thể た + ことがあります] diễn tả kinh nghiệm, trải nghiệm đã từng thực hiện hành động nào đó trong quá khứ.\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: Động từ '食べる' (ăn) chia thể quá khứ ngắn た là '食べた' (đề bài viết sẵn '食べ', chỉ cần điền thêm chữ 'た') tạo thành '食べたことがあります' (từng ăn).\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + 'て' (thể て), 'る' (thể từ điển), 'ない' (thể phủ định): Đều sai cấu trúc bắt buộc của mẫu câu kinh nghiệm.\n\n📚 TỪ VỰNG BỔ TRỢ:\n- すし: Món Sushi truyền thống Nhật Bản.\n- あります: Có, tồn tại.",
   ),
   const GrammarQuestion(
     id: 38,
     lesson: 19,
     question: "日曜日 買い物を し [   ]、テニスをしたりします。",
     translation: "Chủ nhật lúc thì tôi đi mua sắm, lúc thì chơi tennis.",
-    options: ["たり", "て", "たりして", "từ"],
+    options: ["たり", "て", "たりして", "たら"],
     correctOptionIndex: 0,
-    explanation: "🌟 CẤU TRÚC: [V1たり、V2たり します] dùng để liệt kê một số hành động tiêu biểu đại diện (không quan tâm trình tự thời gian).\n🔍 PHÂN TÍCH:\n- Động từ 'する' (làm/chơi) chia sang thể た là 'した' thêm 'り' thành 'したり'. Kết hợp với vế sau 'テニスをしたりします' để liệt kê việc mua sắm và chơi tennis vào ngày chủ nhật.\n- 'て' dùng để nối chuỗi thời gian liên tiếp.\n📚 TỪ VỰNG: 日曜日 (chủ nhật), 買い物 (mua sắm), テニス (tennis).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- [V1-たり、V2-たり します] liệt kê các hành động đại diện tiêu biểu trong nhiều hoạt động (không nhấn mạnh thứ tự thời gian, dịch là 'lúc thì... lúc thì...').\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: Động từ 'する' (làm/mua sắm) chia quá khứ た thêm り thành 'したり' (đề bài viết sẵn 'し', chỉ cần điền thêm 'たり'). Kết hợp với vế sau 'テニスをしたりします'.\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + 'て': Dùng nối chuỗi hành động tuần tự thời gian chặt chẽ.\n  + 'たら': Mẫu điều kiện giả định.\n\n📚 TỪ VỰNG BỔ TRỢ:\n- 日曜日 (にちようび): Chủ nhật.\n- 買い物 (かいもの): Mua sắm, việc đi mua đồ.\n- テニス: Môn quần vợt, tennis.",
   ),
   // Bài 20
   const GrammarQuestion(
     id: 39,
     lesson: 20,
-    question: "「今 độ の日曜日、đo cọ か đi く？」ー「ううん、đo cọ [   ] đi かない。」 (Bản thoại chuẩn: どこへも行かない)",
+    question: "「今度の日曜日、どこか行く？」ー「ううん、どこ [   ] 行かない。」",
     translation: "Chủ nhật tới cậu đi đâu không? - Không, tớ chẳng đi đâu cả.",
     options: ["へも", "へ", "も", "でも"],
     correctOptionIndex: 0,
-    explanation: "🌟 CẤU TRÚC: [Nghi vấn từ chỉ địa điểm + へも + Động từ thể phủ định] diễn tả sự phủ định hoàn toàn địa điểm di chuyển ('không đi đâu cả').\n🔍 PHÂN TÍCH:\n- Khi muốn phủ định hoàn toàn hướng đi đối với các động từ chuyển động (như 行く), ta dùng trợ từ kết hợp 'へも' đi sau từ nghi vấn 'đo cọ' (ở đâu) và động từ phủ định '行かない' (không đi).\n- Cụm từ chuẩn ngữ pháp là 'どこへも行かない'.\n📚 TỪ VỰNG: 今度 (lần tới/chủ nhật tới), どこか (nơi nào đó), 行かない (không đi - thể ngắn của 行きません).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- Phủ định hoàn toàn phương hướng di chuyển: [Từ nghi vấn địa điểm どこ + へも + Động từ di chuyển thể phủ định] nghĩa là 'không đi bất cứ đâu cả'.\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: Trợ từ kép 'へも' đi liền sau 'どこ' chỉ hướng di chuyển phủ định hoàn toàn của động từ '行かない'.\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + 'へ': Chỉ hướng đi khẳng định (ví dụ: どこへ行く - đi đâu).\n  + 'も': Thường dùng phủ định hoàn toàn vật tồn tại (dòng tĩnh: だれもいない, なにもない).\n  + 'でも': Mang nghĩa 'hoặc/ngay cả' (ví dụ: trà hay gì đó).\n\n📚 TỪ VỰNG BỔ TRỢ:\n- 今度 (こんど): Lần tới, chủ nhật tới.\n- どこか: Một nơi nào đó.\n- 行く (いく): Đi (thể từ điển).\n- ううん: Không (cách nói phủ nhận ngắn, thân mật).\n- 行かない (いかない): Không đi (thể ngắn phủ định).",
   ),
   const GrammarQuestion(
     id: 40,
@@ -379,7 +379,7 @@ final List<GrammarQuestion> grammarQuestions = [
     translation: "Hôm qua cậu rảnh không? - Không, tớ không rảnh.",
     options: ["じゃなかった", "じゃありませんでした", "ではなかった", "くない"],
     correctOptionIndex: 0,
-    explanation: "🌟 CẤU TRÚC: Phủ định quá khứ ở thể thông thường (thân mật) của tính từ đuôi な / Danh từ: [N / Adj な + じゃなかった].\n🔍 PHÂN TÍCH:\n- '暇' (rảnh rỗi) là tính từ đuôi な. Trong giao tiếp ngắn thân mật (thể thông thường), phủ định quá khứ của nó là 'じゃなかった'.\n- 'じゃありませんでした' là phủ định quá khứ lịch sự (dùng trong câu kết thúc bằng です/ます).\n- 'くない' dùng cho tính từ đuôi い.\n📚 TỪ VỰNG: 昨日 (hôm qua), 暇 (rảnh rỗi).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- Thể thông thường (thân mật) phủ định quá khứ của tính từ đuôi な / Danh từ: [N / Adj な + じゃなかった].\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: '暇' (rảnh rỗi) là tính từ đuôi な. Giao tiếp hội thoại thể thông thường thân mật, quá khứ phủ định điền 'じゃなかった' là chuẩn ngữ cảnh.\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + 'じゃありませんでした': Là phủ định quá khứ lịch sự (thường đi với です/ます), không dùng trong hội thoại ngắn thân mật kết thúc lửng.\n  + 'くない': Dùng cho phủ định hiện tại của tính từ đuôi い.\n\n📚 TỪ VỰNG BỔ TRỢ:\n- 昨日 (きのう): Hôm qua.\n- 暇 (ひま): Rảnh rỗi, thời gian rảnh.",
   ),
   // Bài 21
   const GrammarQuestion(
@@ -389,7 +389,7 @@ final List<GrammarQuestion> grammarQuestions = [
     translation: "Tôi nghĩ là Nhật Bản có vật giá đắt đỏ.",
     options: ["と", "だ", "の", "（không điền gì）"],
     correctOptionIndex: 3,
-    explanation: "🌟 CẤU TRÚC: [Mệnh đề thể thông thường + と思います] diễn tả suy nghĩ, phán đoán cá nhân của người nói ('Tôi nghĩ rằng...').\n🔍 PHÂN TÍCH:\n- Tính từ đuôi い '高い' (đắt) ở dạng thông thường (giữ nguyên 'い') đi kèm trực tiếp với trợ từ 'と' phía sau ('高いと思います'). Do đó, khoảng trống trước chữ 'と' không cần điền thêm bất kỳ từ nối nào.\n- Điền 'だ' là sai ngữ pháp vì 'だ' chỉ dùng sau danh từ hoặc tính từ đuôi な ở thể thông thường.\n📚 TỪ VỰNG: 物価 (vật giá/giá cả), 高い (cao/đắt), 思います (nghĩ).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- [Mệnh đề thể thông thường + と思います] diễn tả ý kiến, suy nghĩ cá nhân của người nói ('Tôi nghĩ rằng...').\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: '（không điền gì）' là đáp án đúng. Vì '高い' (đắt) là tính từ đuôi い, ở thể thông thường hiện tại nó giữ nguyên đuôi và đi trực tiếp trước trợ từ 'と' ('高いと思います'). Đề bài đã viết sẵn chữ 'と思います', do đó ta không cần điền thêm gì trước nó.\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + 'だ': Chỉ điền sau danh từ hoặc tính từ đuôi な ở thể thông thường (ví dụ: 暇だと思います).\n  + 'と': Đã được viết sẵn ở vế sau nên không điền lặp.\n\n📚 TỪ VỰNG BỔ TRỢ:\n- 物価 (ぶっか): Vật giá, giá cả sinh hoạt.\n- 高い (たかい): Đắt, cao.\n- 思います (おもいます): Nghĩ, suy nghĩ.",
   ),
   const GrammarQuestion(
     id: 42,
@@ -398,7 +398,7 @@ final List<GrammarQuestion> grammarQuestions = [
     translation: "Ngày mai chắc là sẽ mưa.",
     options: ["降る", "降ります", "降って", "降った"],
     correctOptionIndex: 0,
-    explanation: "🌟 CẤU TRÚC: [Thể thông thường + でしょう] diễn tả sự dự đoán, phán đoán của người nói với mức độ chắc chắn tương đối cao ('Chắc là...').\n🔍 PHÂN TÍCH:\n- Trước 'đại từ phán đoán' 'でしょう', động từ phải được chia ở thể thông thường (hiện tại/tương lai). Động từ '降る' (mưa rơi) ở thể từ điển là lựa chọn chính xác.\n- '降ります' ở thể lịch sự là sai.\n- '降った' là quá khứ, không phù hợp với trạng từ tương lai 'あした' (ngày mai).\n📚 TỪ VỰNG: あした (ngày mai), 雨 (mưa), 降ります (rơi/mưa rơi).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- [Động từ thể thông thường + でしょう] dùng để dự đoán, ước chừng về một sự việc với độ tin cậy khá cao ('Chắc là...').\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: Động từ '降る' (mưa rơi) ở thể từ điển (thông thường tương lai) đi kèm với 'でしょう' để dự đoán thời tiết ngày mai ('あした').\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + '降ります': Thể lịch sự (sai cấu trúc đứng trước でしょう).\n  + '降った': Thể quá khứ, không phù hợp trạng từ chỉ tương lai 'あした' (ngày mai).\n  + '降って': Thể て.\n\n📚 TỪ VỰNG BỔ TRỢ:\n- あした: Ngày mai.\n- 雨 (あめ): Mưa, cơn mưa.\n- 降る (ふる): Rơi (mưa/tuyết).",
   ),
   // Bài 22
   const GrammarQuestion(
@@ -408,26 +408,26 @@ final List<GrammarQuestion> grammarQuestions = [
     translation: "Đây là bức ảnh mà tôi đã chụp.",
     options: ["撮った", "撮る", "撮って", "撮ります"],
     correctOptionIndex: 0,
-    explanation: "🌟 CẤU TRÚC: Định ngữ bổ nghĩa danh từ: [Mệnh đề thể thông thường + Danh từ].\n🔍 PHÂN TÍCH:\n- Để bổ nghĩa cho danh từ '写真' (bức ảnh) diễn tả việc 'tôi đã chụp' trong quá khứ, động từ '撮る' (chụp) phải chia sang thể quá khứ thông thường (thể た) là '撮った'. Cụm danh từ: '撮った写真' (bức ảnh đã chụp).\n- '撮る' (chưa xảy ra).\n- '撮ります' ở thể lịch sự, không được dùng làm định ngữ bổ nghĩa danh từ giữa câu.\n📚 TỪ VỰNG: 写真 (ảnh), 撮ります (chụp).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- Định ngữ bổ nghĩa danh từ: [Mệnh đề bổ nghĩa (Động từ chia thể thông thường) + Danh từ].\n- Cả mệnh đề bổ nghĩa cho danh từ làm rõ tính chất của vật.\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: Động từ '撮る' (chụp) chia quá khứ thông thường '撮った' bổ nghĩa cho danh từ '写真' (bức ảnh) tạo thành cụm 'bức ảnh tôi đã chụp'.\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + '撮る': Thể hiện tại/tương lai (bức ảnh tôi SẼ chụp), không đúng nghĩa quá khứ.\n  + '撮ります': Thể lịch sự, không được dùng làm định ngữ đứng giữa câu bổ nghĩa danh từ.\n\n📚 TỪ VỰNG BỔ TRỢ:\n- 写真 (しゃしん): Ảnh, bức ảnh.\n- 撮る (とる): Chụp (ảnh).",
   ),
   const GrammarQuestion(
     id: 44,
     lesson: 22,
     question: "あそこに [   ] 人は だれですか。",
     translation: "Người đang đứng đằng kia là ai?",
-    options: ["いる", "います", "いて", "おる"],
+    options: ["いる", "ます", "いて", "おる"],
     correctOptionIndex: 0,
-    explanation: "🌟 CẤU TRÚC: Định ngữ bổ nghĩa danh từ: [Mệnh đề thể thông thường + Danh từ].\n🔍 PHÂN TÍCH:\n- Danh từ '人' (người) được bổ nghĩa bởi mệnh đề 'ở đằng kia'. Vì là người/động vật nên dùng động từ tồn tại 'いる' ở thể thông thường (thể từ điển).\n- 'います' ở thể lịch sự, không dùng để bổ nghĩa danh từ trực tiếp giữa câu.\n- 'おる' là khiêm nhường ngữ, không thích hợp ở ngữ cảnh thông thường N5 này.\n📚 TỪ VỰNG: あそこ (đằng kia), 人 (người), だれ (ai).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- Định ngữ bổ nghĩa danh từ: [Mệnh đề bổ nghĩa (Động từ chia thể thông thường) + Danh từ].\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: 'いる' là động từ tồn tại chỉ sự có mặt của người/động vật ở thể thông thường hiện tại để bổ nghĩa cho danh từ '人' (người).\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + 'ます': Thể lịch sự không bổ nghĩa danh từ được.\n  + 'おる': Dạng khiêm nhường ngữ của いる, không đúng sắc thái thông thường ở N5.\n  + 'いて': Thể て.\n\n📚 TỪ VỰNG BỔ TRỢ:\n- あそこ: Đằng kia, vị trí xa cả hai người.\n- 人 (ひと): Người.\n- だれ: Ai.",
   ),
   // Bài 23
   const GrammarQuestion(
     id: 45,
     lesson: 23,
-    question: "図書館で 本uを 借りる [   ]、カードが 要ります。",
+    question: "図書館で 本を 借りる [   ]、カードが 要ります。",
     translation: "Khi mượn sách ở thư viện thì cần có thẻ.",
     options: ["とき", "まえに", "nữa", "から"],
     correctOptionIndex: 0,
-    explanation: "🌟 CẤU TRÚC: [Mệnh đề thể thông thường + とき] nghĩa là 'Khi/Lúc làm việc gì...'.\n🔍 PHÂN TÍCH:\n- Trợ từ liên kết thời điểm 'とき' đi sau động từ thể thông thường '借りる' (mượn) biểu thị thời gian hành động cần thiết xảy ra ('Khi mượn sách...').\n- 'まえに' chỉ thời gian trước khi làm việc gì, tuy đúng ngữ pháp nhưng về mặt ngữ nghĩa, 'khi mượn sách thì cần thẻ' (làm thủ tục) mang tính liên kết thời điểm trực tiếp logic nhất.\n📚 TỪ VỰNG: 図書館 (thư viện), 借りる (mượn), カード (thẻ), 要ります (cần/cần thiết).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- [Động từ thể từ điển / thể た + とき] chỉ thời điểm, hoàn cảnh khi thực hiện một hành động nào đó ('Khi / Lúc...').\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: 'とき' (khi/lúc) đi sau động từ mượn '借りる' để làm mệnh đề trạng ngữ thời điểm ('Khi mượn sách cần có thẻ').\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + 'まえに': Có nghĩa là 'trước khi'. Tuy đúng ngữ pháp nhưng về mặt ngữ dụng tự nhiên nhất để chỉ thủ tục bắt buộc 'khi làm gì' là dùng 'とき'.\n  + 'nữa' và 'から': Không phù hợp ngữ nghĩa.\n\n📚 TỪ VỰNG BỔ TRỢ:\n- 図書館 (としょかん): Thư viện.\n- 借りる (かりる): Mượn.\n- カード: Thẻ (Card).\n- 要ります (いります): Cần, cần thiết.",
   ),
   const GrammarQuestion(
     id: 46,
@@ -436,17 +436,17 @@ final List<GrammarQuestion> grammarQuestions = [
     translation: "Hễ nhấn nút này thì tiền thừa sẽ chạy ra.",
     options: ["と", "từ", "ba", "này"],
     correctOptionIndex: 0,
-    explanation: "🌟 CẤU TRÚC: [Động từ thể từ điển + と, Mệnh đề hệ quả] diễn tả một hệ quả tự nhiên, tất yếu xảy ra sau một hành động cụ thể ('Hễ... thì...').\n🔍 PHÂN TÍCH:\n- Trợ từ liên kết điều kiện tất yếu 'と' đi sau động từ thể từ điển '押す' (nhấn/ấn) chỉ ra rằng việc nhấn nút này chắc chắn và tự động dẫn đến việc tiền thừa chạy ra.\n- Các phương án khác đều là nhiễu tiếng Việt vô nghĩa.\n📚 TỪ VỰNG: ボタン (nút/phím ấn), 押す (ấn/nhấn), お釣り (tiền lẻ/tiền thừa), 出ます (chạy ra/xuất hiện).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- [Động từ thể từ điển + と + Mệnh đề hệ quả] diễn tả một điều kiện tất yếu, tự nhiên hoặc một hành động dẫn đến một kết quả cơ học tự động ('Hễ... thì...').\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: Trợ từ liên kết điều kiện tự nhiên 'と' đứng sau động từ thể từ điển '押す' (nhấn/ấn) chỉ ra hệ quả tất yếu là tiền thừa sẽ chạy ra.\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + 'từ', 'ba', 'này': Từ tiếng Việt gây nhiễu vô nghĩa.\n\n📚 TỪ VỰNG BỔ TRỢ:\n- ボタン: Nút, nút bấm.\n- 押す (おす): Ấn, nhấn phím.\n- お釣り (おつり): Tiền lẻ trả lại, tiền thừa.\n- 出ます (でます): Chạy ra, xuất hiện.",
   ),
   // Bài 24
   const GrammarQuestion(
     id: 47,
     lesson: 24,
-    question: "佐藤さんは わたしに 漢字を n5 ... (Bản dịch đề: Chị Sato đã dạy chữ Hán cho tôi).",
+    question: "佐藤さんは わたしに 漢字を 教え [   ]。",
     translation: "Chị Sato đã dạy chữ Hán cho tôi.",
-    options: ["教えてくれました", "教えてあげました", "教えてもらいました", "教えました"],
+    options: ["てくれました", "てあげました", "てもらいました", "ました"],
     correctOptionIndex: 0,
-    explanation: "🌟 CẤU TRÚC: [Ai đó + は / が + わたしに + Động từ thể て + くれます] diễn tả lòng biết ơn khi người khác chủ động thực hiện hành động có lợi giúp đỡ mình.\n🔍 PHÂN TÍCH:\n- Chị Sato ('佐藤さん') làm việc tốt dạy chữ Hán ('教えて') cho tôi ('わたしに'), nên dùng mẫu '〜てくれました' (đã làm giúp tôi).\n- '〜てあげました' dùng khi mình làm giúp người khác.\n- '〜てもらいました' dùng khi mình nhận từ người khác nhưng chủ ngữ câu phải là người nhận (わたしは 佐藤さんに...). ở đây chủ ngữ là 佐藤さん nên bắt buộc dùng 'てくれました'.\n📚 TỪ VỰNG: 佐藤さん (chị Sato), 漢字 (chữ Hán), 教えます (dạy/chỉ bảo).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- Mối quan hệ cho nhận hành động: [Chủ ngữ (người khác) + が/は + わたしに + V-て + くれます] diễn tả việc ai đó làm việc tốt giúp đỡ mình với lòng biết ơn.\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: 'てくれました' (佐藤さんは わたしに 教えてくれました) biểu thị việc chị Sato dạy chữ Hán cho tôi như một ân huệ giúp đỡ.\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + 'てあげました': Dùng khi người nói thực hiện hành động giúp đỡ người khác.\n  + 'てもらいました': Dùng khi mình được người khác làm giúp nhưng chủ ngữ câu phải là người nhận (わたしは 佐藤さんに 教えってもらいました).\n\n📚 TỪ VỰNG BỔ TRỢ:\n- 佐藤さん (さとうさん): Chị Sato.\n- 漢字 (かんじ): Chữ Hán, chữ Kanji.\n- 教えます (おしえます): Dạy học, hướng dẫn.",
   ),
   const GrammarQuestion(
     id: 48,
@@ -455,7 +455,7 @@ final List<GrammarQuestion> grammarQuestions = [
     translation: "Tôi đã cho anh Yamada mượn sách.",
     options: ["てあげました", "てくれました", "てもらいました", "ました"],
     correctOptionIndex: 0,
-    explanation: "🌟 CẤU TRÚC: [わたし + は + Người nhận + に + Động từ thể て + あげます] diễn tả việc người nói thực hiện hành động giúp đỡ hoặc mang lại lợi ích cho người khác.\n🔍 PHÂN TÍCH:\n- Tôi ('わたしは') làm việc tốt cho mượn sách ('貸して') giúp anh Yamada ('山田さんに'), nên dùng mẫu '〜てあげました' (đã làm giúp ai).\n- '〜てくれました' dùng khi người khác làm giúp mình.\n- '〜てもらいました' dùng khi mình được ai đó làm giúp (nhận hành vi).\n📚 TỪ VỰNG: 山田さん (anh Yamada), 本 (sách), 貸します (cho mượn).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- Mối quan hệ cho nhận hành động: [Người nói + は + Người nhận + に + V-て + あげます] thể hiện việc mình thực hiện hành vi có lợi giúp đỡ người khác.\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: 'てあげました' (động từ '貸す' chia thể て là '貸して', viết sẵn '貸し', điền 'てあげました') biểu thị việc tôi cho anh Yamada mượn sách để giúp anh ấy.\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + 'てくれました': Người khác làm giúp mình (chủ ngữ không thể là わたし).\n  + 'てもらいました': Nhận hành vi (chủ ngữ là người nhận nhưng ở đây山田さんに nhận chứ không phải わたしに).\n\n📚 TỪ VỰNG BỔ TRỢ:\n- 山田さん (やまださん): Anh Yamada.\n- 本 (ほん): Sách, quyển sách.\n- 貸します (かします): Cho mượn.",
   ),
   // Bài 25
   const GrammarQuestion(
@@ -465,7 +465,7 @@ final List<GrammarQuestion> grammarQuestions = [
     translation: "Nếu trời mưa, tôi sẽ không đi ra ngoài.",
     options: ["たら", "chỗ", "ba", "nhất"],
     correctOptionIndex: 0,
-    explanation: "🌟 CẤU TRÚC: [Động từ thể た + ら, Mệnh đề kết quả] diễn tả điều kiện giả định ('Nếu... thì...').\n🔍 PHÂN TÍCH:\n- Động từ '降る' (mưa rơi) chia sang thể quá khứ ngắn た là '降った', thêm 'ら' thành '降ったら' nghĩa là 'Nếu trời mưa'.\n- Mẫu điều kiện 'たら' cực kỳ phổ biến ở N5 để đưa ra tình huống giả định trước khi quyết định hành động ở vế sau ('không đi ra ngoài').\n- Các phương án khác đều là từ tiếng Việt gây nhiễu vô nghĩa.\n📚 TỪ VỰNG: 雨 (mưa), 降ります (rơi/mưa rơi), 出かけません (không đi ra ngoài).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- Mẫu câu điều kiện giả định phổ biến nhất ở N5: [V-たら、Mệnh đề kết quả] nghĩa là 'Nếu... thì...'.\n- Động từ chia quá khứ ngắn た + ら.\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: Động từ '降る' (mưa rơi) chia thể た là '降った', ghép với 'ら' thành '降ったら' (nếu mưa) - viết sẵn '降っ', điền 'たら'.\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + 'chỗ', 'ba', 'nhất': Tiếng Việt gây nhiễu hoàn toàn vô nghĩa.\n\n📚 TỪ VỰNG BỔ TRỢ:\n- 雨 (あめ): Mưa.\n- 降ります (ふります): Rơi.\n- 出かけません (でかけません): Không đi ra ngoài.",
   ),
   const GrammarQuestion(
     id: 50,
@@ -474,6 +474,6 @@ final List<GrammarQuestion> grammarQuestions = [
     translation: "Dù rẻ thế nào đi nữa tôi cũng không mua chiếc máy tính này.",
     options: ["ても", "sau", "được", "mới"],
     correctOptionIndex: 0,
-    explanation: "🌟 CẤU TRÚC: [いくら + Tính từ đuôi い chia dạng くて + も] biểu thị điều kiện nhượng bộ giả định ('Cho dù... đi chăng nữa thì vẫn...').\n🔍 PHÂN TÍCH:\n- Tính từ đuôi い '安い' (rẻ) chuyển sang dạng liên kết '安く' kết hợp với cụm từ nhượng bộ 'ても' kết hợp với phó từ 'いくら' tạo nên câu: 'いくら安くても' (cho dù có rẻ thế nào đi nữa).\n- Vế sau diễn tả quyết định phủ định cứng rắn ('không mua chiếc máy tính này').\n- Các phương án khác đều là nhiễu tiếng Việt.\n📚 TỪ VỰNG: いくら (bao nhiêu/cho dù thế nào), 安i (rẻ), パソコン (máy tính cá nhân), 買いません (không mua).",
+    explanation: "🌟 CẤU TRÚC NGỮ PHÁP:\n- Cấu trúc nhượng bộ giả định: [いくら + Động từ/Tính từ thể て + も] mang ý nghĩa 'Cho dù... thế nào đi nữa thì vẫn...'.\n- Tính từ đuôi い '安い' chuyển sang thể て thành '安くて' + 'も'.\n\n🔍 PHÂN TÍCH ĐÁP ÁN:\n- ĐÁP ÁN ĐÚNG: 'ても' đi liền sau '安く' (đã lược '安くて') tạo thành cụm từ nhượng bộ '安くても' (cho dù có rẻ).\n- CÁC ĐÁP ÁN SAI (BẪY):\n  + 'sau', 'được', 'mới': Tiếng Việt gây nhiễu vô nghĩa.\n\n📚 TỪ VỰNG BỔ TRỢ:\n- いくら: Cho dù thế nào, bao nhiêu đi nữa.\n- 安い (やすい): Rẻ.\n- パソコン: Máy tính cá nhân (Personal Computer).\n- 買いません (かいません): Không mua.",
   ),
 ];
