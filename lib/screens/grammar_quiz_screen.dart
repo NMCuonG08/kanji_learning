@@ -90,149 +90,147 @@ class _GrammarQuizScreenState extends State<GrammarQuizScreen> {
 
   Widget _buildQuiz() {
     final q = _quizQuestions[_currentIndex];
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Câu ${_currentIndex + 1}/${_quizQuestions.length}',
-                style: const TextStyle(color: Colors.white70, fontSize: 14),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE94560),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Text(
-                  'Bài ${q.lesson}',
-                  style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          LinearProgressIndicator(
-            value: (_currentIndex + 1) / _quizQuestions.length,
-            backgroundColor: Colors.white12,
-            color: const Color(0xFFE94560),
-          ),
-          const SizedBox(height: 24),
-          // Question Card
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: const Color(0xFF16213E),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: const Color(0xFF0F3460), width: 1.5),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  q.question,
-                  style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
-                  textAlign: TextAlign.center,
+                  'Câu ${_currentIndex + 1}/${_quizQuestions.length}',
+                  style: const TextStyle(color: Colors.white70, fontSize: 14),
                 ),
-                const SizedBox(height: 12),
-                Text(
-                  q.translation,
-                  style: const TextStyle(color: Colors.white54, fontSize: 16, fontStyle: FontStyle.italic),
-                  textAlign: TextAlign.center,
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE94560),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    'Bài ${q.lesson}',
+                    style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                  ),
                 ),
               ],
             ),
-          ),
-          const SizedBox(height: 24),
-          // Option Buttons
-          Expanded(
-            child: ListView.builder(
-              itemCount: q.options.length,
-              itemBuilder: (context, index) {
-                final optionText = q.options[index];
-                final isSelected = _selectedOptionIndex == index;
-                final isCorrect = q.correctOptionIndex == index;
-                
-                Color bg = const Color(0xFF16213E);
-                Color border = const Color(0xFF0F3460);
-                Color text = Colors.white;
-
-                if (_isAnswered) {
-                  if (isCorrect) {
-                    bg = Colors.green.withValues(alpha: 0.2);
-                    border = Colors.green;
-                    text = Colors.green;
-                  } else if (isSelected) {
-                    bg = Colors.red.withValues(alpha: 0.2);
-                    border = Colors.red;
-                    text = Colors.red;
-                  } else {
-                    bg = const Color(0xFF16213E).withValues(alpha: 0.5);
-                    text = Colors.white30;
-                  }
-                } else if (isSelected) {
-                  bg = const Color(0xFFE94560).withValues(alpha: 0.2);
-                  border = const Color(0xFFE94560);
-                }
-
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: ElevatedButton(
-                    onPressed: _isAnswered ? null : () => _onOptionTap(index),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: bg,
-                      foregroundColor: text,
-                      disabledBackgroundColor: bg,
-                      disabledForegroundColor: text,
-                      side: BorderSide(color: border, width: isSelected || (_isAnswered && isCorrect) ? 2 : 1),
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      elevation: 0,
-                    ),
-                    child: Text(
-                      optionText,
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                );
-              },
+            const SizedBox(height: 10),
+            LinearProgressIndicator(
+              value: (_currentIndex + 1) / _quizQuestions.length,
+              backgroundColor: Colors.white12,
+              color: const Color(0xFFE94560),
             ),
-          ),
-          // Explanation & Next Button
-          if (_isAnswered) ...[
+            const SizedBox(height: 24),
+            // Question Card
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: const Color(0xFF0F3460).withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Colors.white10),
+                color: const Color(0xFF16213E),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: const Color(0xFF0F3460), width: 1.5),
               ),
-              child: Text(
-                q.explanation,
-                style: const TextStyle(color: Colors.white70, fontSize: 14),
-                textAlign: TextAlign.center,
-              ),
-            ),
-            const SizedBox(height: 12),
-            ElevatedButton(
-              onPressed: _onNextTap,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFE94560),
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-              child: Text(
-                _currentIndex == _quizQuestions.length - 1 ? 'Xem kết quả' : 'Tiếp theo',
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    q.question,
+                    style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    q.translation,
+                    style: const TextStyle(color: Colors.white54, fontSize: 16, fontStyle: FontStyle.italic),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ),
             ),
+            const SizedBox(height: 24),
+            // Option Buttons
+            ...q.options.asMap().entries.map((entry) {
+              final index = entry.key;
+              final optionText = entry.value;
+              final isSelected = _selectedOptionIndex == index;
+              final isCorrect = q.correctOptionIndex == index;
+              
+              Color bg = const Color(0xFF16213E);
+              Color border = const Color(0xFF0F3460);
+              Color text = Colors.white;
+
+              if (_isAnswered) {
+                if (isCorrect) {
+                  bg = Colors.green.withValues(alpha: 0.2);
+                  border = Colors.green;
+                  text = Colors.green;
+                } else if (isSelected) {
+                  bg = Colors.red.withValues(alpha: 0.2);
+                  border = Colors.red;
+                  text = Colors.red;
+                } else {
+                  bg = const Color(0xFF16213E).withValues(alpha: 0.5);
+                  text = Colors.white30;
+                }
+              } else if (isSelected) {
+                bg = const Color(0xFFE94560).withValues(alpha: 0.2);
+                border = const Color(0xFFE94560);
+              }
+
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: ElevatedButton(
+                  onPressed: _isAnswered ? null : () => _onOptionTap(index),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: bg,
+                    foregroundColor: text,
+                    disabledBackgroundColor: bg,
+                    disabledForegroundColor: text,
+                    side: BorderSide(color: border, width: isSelected || (_isAnswered && isCorrect) ? 2 : 1),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    elevation: 0,
+                  ),
+                  child: Text(
+                    optionText,
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              );
+            }),
+            // Explanation & Next Button
+            if (_isAnswered) ...[
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0F3460).withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.white10),
+                ),
+                child: Text(
+                  q.explanation,
+                  style: const TextStyle(color: Colors.white70, fontSize: 14),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: _onNextTap,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFE94560),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                child: Text(
+                  _currentIndex == _quizQuestions.length - 1 ? 'Xem kết quả' : 'Tiếp theo',
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }
