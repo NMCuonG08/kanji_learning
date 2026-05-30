@@ -273,6 +273,7 @@ class _HomeScreenState extends State<HomeScreen> {
             final progress = _progress[kanji.id];
             final mastery = progress != null ? progress['masteryLevel'] as int : 0;
             final color = _getMasteryColor(mastery);
+            final isDark = ThemeService.isDarkMode.value;
 
             return GestureDetector(
               onTap: () async {
@@ -283,15 +284,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 _loadProgress();
               },
               child: Container(
-                margin: const EdgeInsets.only(bottom: 2, right: 2),
+                margin: const EdgeInsets.only(bottom: 3, right: 3),
                 decoration: BoxDecoration(
-                  color: ThemeService.getCardColor(context),
+                  color: color.withValues(alpha: isDark ? 0.15 : 0.25),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: ThemeService.getBorderColor(context), width: 1.5),
                   boxShadow: [
                     BoxShadow(
-                      color: color.withValues(alpha: 0.8),
-                      offset: const Offset(2, 2),
+                      color: ThemeService.getBorderColor(context),
+                      offset: const Offset(3, 3),
                       blurRadius: 0,
                     ),
                   ],
