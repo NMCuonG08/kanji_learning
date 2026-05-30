@@ -21,6 +21,10 @@ class _DetailScreenState extends State<DetailScreen> {
     super.initState();
     TtsService.init();
     _loadStatus();
+    // Autoplay the Kanji character pronunciation on open
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      TtsService.speak(widget.kanji.character);
+    });
   }
 
   Future<void> _loadStatus() async {

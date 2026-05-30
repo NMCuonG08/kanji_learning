@@ -906,6 +906,17 @@ class _VocabFlashcardScreenState extends State<VocabFlashcardScreen> with Ticker
     _flipAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _flipController, curve: Curves.easeInOut),
     );
+
+    // Autoplay the reading of the first card on open
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _speakCurrentCard();
+    });
+  }
+
+  void _speakCurrentCard() {
+    if (_activeQueue.isNotEmpty) {
+      TtsService.speak(_activeQueue.first.reading);
+    }
   }
 
   @override
@@ -942,6 +953,8 @@ class _VocabFlashcardScreenState extends State<VocabFlashcardScreen> with Ticker
       _activeQueue.removeAt(0);
       _flipToFrontSilent();
     });
+    // Autoplay the new card pronunciation
+    _speakCurrentCard();
   }
 
   Future<void> _onMastered() async {
@@ -960,6 +973,9 @@ class _VocabFlashcardScreenState extends State<VocabFlashcardScreen> with Ticker
       
       if (_activeQueue.isEmpty) {
         _isFinished = true;
+      } else {
+        // Autoplay the new card pronunciation
+        _speakCurrentCard();
       }
     });
   }
@@ -1264,6 +1280,8 @@ class _VocabFlashcardScreenState extends State<VocabFlashcardScreen> with Ticker
                     _isFinished = false;
                     _flipToFrontSilent();
                   });
+                  // Autoplay the first card of the new batch
+                  _speakCurrentCard();
                 },
                 icon: const Icon(Icons.arrow_forward),
                 label: const Text('Học tiếp 15 từ mới', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),

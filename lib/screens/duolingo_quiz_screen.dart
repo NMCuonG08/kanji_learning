@@ -49,6 +49,13 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
       _remainingJumbled = List<String>.from(challenge.jumbledTokens);
       _isAnswerChecked = false;
     });
+
+    // Autoplay Japanese prompt sound if available
+    if (challenge.type == 'jp_to_vi') {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        TtsService.speak(challenge.prompt);
+      });
+    }
   }
 
   void _selectToken(String token) {
