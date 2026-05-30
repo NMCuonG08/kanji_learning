@@ -104,14 +104,21 @@ class _VocabMatchGameScreenState extends State<VocabMatchGameScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF1A1A2E),
-      appBar: AppBar(
-        title: const Text('Game Nối Từ Vựng', style: TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: const Color(0xFF16213E),
-        foregroundColor: Colors.white,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        Navigator.pop(context);
+      },
+      child: Scaffold(
+        backgroundColor: const Color(0xFF1A1A2E),
+        appBar: AppBar(
+          title: const Text('Game Nối Từ Vựng', style: TextStyle(fontWeight: FontWeight.bold)),
+          backgroundColor: const Color(0xFF16213E),
+          foregroundColor: Colors.white,
+        ),
+        body: _gameComplete ? _buildResult() : _buildGame(),
       ),
-      body: _gameComplete ? _buildResult() : _buildGame(),
     );
   }
 

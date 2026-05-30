@@ -8,6 +8,7 @@ import 'grammar_screen.dart';
 import 'vocabulary_screen.dart';
 import 'match_game_screen.dart';
 import 'listening_screen.dart';
+import '../services/theme_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -58,22 +59,34 @@ class _HomeScreenState extends State<HomeScreen> {
     return DefaultTabController(
       length: 4,
       child: Scaffold(
-        backgroundColor: const Color(0xFF1A1A2E),
+        backgroundColor: ThemeService.getBgColor(context),
         appBar: AppBar(
-          title: const Text('漢字マスター', style: TextStyle(fontWeight: FontWeight.bold)),
-          backgroundColor: const Color(0xFF16213E),
-          foregroundColor: Colors.white,
+          title: const Text('Kanji Master', style: TextStyle(fontWeight: FontWeight.bold)),
+          backgroundColor: ThemeService.getCardColor(context),
+          foregroundColor: ThemeService.getPrimaryTextColor(context),
           elevation: 0,
-          bottom: const TabBar(
-            tabs: [
-              Tab(text: '漢字', icon: Icon(Icons.translate)),
-              Tab(text: '文法', icon: Icon(Icons.menu_book)),
-              Tab(text: '語彙', icon: Icon(Icons.list_alt)),
+          actions: [
+            IconButton(
+              icon: Icon(
+                ThemeService.isDarkMode.value ? Icons.light_mode : Icons.dark_mode,
+              ),
+              tooltip: ThemeService.isDarkMode.value ? 'Giao diện Sáng' : 'Giao diện Tối',
+              onPressed: () async {
+                await ThemeService.toggleTheme();
+                setState(() {});
+              },
+            ),
+          ],
+          bottom: TabBar(
+            tabs: const [
+              Tab(text: 'Kanji', icon: Icon(Icons.translate)),
+              Tab(text: 'Ngữ pháp', icon: Icon(Icons.menu_book)),
+              Tab(text: 'Từ vựng', icon: Icon(Icons.list_alt)),
               Tab(text: 'Luyện nghe', icon: Icon(Icons.headphones)),
             ],
-            indicatorColor: Color(0xFFE94560),
-            labelColor: Colors.white,
-            unselectedLabelColor: Colors.white54,
+            indicatorColor: const Color(0xFFE94560),
+            labelColor: ThemeService.getPrimaryTextColor(context),
+            unselectedLabelColor: ThemeService.getSecondaryTextColor(context),
           ),
         ),
         body: _isLoading
@@ -216,9 +229,9 @@ class _HomeScreenState extends State<HomeScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Tất cả Kanji N5',
-          style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+          style: TextStyle(color: ThemeService.getPrimaryTextColor(context), fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 12),
         GridView.builder(

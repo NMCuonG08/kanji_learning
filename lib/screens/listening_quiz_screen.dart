@@ -243,15 +243,21 @@ class _ListeningQuizScreenState extends State<ListeningQuizScreen> {
     final q = widget.question;
     final is3or4 = q.taskType == 'task3' || q.taskType == 'task4';
 
-    return Scaffold(
-      backgroundColor: const Color(0xFF1A1A2E),
-      appBar: AppBar(
-        title: Text(_getTaskTypeTitle(q.taskType), style: const TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: const Color(0xFF16213E),
-        foregroundColor: Colors.white,
-        elevation: 0,
-      ),
-      body: SingleChildScrollView(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        Navigator.pop(context);
+      },
+      child: Scaffold(
+        backgroundColor: const Color(0xFF1A1A2E),
+        appBar: AppBar(
+          title: Text(_getTaskTypeTitle(q.taskType), style: const TextStyle(fontWeight: FontWeight.bold)),
+          backgroundColor: const Color(0xFF16213E),
+          foregroundColor: Colors.white,
+          elevation: 0,
+        ),
+        body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -551,8 +557,9 @@ class _ListeningQuizScreenState extends State<ListeningQuizScreen> {
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   String _getQuestionTranslation(String questionJa) {
     if (questionJa.contains('学生はこれから何をしますか')) {

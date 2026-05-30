@@ -84,15 +84,28 @@ class _QuizScreenState extends State<QuizScreen> {
   @override
   Widget build(BuildContext context) {
     if (_currentIndex >= _quizItems.length) {
-      return _buildResultScreen();
+      return PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) {
+          if (didPop) return;
+          Navigator.pop(context);
+        },
+        child: _buildResultScreen(),
+      );
     }
 
     final kanji = _quizItems[_currentIndex];
     final options = _generateOptions(kanji);
 
-    return Scaffold(
-      backgroundColor: const Color(0xFF1A1A2E),
-      appBar: AppBar(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        Navigator.pop(context);
+      },
+      child: Scaffold(
+        backgroundColor: const Color(0xFF1A1A2E),
+        appBar: AppBar(
         title: Text(widget.title, style: const TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: const Color(0xFF16213E),
         foregroundColor: Colors.white,
@@ -222,8 +235,9 @@ class _QuizScreenState extends State<QuizScreen> {
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildResultScreen() {
     final total = _correctCount + _wrongCount;

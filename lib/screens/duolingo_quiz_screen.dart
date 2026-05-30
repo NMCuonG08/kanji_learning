@@ -171,19 +171,26 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
       );
     }
 
-    return Scaffold(
-      backgroundColor: const Color(0xFF1A1A2E),
-      appBar: AppBar(
-        title: const Text('Ghép Câu Duolingo', style: TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: const Color(0xFF16213E),
-        foregroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.close),
-          onPressed: () => Navigator.pop(context),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        Navigator.pop(context);
+      },
+      child: Scaffold(
+        backgroundColor: const Color(0xFF1A1A2E),
+        appBar: AppBar(
+          title: const Text('Ghép Câu Duolingo', style: TextStyle(fontWeight: FontWeight.bold)),
+          backgroundColor: const Color(0xFF16213E),
+          foregroundColor: Colors.white,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.close),
+            onPressed: () => Navigator.pop(context),
+          ),
         ),
+        body: _isFinished ? _buildVictoryScreen() : _buildQuizSession(),
       ),
-      body: _isFinished ? _buildVictoryScreen() : _buildQuizSession(),
     );
   }
 

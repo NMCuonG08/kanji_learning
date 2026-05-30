@@ -100,33 +100,44 @@ class _MatchGameScreenState extends State<MatchGameScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF1A1A2E),
-      appBar: AppBar(
-        title: Text(
-          _gameMode == 'meaning'
-              ? 'Game Nối Ý Nghĩa'
-              : _gameMode == 'reading'
-                  ? 'Game Nối Cách Đọc'
-                  : 'Game Nối Kanji',
-          style: const TextStyle(fontWeight: FontWeight.bold),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        if (_gameMode != null && !_gameComplete) {
+          setState(() => _gameMode = null);
+        } else {
+          Navigator.pop(context);
+        }
+      },
+      child: Scaffold(
+        backgroundColor: const Color(0xFF1A1A2E),
+        appBar: AppBar(
+          title: Text(
+            _gameMode == 'meaning'
+                ? 'Game Nối Ý Nghĩa'
+                : _gameMode == 'reading'
+                    ? 'Game Nối Cách Đọc'
+                    : 'Game Nối Kanji',
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          backgroundColor: const Color(0xFF16213E),
+          foregroundColor: Colors.white,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              if (_gameMode != null && !_gameComplete) {
+                setState(() => _gameMode = null);
+              } else {
+                Navigator.pop(context);
+              }
+            },
+          ),
         ),
-        backgroundColor: const Color(0xFF16213E),
-        foregroundColor: Colors.white,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            if (_gameMode != null && !_gameComplete) {
-              setState(() => _gameMode = null);
-            } else {
-              Navigator.pop(context);
-            }
-          },
-        ),
+        body: _gameMode == null
+            ? _buildSelectionScreen()
+            : (_gameComplete ? _buildResult() : _buildGame()),
       ),
-      body: _gameMode == null
-          ? _buildSelectionScreen()
-          : (_gameComplete ? _buildResult() : _buildGame()),
     );
   }
 

@@ -75,16 +75,23 @@ class _GrammarQuizScreenState extends State<GrammarQuizScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFF1A1A2E),
-      appBar: AppBar(
-        title: const Text('Trắc Nghiệm Ngữ Pháp', style: TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: const Color(0xFF16213E),
-        foregroundColor: Colors.white,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        Navigator.pop(context);
+      },
+      child: Scaffold(
+        backgroundColor: const Color(0xFF1A1A2E),
+        appBar: AppBar(
+          title: const Text('Trắc Nghiệm Ngữ Pháp', style: TextStyle(fontWeight: FontWeight.bold)),
+          backgroundColor: const Color(0xFF16213E),
+          foregroundColor: Colors.white,
+        ),
+        body: _isLoading
+            ? const Center(child: CircularProgressIndicator(color: Color(0xFFE94560)))
+            : (_quizComplete ? _buildResult() : _buildQuiz()),
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFFE94560)))
-          : (_quizComplete ? _buildResult() : _buildQuiz()),
     );
   }
 
