@@ -485,16 +485,22 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
   }
 
   Widget _buildVocabCardRow(VocabWord v, bool isMastered) {
-    return Card(
-      color: ThemeService.getCardColor(context),
-      margin: const EdgeInsets.only(bottom: 8),
-      elevation: 0,
-      shape: RoundedRectangleBorder(
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8, right: 4),
+      decoration: BoxDecoration(
+        color: ThemeService.getCardColor(context),
         borderRadius: BorderRadius.circular(10),
-        side: BorderSide(
+        border: Border.all(
           color: isMastered ? Colors.green.shade700 : ThemeService.getBorderColor(context),
           width: isMastered ? 2.0 : 1.5,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: ThemeService.getBorderColor(context),
+            offset: const Offset(3, 3),
+            blurRadius: 0,
+          ),
+        ],
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -865,16 +871,22 @@ class _VocabTopicDetailScreenState extends State<VocabTopicDetailScreen> {
   }
 
   Widget _buildVocabCard(VocabWord v, bool isMastered) {
-    return Card(
-      color: ThemeService.getCardColor(context),
-      margin: const EdgeInsets.only(bottom: 8),
-      elevation: 0,
-      shape: RoundedRectangleBorder(
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8, right: 4),
+      decoration: BoxDecoration(
+        color: ThemeService.getCardColor(context),
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(
+        border: Border.all(
           color: isMastered ? Colors.green.shade700 : ThemeService.getBorderColor(context),
           width: isMastered ? 2.0 : 1.5,
         ),
+        boxShadow: [
+          BoxShadow(
+            color: ThemeService.getBorderColor(context),
+            offset: const Offset(3, 3),
+            blurRadius: 0,
+          ),
+        ],
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),

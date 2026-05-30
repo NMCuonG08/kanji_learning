@@ -219,12 +219,19 @@ class _DetailScreenState extends State<DetailScreen> {
             ),
             const SizedBox(height: 12),
             ...k.examples.map((ex) => Container(
-              margin: const EdgeInsets.only(bottom: 12),
+              margin: const EdgeInsets.only(bottom: 12, right: 4),
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: ThemeService.getCardColor(context),
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: ThemeService.getBorderColor(context), width: 1.5),
+                boxShadow: [
+                  BoxShadow(
+                    color: ThemeService.getBorderColor(context),
+                    offset: const Offset(3, 3),
+                    blurRadius: 0,
+                  ),
+                ],
               ),
               child: Row(
                 children: [

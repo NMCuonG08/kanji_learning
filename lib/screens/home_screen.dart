@@ -124,25 +124,30 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildStatsCard() {
     final total = kanjiList.length;
     final percent = total > 0 ? (_masteredCount / total * 100).toInt() : 0;
+    final isDark = ThemeService.isDarkMode.value;
 
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFFE94560), Color(0xFF0F3460)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        color: ThemeService.getCardColor(context),
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: ThemeService.getBorderColor(context), width: 2.0),
+        boxShadow: [
+          BoxShadow(
+            color: ThemeService.getBorderColor(context),
+            offset: const Offset(4, 4),
+            blurRadius: 0,
+          ),
+        ],
       ),
       child: Column(
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildStatItem('$_masteredCount', 'Đã thuộc'),
-              _buildStatItem('$_learningCount', 'Đang học'),
-              _buildStatItem('$percent%', 'Tiến độ'),
+              _buildStatItem('$_masteredCount', 'Đã thuộc', ThemeService.getPrimaryTextColor(context)),
+              _buildStatItem('$_learningCount', 'Đang học', ThemeService.getPrimaryTextColor(context)),
+              _buildStatItem('$percent%', 'Tiến độ', const Color(0xFFE94560)),
             ],
           ),
           const SizedBox(height: 16),
@@ -150,8 +155,8 @@ class _HomeScreenState extends State<HomeScreen> {
             borderRadius: BorderRadius.circular(8),
             child: LinearProgressIndicator(
               value: total > 0 ? _masteredCount / total : 0,
-              backgroundColor: Colors.white24,
-              color: Colors.white,
+              backgroundColor: isDark ? Colors.white24 : Colors.black12,
+              color: const Color(0xFFE94560),
               minHeight: 8,
             ),
           ),
@@ -160,11 +165,11 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildStatItem(String value, String label) {
+  Widget _buildStatItem(String value, String label, Color valueColor) {
     return Column(
       children: [
-        Text(value, style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white)),
-        Text(label, style: const TextStyle(fontSize: 12, color: Colors.white70)),
+        Text(value, style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: valueColor)),
+        Text(label, style: TextStyle(fontSize: 12, color: ThemeService.getSecondaryTextColor(context))),
       ],
     );
   }
@@ -186,7 +191,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       },
                 icon: const Icon(Icons.school),
                 label: Text('Học (${dueCount > 0 ? dueCount : 0})', style: const TextStyle(fontSize: 13)),
-                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFE94560), foregroundColor: Colors.white, disabledBackgroundColor: Colors.grey.shade800, padding: const EdgeInsets.symmetric(vertical: 14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFE94560), 
+                  foregroundColor: Colors.white, 
+                  disabledBackgroundColor: Colors.grey.shade800, 
+                  padding: const EdgeInsets.symmetric(vertical: 14), 
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  side: BorderSide(color: ThemeService.getBorderColor(context), width: 1.5),
+                ),
               ),
             ),
             const SizedBox(width: 8),
@@ -202,7 +214,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       },
                 icon: const Icon(Icons.replay),
                 label: const Text('Ôn tập', style: TextStyle(fontSize: 13)),
-                style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0F3460), foregroundColor: Colors.white, disabledBackgroundColor: Colors.grey.shade800, padding: const EdgeInsets.symmetric(vertical: 14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF0F3460), 
+                  foregroundColor: Colors.white, 
+                  disabledBackgroundColor: Colors.grey.shade800, 
+                  padding: const EdgeInsets.symmetric(vertical: 14), 
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  side: BorderSide(color: ThemeService.getBorderColor(context), width: 1.5),
+                ),
               ),
             ),
           ],
@@ -218,7 +237,13 @@ class _HomeScreenState extends State<HomeScreen> {
             },
             icon: const Icon(Icons.extension),
             label: const Text('Game Nối Từ'),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.purple, foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.purple, 
+              foregroundColor: Colors.white, 
+              padding: const EdgeInsets.symmetric(vertical: 14), 
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              side: BorderSide(color: ThemeService.getBorderColor(context), width: 1.5),
+            ),
           ),
         ),
       ],
@@ -258,15 +283,23 @@ class _HomeScreenState extends State<HomeScreen> {
                 _loadProgress();
               },
               child: Container(
+                margin: const EdgeInsets.only(bottom: 2, right: 2),
                 decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.2),
+                  color: ThemeService.getCardColor(context),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: color, width: 1.5),
+                  border: Border.all(color: ThemeService.getBorderColor(context), width: 1.5),
+                  boxShadow: [
+                    BoxShadow(
+                      color: color.withValues(alpha: 0.8),
+                      offset: const Offset(2, 2),
+                      blurRadius: 0,
+                    ),
+                  ],
                 ),
                 child: Center(
                   child: Text(
                     kanji.character,
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: color),
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: ThemeService.getPrimaryTextColor(context)),
                   ),
                 ),
               ),

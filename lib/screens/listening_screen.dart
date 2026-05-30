@@ -227,29 +227,37 @@ class _ListeningScreenState extends State<ListeningScreen> {
         final q = list[index];
         final isCompleted = _completedIds.contains(q.id);
 
-        return Card(
-          color: ThemeService.getCardColor(context),
-          margin: const EdgeInsets.only(bottom: 12),
-          elevation: 0,
-          shape: RoundedRectangleBorder(
+        return Container(
+          margin: const EdgeInsets.only(bottom: 12, right: 4),
+          decoration: BoxDecoration(
+            color: ThemeService.getCardColor(context),
             borderRadius: BorderRadius.circular(12),
-            side: BorderSide(color: ThemeService.getBorderColor(context), width: 1.5),
+            border: Border.all(color: ThemeService.getBorderColor(context), width: 1.5),
+            boxShadow: [
+              BoxShadow(
+                color: ThemeService.getBorderColor(context),
+                offset: const Offset(4, 4),
+                blurRadius: 0,
+              ),
+            ],
           ),
-          child: InkWell(
-            onTap: () async {
-              await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => ListeningQuizScreen(
-                    question: q,
-                    onComplete: _loadProgress,
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => ListeningQuizScreen(
+                      question: q,
+                      onComplete: _loadProgress,
+                    ),
                   ),
-                ),
-              );
-              _loadProgress();
-            },
-            borderRadius: BorderRadius.circular(12),
-            child: Padding(
+                );
+                _loadProgress();
+              },
+              borderRadius: BorderRadius.circular(12),
+              child: Padding(
               padding: const EdgeInsets.all(12),
               child: Row(
                 children: [
@@ -321,8 +329,9 @@ class _ListeningScreenState extends State<ListeningScreen> {
               ),
             ),
           ),
-        );
-      },
+        ),
+      );
+    },
     );
   }
 }

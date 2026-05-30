@@ -49,6 +49,7 @@ class _GrammarScreenState extends State<GrammarScreen> {
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    side: BorderSide(color: ThemeService.getBorderColor(context), width: 1.5),
                   ),
                 ),
               ),
@@ -68,6 +69,7 @@ class _GrammarScreenState extends State<GrammarScreen> {
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    side: BorderSide(color: ThemeService.getBorderColor(context), width: 1.5),
                   ),
                 ),
               ),
@@ -81,7 +83,7 @@ class _GrammarScreenState extends State<GrammarScreen> {
             itemBuilder: (context, index) {
               final g = grammarList[index];
               return Container(
-                margin: const EdgeInsets.only(bottom: 12),
+                margin: const EdgeInsets.only(bottom: 12, right: 4),
                 decoration: BoxDecoration(
                   color: ThemeService.getCardColor(context),
                   borderRadius: BorderRadius.circular(12),
@@ -89,6 +91,13 @@ class _GrammarScreenState extends State<GrammarScreen> {
                     color: ThemeService.getBorderColor(context),
                     width: 1.5,
                   ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: ThemeService.getBorderColor(context),
+                      offset: const Offset(4, 4),
+                      blurRadius: 0,
+                    ),
+                  ],
                 ),
                 child: ExpansionTile(
                   tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
