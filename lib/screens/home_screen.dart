@@ -274,6 +274,9 @@ class _HomeScreenState extends State<HomeScreen> {
             final mastery = progress != null ? progress['masteryLevel'] as int : 0;
             final color = _getMasteryColor(mastery);
             final isDark = ThemeService.isDarkMode.value;
+            final cellBg = isDark 
+                ? (Color.lerp(color, const Color(0xFF1A1A2E), 0.85) ?? color)
+                : (Color.lerp(color, Colors.white, 0.85) ?? color);
 
             return GestureDetector(
               onTap: () async {
@@ -286,7 +289,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Container(
                 margin: const EdgeInsets.only(bottom: 3, right: 3),
                 decoration: BoxDecoration(
-                  color: color.withValues(alpha: isDark ? 0.15 : 0.25),
+                  color: cellBg,
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: ThemeService.getBorderColor(context), width: 1.5),
                   boxShadow: [
