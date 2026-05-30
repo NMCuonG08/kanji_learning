@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/kanji.dart';
 import '../database/db.dart';
 import '../services/tts_service.dart';
+import '../services/theme_service.dart';
 
 class DetailScreen extends StatefulWidget {
   final Kanji kanji;
@@ -50,12 +51,17 @@ class _DetailScreenState extends State<DetailScreen> {
   @override
   Widget build(BuildContext context) {
     final k = widget.kanji;
+    final isDark = ThemeService.isDarkMode.value;
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1A2E),
+      backgroundColor: ThemeService.getBgColor(context),
       appBar: AppBar(
         title: Text(k.character, style: const TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: const Color(0xFF16213E),
-        foregroundColor: Colors.white,
+        backgroundColor: ThemeService.getCardColor(context),
+        foregroundColor: ThemeService.getPrimaryTextColor(context),
+        elevation: 0,
+        shape: Border(
+          bottom: BorderSide(color: ThemeService.getBorderColor(context), width: 1.5),
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -70,47 +76,64 @@ class _DetailScreenState extends State<DetailScreen> {
                     IconButton(
                       onPressed: () => TtsService.speak(k.onyomi),
                       icon: const Icon(Icons.volume_up, color: Color(0xFFE94560), size: 32),
-                      style: IconButton.styleFrom(backgroundColor: const Color(0xFF16213E)),
+                      style: IconButton.styleFrom(
+                        backgroundColor: ThemeService.getCardColor(context),
+                        side: BorderSide(color: ThemeService.getBorderColor(context), width: 1.5),
+                      ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 12),
                     IconButton(
                       onPressed: () => TtsService.speak(k.kunyomi),
-                      icon: const Icon(Icons.record_voice_over, color: Color(0xFF0F3460), size: 32),
-                      style: IconButton.styleFrom(backgroundColor: const Color(0xFF16213E)),
+                      icon: Icon(Icons.record_voice_over, color: isDark ? const Color(0xFF38BDF8) : const Color(0xFF0F3460), size: 32),
+                      style: IconButton.styleFrom(
+                        backgroundColor: ThemeService.getCardColor(context),
+                        side: BorderSide(color: ThemeService.getBorderColor(context), width: 1.5),
+                      ),
                     ),
                   ],
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 20),
                 Container(
                   width: 180,
                   height: 180,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF16213E),
+                    color: ThemeService.getCardColor(context),
                     borderRadius: BorderRadius.circular(24),
-                    border: Border.all(color: const Color(0xFFE94560), width: 3),
+                    border: Border.all(color: ThemeService.getBorderColor(context), width: 3),
+                    boxShadow: [
+                      BoxShadow(
+                        color: ThemeService.getBorderColor(context),
+                        offset: const Offset(6, 6),
+                        blurRadius: 0,
+                      ),
+                    ],
                   ),
                   child: Center(
-                    child: Text(k.character, style: const TextStyle(fontSize: 100, color: Colors.white)),
+                    child: Text(k.character, style: TextStyle(fontSize: 100, color: ThemeService.getPrimaryTextColor(context), fontWeight: FontWeight.bold)),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 28),
             _buildMasteryBar(),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
             Row(
               children: [
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: () => _setStatus('learning'),
                     icon: const Icon(Icons.school, size: 18),
-                    label: const Text('Đang học'),
+                    label: const Text('Đang học', style: TextStyle(fontWeight: FontWeight.bold)),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: _status == 'learning' ? Colors.orange : const Color(0xFF16213E),
-                      foregroundColor: Colors.white,
-                      side: BorderSide(color: _status == 'learning' ? Colors.orange : Colors.white24),
-                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      backgroundColor: _status == 'learning' ? Colors.orange : ThemeService.getCardColor(context),
+                      foregroundColor: _status == 'learning' ? Colors.white : ThemeService.getPrimaryTextColor(context),
+                      side: BorderSide(
+                        color: _status == 'learning' ? Colors.orange.shade700 : ThemeService.getBorderColor(context),
+                        width: 1.5,
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      elevation: 0,
                     ),
                   ),
                 ),
@@ -119,32 +142,43 @@ class _DetailScreenState extends State<DetailScreen> {
                   child: ElevatedButton.icon(
                     onPressed: () => _setStatus('learned'),
                     icon: const Icon(Icons.check_circle, size: 18),
-                    label: const Text('Đã học'),
+                    label: const Text('Đã học', style: TextStyle(fontWeight: FontWeight.bold)),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: _status == 'learned' ? Colors.green : const Color(0xFF16213E),
-                      foregroundColor: Colors.white,
-                      side: BorderSide(color: _status == 'learned' ? Colors.green : Colors.white24),
-                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      backgroundColor: _status == 'learned' ? Colors.green : ThemeService.getCardColor(context),
+                      foregroundColor: _status == 'learned' ? Colors.white : ThemeService.getPrimaryTextColor(context),
+                      side: BorderSide(
+                        color: _status == 'learned' ? Colors.green.shade700 : ThemeService.getBorderColor(context),
+                        width: 1.5,
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      elevation: 0,
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
             _buildInfoRow('Ý nghĩa', k.meaningVi),
             _buildInfoRow('音読み (On)', k.onyomi.isEmpty ? '—' : k.onyomi),
             _buildInfoRow('訓読み (Kun)', k.kunyomi.isEmpty ? '—' : k.kunyomi),
             _buildInfoRow('Số nét', '${k.strokeCount}'),
             _buildInfoRow('JLPT', 'N${k.jlptLevel}'),
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFF16213E),
+                color: ThemeService.getCardColor(context),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFFE94560), width: 1.5),
+                border: Border.all(color: ThemeService.getBorderColor(context), width: 2.0),
+                boxShadow: [
+                  BoxShadow(
+                    color: ThemeService.getBorderColor(context),
+                    offset: const Offset(4, 4),
+                    blurRadius: 0,
+                  ),
+                ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -156,8 +190,9 @@ class _DetailScreenState extends State<DetailScreen> {
                         decoration: BoxDecoration(
                           color: const Color(0xFFE94560),
                           borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: ThemeService.getBorderColor(context), width: 1.2),
                         ),
-                        child: Text(k.radical, style: const TextStyle(fontSize: 24, color: Colors.white)),
+                        child: Text(k.radical, style: const TextStyle(fontSize: 24, color: Colors.white, fontWeight: FontWeight.bold)),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
@@ -168,7 +203,7 @@ class _DetailScreenState extends State<DetailScreen> {
                                 style: const TextStyle(color: Color(0xFFE94560), fontSize: 16, fontWeight: FontWeight.bold)),
                             const SizedBox(height: 4),
                             Text(k.radicalNote,
-                                style: const TextStyle(color: Colors.white70, fontSize: 14)),
+                                style: TextStyle(color: ThemeService.getSecondaryTextColor(context), fontSize: 14)),
                           ],
                         ),
                       ),
@@ -177,33 +212,34 @@ class _DetailScreenState extends State<DetailScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 20),
-            const Align(
+            const SizedBox(height: 24),
+            Align(
               alignment: Alignment.centerLeft,
-              child: Text('Ví dụ', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+              child: Text('Ví dụ', style: TextStyle(color: ThemeService.getPrimaryTextColor(context), fontSize: 18, fontWeight: FontWeight.bold)),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
             ...k.examples.map((ex) => Container(
-              margin: const EdgeInsets.only(bottom: 8),
+              margin: const EdgeInsets.only(bottom: 12),
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color(0xFF16213E),
+                color: ThemeService.getCardColor(context),
                 borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: ThemeService.getBorderColor(context), width: 1.5),
               ),
               child: Row(
                 children: [
                   IconButton(
                     onPressed: () => TtsService.speak(ex.reading),
-                    icon: const Icon(Icons.volume_up, color: Colors.white54, size: 20),
+                    icon: Icon(Icons.volume_up, color: ThemeService.getSecondaryTextColor(context), size: 20),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(ex.word, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-                        Text(ex.reading, style: const TextStyle(color: Colors.white54, fontSize: 14)),
-                        Text(ex.meaningVi, style: const TextStyle(color: Color(0xFFE94560), fontSize: 14)),
+                        Text(ex.word, style: TextStyle(color: ThemeService.getPrimaryTextColor(context), fontSize: 18, fontWeight: FontWeight.bold)),
+                        Text(ex.reading, style: TextStyle(color: ThemeService.getMutedTextColor(context), fontSize: 14)),
+                        Text(ex.meaningVi, style: const TextStyle(color: Color(0xFFE94560), fontSize: 14, fontWeight: FontWeight.w600)),
                       ],
                     ),
                   ),
@@ -222,18 +258,18 @@ class _DetailScreenState extends State<DetailScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text('Mức độ', style: TextStyle(color: Colors.white70, fontSize: 14)),
+            Text('Mức độ', style: TextStyle(color: ThemeService.getSecondaryTextColor(context), fontSize: 14, fontWeight: FontWeight.w600)),
             Text(_masteryLabel(widget.mastery), style: TextStyle(
               color: _masteryColor(widget.mastery), fontWeight: FontWeight.bold, fontSize: 14,
             )),
           ],
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 8),
         ClipRRect(
-          borderRadius: BorderRadius.circular(4),
+          borderRadius: BorderRadius.circular(6),
           child: LinearProgressIndicator(
             value: widget.mastery / 5,
-            backgroundColor: Colors.white12,
+            backgroundColor: ThemeService.isDarkMode.value ? Colors.white12 : Colors.black12,
             color: _masteryColor(widget.mastery),
             minHeight: 10,
           ),
@@ -244,12 +280,12 @@ class _DetailScreenState extends State<DetailScreen> {
 
   Widget _buildInfoRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(color: Colors.white54, fontSize: 14)),
-          Text(value, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
+          Text(label, style: TextStyle(color: ThemeService.getSecondaryTextColor(context), fontSize: 14)),
+          Text(value, style: TextStyle(color: ThemeService.getPrimaryTextColor(context), fontSize: 16, fontWeight: FontWeight.w600)),
         ],
       ),
     );

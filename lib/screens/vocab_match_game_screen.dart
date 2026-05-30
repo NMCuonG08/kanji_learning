@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/vocab.dart';
 import '../database/db.dart';
 import '../services/tts_service.dart';
+import '../services/theme_service.dart';
 
 class VocabMatchGameScreen extends StatefulWidget {
   final List<VocabWord> pool;
@@ -111,11 +112,15 @@ class _VocabMatchGameScreenState extends State<VocabMatchGameScreen> {
         Navigator.pop(context);
       },
       child: Scaffold(
-        backgroundColor: const Color(0xFF1A1A2E),
+        backgroundColor: ThemeService.getBgColor(context),
         appBar: AppBar(
           title: const Text('Game Nối Từ Vựng', style: TextStyle(fontWeight: FontWeight.bold)),
-          backgroundColor: const Color(0xFF16213E),
-          foregroundColor: Colors.white,
+          backgroundColor: ThemeService.getCardColor(context),
+          foregroundColor: ThemeService.getPrimaryTextColor(context),
+          elevation: 0,
+          shape: Border(
+            bottom: BorderSide(color: ThemeService.getBorderColor(context), width: 1.5),
+          ),
         ),
         body: _gameComplete ? _buildResult() : _buildGame(),
       ),
@@ -123,6 +128,7 @@ class _VocabMatchGameScreenState extends State<VocabMatchGameScreen> {
   }
 
   Widget _buildGame() {
+    final isDark = ThemeService.isDarkMode.value;
     return Padding(
       padding: const EdgeInsets.all(12),
       child: Column(
@@ -138,41 +144,43 @@ class _VocabMatchGameScreenState extends State<VocabMatchGameScreen> {
               Row(children: [
                 const Icon(Icons.cancel, color: Colors.red, size: 18),
                 const SizedBox(width: 4),
-                Text('$_wrongCount', style: TextStyle(color: _wrongCount > 0 ? Colors.red : Colors.white38, fontSize: 16)),
+                Text('$_wrongCount', style: TextStyle(color: _wrongCount > 0 ? Colors.red : ThemeService.getMutedTextColor(context), fontSize: 16, fontWeight: FontWeight.bold)),
               ]),
             ],
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           LinearProgressIndicator(
             value: _matchedCount / _batch.length,
-            backgroundColor: Colors.white12,
+            backgroundColor: isDark ? Colors.white12 : Colors.black12,
             color: const Color(0xFFE94560),
+            minHeight: 6,
+            borderRadius: BorderRadius.circular(4),
           ),
-          const SizedBox(height: 4),
-          const Text('Chọn từ bên trái → nghĩa tiếng Việt bên phải', style: TextStyle(color: Colors.white54, fontSize: 12)),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
+          Text('Chọn từ bên trái → nghĩa tiếng Việt bên phải', style: TextStyle(color: ThemeService.getSecondaryTextColor(context), fontSize: 13, fontWeight: FontWeight.w600)),
+          const SizedBox(height: 16),
           Expanded(
             child: LayoutBuilder(
               builder: (context, constraints) {
                 final availableHeight = constraints.maxHeight;
-                final itemHeight = (availableHeight - (_batch.length - 1) * 5) / _batch.length;
+                final itemHeight = (availableHeight - (_batch.length - 1) * 6) / _batch.length;
                 return Row(
                   children: [
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: List.generate(_batch.length, (i) => Padding(
-                          padding: EdgeInsets.only(bottom: i < _batch.length - 1 ? 5 : 0),
+                          padding: EdgeInsets.only(bottom: i < _batch.length - 1 ? 6 : 0),
                           child: SizedBox(height: itemHeight, child: _buildWordItem(i)),
                         )),
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: List.generate(_shuffledMeanings.length, (i) => Padding(
-                          padding: EdgeInsets.only(bottom: i < _shuffledMeanings.length - 1 ? 5 : 0),
+                          padding: EdgeInsets.only(bottom: i < _shuffledMeanings.length - 1 ? 6 : 0),
                           child: SizedBox(height: itemHeight, child: _buildMeaningItem(i)),
                         )),
                       ),
@@ -191,20 +199,27 @@ class _VocabMatchGameScreenState extends State<VocabMatchGameScreen> {
     final matched = _matchedWord.contains(i);
     final selected = _selectedWordIndex == i;
     final isWrong = _showWrong && _wrongWordIndex == i;
-    Color bg, border;
+    final isDark = ThemeService.isDarkMode.value;
+    Color bg, border, textColor;
+
     if (matched) {
-      bg = Colors.green.withValues(alpha: 0.15);
-      border = Colors.green;
+      bg = isDark ? Colors.green.withValues(alpha: 0.15) : const Color(0xFFDCFCE7);
+      border = Colors.green.shade700;
+      textColor = isDark ? Colors.green : Colors.green.shade800;
     } else if (isWrong) {
-      bg = Colors.red.withValues(alpha: 0.25);
-      border = Colors.red;
+      bg = isDark ? Colors.red.withValues(alpha: 0.25) : const Color(0xFFFEE2E2);
+      border = Colors.red.shade700;
+      textColor = isDark ? Colors.red : Colors.red.shade800;
     } else if (selected) {
-      bg = const Color(0xFFE94560).withValues(alpha: 0.25);
+      bg = const Color(0xFFE94560).withValues(alpha: 0.15);
       border = const Color(0xFFE94560);
+      textColor = const Color(0xFFE94560);
     } else {
-      bg = const Color(0xFF16213E);
-      border = const Color(0xFF0F3460);
+      bg = ThemeService.getCardColor(context);
+      border = ThemeService.getBorderColor(context);
+      textColor = ThemeService.getPrimaryTextColor(context);
     }
+
     return GestureDetector(
       onTap: matched ? null : () => _onWordTap(i),
       child: AnimatedContainer(
@@ -212,7 +227,7 @@ class _VocabMatchGameScreenState extends State<VocabMatchGameScreen> {
         decoration: BoxDecoration(
           color: bg,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: border, width: matched || selected || isWrong ? 2 : 1),
+          border: Border.all(color: border, width: matched || selected || isWrong ? 2.5 : 1.5),
         ),
         child: Center(
           child: SingleChildScrollView(
@@ -226,13 +241,13 @@ class _VocabMatchGameScreenState extends State<VocabMatchGameScreen> {
                     _batch[i].word,
                     style: TextStyle(
                       fontSize: 16, fontWeight: FontWeight.bold,
-                      color: matched ? Colors.green : isWrong ? Colors.red : Colors.white,
+                      color: textColor,
                     ),
                   ),
                   if (_batch[i].word != _batch[i].reading)
                     Text(
                       _batch[i].reading,
-                      style: const TextStyle(fontSize: 10, color: Colors.white54),
+                      style: TextStyle(fontSize: 10, color: ThemeService.getMutedTextColor(context)),
                     ),
                 ],
               ),
@@ -247,20 +262,27 @@ class _VocabMatchGameScreenState extends State<VocabMatchGameScreen> {
     final matched = _matchedMeaning.contains(i);
     final selected = _selectedMeaningIndex == i;
     final isWrong = _showWrong && _wrongMeaningIndex == i;
-    Color bg, border;
+    final isDark = ThemeService.isDarkMode.value;
+    Color bg, border, textColor;
+
     if (matched) {
-      bg = Colors.green.withValues(alpha: 0.15);
-      border = Colors.green;
+      bg = isDark ? Colors.green.withValues(alpha: 0.15) : const Color(0xFFDCFCE7);
+      border = Colors.green.shade700;
+      textColor = isDark ? Colors.green : Colors.green.shade800;
     } else if (isWrong) {
-      bg = Colors.red.withValues(alpha: 0.25);
-      border = Colors.red;
+      bg = isDark ? Colors.red.withValues(alpha: 0.25) : const Color(0xFFFEE2E2);
+      border = Colors.red.shade700;
+      textColor = isDark ? Colors.red : Colors.red.shade800;
     } else if (selected) {
-      bg = const Color(0xFF0F3460).withValues(alpha: 0.5);
-      border = const Color(0xFFE94560);
+      bg = isDark ? const Color(0xFF0F3460).withValues(alpha: 0.5) : const Color(0xFFEFF6FF);
+      border = isDark ? const Color(0xFFE94560) : Colors.blue.shade700;
+      textColor = isDark ? Colors.white : Colors.blue.shade800;
     } else {
-      bg = const Color(0xFF16213E);
-      border = const Color(0xFF0F3460);
+      bg = ThemeService.getCardColor(context);
+      border = ThemeService.getBorderColor(context);
+      textColor = ThemeService.getPrimaryTextColor(context);
     }
+
     return GestureDetector(
       onTap: matched ? null : () => _onMeaningTap(i),
       child: AnimatedContainer(
@@ -269,14 +291,14 @@ class _VocabMatchGameScreenState extends State<VocabMatchGameScreen> {
         decoration: BoxDecoration(
           color: bg,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: border, width: matched || selected || isWrong ? 2 : 1),
+          border: Border.all(color: border, width: matched || selected || isWrong ? 2.5 : 1.5),
         ),
         child: Center(
           child: Text(
             _shuffledMeanings[i].meaningVi,
             style: TextStyle(
               fontSize: 12, fontWeight: FontWeight.w600,
-              color: matched ? Colors.green : isWrong ? Colors.red : Colors.white,
+              color: textColor,
             ),
             textAlign: TextAlign.center,
             maxLines: 2,
@@ -296,26 +318,38 @@ class _VocabMatchGameScreenState extends State<VocabMatchGameScreen> {
         children: [
           Icon(percent >= 80 ? Icons.emoji_events : Icons.thumb_up, size: 80, color: percent >= 80 ? Colors.amber : Colors.blue),
           const SizedBox(height: 20),
-          Text('$percent%', style: const TextStyle(fontSize: 56, fontWeight: FontWeight.bold, color: Colors.white)),
+          Text('$percent%', style: TextStyle(fontSize: 56, fontWeight: FontWeight.bold, color: ThemeService.getPrimaryTextColor(context))),
           const SizedBox(height: 8),
-          Text('$_matchedCount đúng / $_wrongCount sai', style: const TextStyle(fontSize: 18, color: Colors.white70)),
+          Text('$_matchedCount đúng / $_wrongCount sai', style: TextStyle(fontSize: 18, color: ThemeService.getSecondaryTextColor(context))),
           const SizedBox(height: 8),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 32),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32),
             child: Text(
               'Các từ nối đúng sẽ không xuất hiện lại trong game nối từ vựng trong 3 ngày tới.',
-              style: TextStyle(color: Colors.white54, fontSize: 13),
+              style: TextStyle(color: ThemeService.getMutedTextColor(context), fontSize: 13),
               textAlign: TextAlign.center,
             ),
           ),
           const SizedBox(height: 32),
           ElevatedButton(
             onPressed: () => setState(() => _startGame()),
-            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFE94560), foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 32), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-            child: const Text('Chơi lại', style: TextStyle(fontSize: 16)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFE94560), 
+              foregroundColor: Colors.white, 
+              padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 32), 
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: BorderSide(color: ThemeService.getBorderColor(context), width: 1.5),
+              ),
+              elevation: 0,
+            ),
+            child: const Text('Chơi lại', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           ),
           const SizedBox(height: 12),
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Về trang chính', style: TextStyle(color: Colors.white54))),
+          TextButton(
+            onPressed: () => Navigator.pop(context), 
+            child: Text('Về trang chính', style: TextStyle(color: ThemeService.getMutedTextColor(context))),
+          ),
         ],
       ),
     );

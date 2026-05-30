@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../data/duolingo_data.dart';
 import '../models/duolingo_challenge.dart';
 import '../services/tts_service.dart';
+import '../services/theme_service.dart';
 
 class DuolingoQuizScreen extends StatefulWidget {
   const DuolingoQuizScreen({super.key});
@@ -305,9 +306,9 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
         Expanded(
           child: Container(
             decoration: BoxDecoration(
-              color: const Color(0xFF16213E),
+              color: ThemeService.getCardColor(context),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: const Color(0xFF0F3460)),
+              border: Border.all(color: ThemeService.getBorderColor(context), width: 1.5),
             ),
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -323,7 +324,7 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
                     if (challenge.type == 'jp_to_vi')
                       IconButton(
                         onPressed: () => TtsService.speak(challenge.prompt),
-                        icon: const Icon(Icons.volume_up, color: Colors.white70, size: 20),
+                        icon: Icon(Icons.volume_up, color: ThemeService.getSecondaryTextColor(context), size: 20),
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(),
                       ),
@@ -335,7 +336,7 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
                 challenge.type == 'vi_to_jp'
                     ? Text(
                         challenge.prompt,
-                        style: const TextStyle(color: Colors.white, fontSize: 19, fontWeight: FontWeight.bold),
+                        style: TextStyle(color: ThemeService.getPrimaryTextColor(context), fontSize: 19, fontWeight: FontWeight.bold),
                       )
                     : _buildSentenceWithFurigana(challenge.prompt, challenge.jpPromptTokens ?? [], challenge.furigana),
               ],
@@ -383,7 +384,7 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
           style: TextStyle(
             fontSize: fontSize,
             fontWeight: FontWeight.bold,
-            color: isTransparent ? Colors.transparent : Colors.white,
+            color: isTransparent ? Colors.transparent : ThemeService.getPrimaryTextColor(context),
           ),
         ),
       ],
@@ -394,9 +395,9 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
     return Container(
       constraints: const BoxConstraints(minHeight: 88),
       decoration: BoxDecoration(
-        color: const Color(0xFF16213E).withValues(alpha: 0.3),
+        color: ThemeService.getCardColor(context).withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFF0F3460).withValues(alpha: 0.5)),
+        border: Border.all(color: ThemeService.getBorderColor(context).withValues(alpha: 0.5), width: 1.5),
       ),
       padding: const EdgeInsets.all(12),
       alignment: Alignment.center,
@@ -498,13 +499,13 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
   Widget _buildWordChip(String token, String? furigana, {double elevation = 0, bool isTransparent = false}) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF16213E),
+        color: ThemeService.getCardColor(context),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFF0F3460), width: 1.5),
+        border: Border.all(color: ThemeService.getBorderColor(context), width: 1.5),
         boxShadow: elevation > 0
             ? [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.25),
+                  color: ThemeService.getShadowColor(context),
                   blurRadius: 4,
                   offset: const Offset(0, 2),
                 )
@@ -520,7 +521,7 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
     if (!_isAnswerChecked) {
       if (_showHint) {
         return Container(
-          color: const Color(0xFF16213E),
+          color: ThemeService.getCardColor(context),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           child: Row(
             children: [
@@ -559,7 +560,7 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
       }
 
       return Container(
-        color: const Color(0xFF16213E),
+        color: ThemeService.getCardColor(context),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         child: SizedBox(
           width: double.infinity,
@@ -611,14 +612,14 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
           ),
           if (!_isCorrect) ...[
             const SizedBox(height: 12),
-            const Text(
+            Text(
               'ĐÁP ÁN ĐÚNG:',
-              style: TextStyle(color: Colors.white38, fontSize: 10, fontWeight: FontWeight.bold),
+              style: TextStyle(color: ThemeService.getMutedTextColor(context), fontSize: 10, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 4),
             Text(
               challenge.target,
-              style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+              style: TextStyle(color: ThemeService.getPrimaryTextColor(context), fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ],
           const SizedBox(height: 16),
@@ -626,13 +627,13 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: const Color(0xFF16213E),
+              color: ThemeService.getAccentColor(context),
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: Colors.white10),
+              border: Border.all(color: ThemeService.getBorderColor(context).withValues(alpha: 0.15)),
             ),
             child: Text(
               challenge.explanation,
-              style: const TextStyle(color: Colors.white70, fontSize: 13, height: 1.4),
+              style: TextStyle(color: ThemeService.getSecondaryTextColor(context), fontSize: 13, height: 1.4),
             ),
           ),
           const SizedBox(height: 16),

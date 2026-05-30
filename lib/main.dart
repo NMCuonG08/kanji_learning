@@ -25,10 +25,10 @@ class KanjiApp extends StatelessWidget {
               brightness: isDark ? Brightness.dark : Brightness.light,
             ),
             useMaterial3: true,
-            scaffoldBackgroundColor: isDark ? const Color(0xFF1A1A2E) : const Color(0xFFF1F5F9),
+            scaffoldBackgroundColor: isDark ? const Color(0xFF1A1A2E) : const Color(0xFFFAFAFA),
             appBarTheme: AppBarTheme(
-              backgroundColor: isDark ? const Color(0xFF16213E) : Colors.white,
-              foregroundColor: isDark ? Colors.white : const Color(0xFF0F172A),
+              backgroundColor: isDark ? const Color(0xFF16213E) : const Color(0xFFFAFAFA),
+              foregroundColor: isDark ? Colors.white : Colors.black,
               elevation: 0,
             ),
           ),

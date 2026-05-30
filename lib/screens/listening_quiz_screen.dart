@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../models/listening_question.dart';
 import '../services/tts_service.dart';
 import '../database/db.dart';
+import '../services/theme_service.dart';
 
 class PlaybackItem {
   final String text;
@@ -242,6 +243,7 @@ class _ListeningQuizScreenState extends State<ListeningQuizScreen> {
   Widget build(BuildContext context) {
     final q = widget.question;
     final is3or4 = q.taskType == 'task3' || q.taskType == 'task4';
+    final isDark = ThemeService.isDarkMode.value;
 
     return PopScope(
       canPop: false,
@@ -250,316 +252,346 @@ class _ListeningQuizScreenState extends State<ListeningQuizScreen> {
         Navigator.pop(context);
       },
       child: Scaffold(
-        backgroundColor: const Color(0xFF1A1A2E),
+        backgroundColor: ThemeService.getBgColor(context),
         appBar: AppBar(
           title: Text(_getTaskTypeTitle(q.taskType), style: const TextStyle(fontWeight: FontWeight.bold)),
-          backgroundColor: const Color(0xFF16213E),
-          foregroundColor: Colors.white,
+          backgroundColor: ThemeService.getCardColor(context),
+          foregroundColor: ThemeService.getPrimaryTextColor(context),
           elevation: 0,
+          shape: Border(
+            bottom: BorderSide(color: ThemeService.getBorderColor(context), width: 1.5),
+          ),
         ),
         body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Context description card
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: const Color(0xFF16213E),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: const Color(0xFFE94560).withValues(alpha: 0.4), width: 1.5),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Ngữ cảnh (Bối cảnh):',
-                    style: TextStyle(color: Colors.white70, fontSize: 12),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    q.situationVi,
-                    style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w600),
-                  ),
-                  const SizedBox(height: 12),
-                  const Text(
-                    'Câu hỏi (Yêu cầu đề bài):',
-                    style: TextStyle(color: Color(0xFFE94560), fontSize: 13, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    q.questionTextJa,
-                    style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  if (_getQuestionTranslation(q.questionTextJa).isNotEmpty) ...[
-                    const SizedBox(height: 2),
-                    Text(
-                      _getQuestionTranslation(q.questionTextJa),
-                      style: const TextStyle(color: Colors.white54, fontSize: 14, fontStyle: FontStyle.italic),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            // Audio player simulator card
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF0F3460), Color(0xFF16213E)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.white10),
-              ),
-              child: Column(
-                children: [
-                  // Waveform or active playing line label
-                  SizedBox(
-                    height: 50,
-                    child: Center(
-                      child: _isCountdownActive
-                          ? Text(
-                              'Đang chuẩn bị đọc hội thoại: $_countdownSeconds s',
-                              style: const TextStyle(color: Colors.amber, fontSize: 16, fontWeight: FontWeight.bold),
-                            )
-                          : _isPlaying
-                              ? Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const Icon(Icons.volume_up, color: Color(0xFFE94560), size: 20),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      _sequence[_currentSeqIndex].label,
-                                      style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    const SizedBox(
-                                      width: 16,
-                                      height: 16,
-                                      child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFFE94560)),
-                                    ),
-                                  ],
-                                )
-                              : Text(
-                                  _audioDone ? 'Đã phát xong đề bài' : 'Nhấn phát để nghe đề bài',
-                                  style: const TextStyle(color: Colors.white70, fontSize: 15),
-                                ),
-                    ),
-                  ),
-
-                  // Player controls row
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      IconButton(
-                        onPressed: _stopPlayback,
-                        icon: const Icon(Icons.stop, color: Colors.white70, size: 28),
-                        style: IconButton.styleFrom(backgroundColor: Colors.white10),
-                      ),
-                      const SizedBox(width: 16),
-                      IconButton(
-                        onPressed: _isPlaying ? _pausePlayback : _startPlayback,
-                        icon: Icon(_isPlaying ? Icons.pause : Icons.play_arrow, color: Colors.white, size: 36),
-                        style: IconButton.styleFrom(backgroundColor: const Color(0xFFE94560), padding: const EdgeInsets.all(12)),
-                      ),
-                      const SizedBox(width: 16),
-                      // Speed adjustment toggle (Normal 1.0x / Slow 0.8x)
-                      TextButton(
-                        onPressed: () {
-                          setState(() {
-                            _speedFactor = _speedFactor == 1.0 ? 0.8 : 1.0;
-                          });
-                          if (_isPlaying) {
-                            // Restart from current phrase to apply speed
-                            _playNextItem();
-                          }
-                        },
-                        style: TextButton.styleFrom(
-                          backgroundColor: Colors.white10,
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                        ),
-                        child: Text(
-                          'Tốc độ: ${_speedFactor}x',
-                          style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ],
-                  ),
-                  _buildPlaybackTimeline(),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            // Question text
-            if (_showTranscript) ...[
-              const Text(
-                'Câu hỏi:',
-                style: TextStyle(color: Colors.white70, fontSize: 14),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                q.questionTextJa,
-                style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 20),
-            ],
-
-            // Options container
-            const Text(
-              'Chọn câu trả lời:',
-              style: TextStyle(color: Colors.white70, fontSize: 14),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 12),
-
-            ...List.generate(q.options.length, (index) {
-              final isCorrect = index == q.correctOptionIndex;
-              final isSelected = _selectedOptionIndex == index;
-
-              Color bg = const Color(0xFF16213E);
-              Color border = const Color(0xFF0F3460);
-              Color textColor = Colors.white;
-
-              if (_isAnswered) {
-                if (isCorrect) {
-                  bg = Colors.green.withValues(alpha: 0.2);
-                  border = Colors.green;
-                  textColor = Colors.green;
-                } else if (isSelected) {
-                  bg = Colors.red.withValues(alpha: 0.2);
-                  border = Colors.red;
-                  textColor = Colors.red;
-                } else {
-                  bg = const Color(0xFF16213E).withValues(alpha: 0.5);
-                  textColor = Colors.white30;
-                }
-              }
-
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: ElevatedButton(
-                  onPressed: _isAnswered ? null : () => _selectOption(index),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: bg,
-                    foregroundColor: textColor,
-                    disabledBackgroundColor: bg,
-                    disabledForegroundColor: textColor,
-                    side: BorderSide(color: border, width: isSelected || (_isAnswered && isCorrect) ? 2 : 1),
-                    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    elevation: 0,
-                  ),
-                  child: Row(
-                    children: [
-                      // Audio buttons for options read aloud (Tasks 3 & 4) on the LEFT
-                      if (is3or4 && _showTranscript) ...[
-                        IconButton(
-                          onPressed: () => TtsService.speak(q.optionAudioTexts[index], rate: _getPlatformRate()),
-                          icon: const Icon(Icons.volume_up, color: Color(0xFFE94560), size: 20),
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
-                        ),
-                        const SizedBox(width: 8),
-                      ],
-                      Expanded(
-                        child: Text(
-                          is3or4 && !_showTranscript
-                              ? 'Đáp án ${index + 1}'
-                              : q.options[index],
-                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            }),
-
-            // Transcript reveal block
-            if (_showTranscript) ...[
-              const SizedBox(height: 20),
-              const Divider(color: Colors.white24),
-              const SizedBox(height: 12),
-              const Text(
-                'Giải thích & Dịch nghĩa:',
-                style: TextStyle(color: Color(0xFFE94560), fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Context description card
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF16213E),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.white10),
+                  color: ThemeService.getCardColor(context),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: ThemeService.getBorderColor(context), width: 2.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: ThemeService.getBorderColor(context),
+                      offset: const Offset(4, 4),
+                      blurRadius: 0,
+                    ),
+                  ],
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      q.explanationVi,
-                      style: const TextStyle(color: Colors.white70, fontSize: 14, height: 1.4),
+                      'Ngữ cảnh (Bối cảnh):',
+                      style: TextStyle(color: ThemeService.getSecondaryTextColor(context), fontSize: 12, fontWeight: FontWeight.bold),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 4),
+                    Text(
+                      q.situationVi,
+                      style: TextStyle(color: ThemeService.getPrimaryTextColor(context), fontSize: 15, fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(height: 12),
                     const Text(
-                      'Bản thoại (Transcript):',
-                      style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
+                      'Câu hỏi (Yêu cầu đề bài):',
+                      style: TextStyle(color: Color(0xFFE94560), fontSize: 13, fontWeight: FontWeight.bold),
                     ),
-                    const SizedBox(height: 8),
-                    ...q.scriptLines.map((line) {
-                      // Separate character label if any (e.g. "先生：")
-                      final parts = line.split('：');
-                      final speaker = parts.length > 1 ? '${parts[0]}：' : '';
-                      final dialogue = parts.length > 1 ? parts.sublist(1).join('：') : line;
-
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Audio play button for individual line on the LEFT
-                            IconButton(
-                              onPressed: () => TtsService.speak(dialogue, rate: _getPlatformRate()),
-                              icon: const Icon(Icons.volume_up, color: Colors.white38, size: 18),
-                              padding: EdgeInsets.zero,
-                              constraints: const BoxConstraints(),
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: RichText(
-                                text: TextSpan(
-                                  style: const TextStyle(fontSize: 14, color: Colors.white, height: 1.4),
-                                  children: [
-                                    if (speaker.isNotEmpty)
-                                      TextSpan(
-                                        text: speaker,
-                                        style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF0F9D58)),
-                                      ),
-                                    TextSpan(text: dialogue),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    }),
+                    const SizedBox(height: 4),
+                    Text(
+                      q.questionTextJa,
+                      style: TextStyle(color: ThemeService.getPrimaryTextColor(context), fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    if (_getQuestionTranslation(q.questionTextJa).isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        _getQuestionTranslation(q.questionTextJa),
+                        style: TextStyle(color: ThemeService.getMutedTextColor(context), fontSize: 14, fontStyle: FontStyle.italic),
+                      ),
+                    ],
                   ],
                 ),
               ),
+              const SizedBox(height: 20),
+
+              // Audio player simulator card
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: ThemeService.getCardColor(context),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: ThemeService.getBorderColor(context), width: 2.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: ThemeService.getBorderColor(context),
+                      offset: const Offset(4, 4),
+                      blurRadius: 0,
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    // Waveform or active playing line label
+                    SizedBox(
+                      height: 50,
+                      child: Center(
+                        child: _isCountdownActive
+                            ? Text(
+                                'Đang chuẩn bị đọc hội thoại: $_countdownSeconds s',
+                                style: TextStyle(color: isDark ? Colors.amber : Colors.amber.shade900, fontSize: 16, fontWeight: FontWeight.bold),
+                              )
+                            : _isPlaying
+                                ? Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const Icon(Icons.volume_up, color: Color(0xFFE94560), size: 20),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        _sequence[_currentSeqIndex].label,
+                                        style: TextStyle(color: ThemeService.getPrimaryTextColor(context), fontSize: 16, fontWeight: FontWeight.bold),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      const SizedBox(
+                                        width: 16,
+                                        height: 16,
+                                        child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFFE94560)),
+                                      ),
+                                    ],
+                                  )
+                                : Text(
+                                    _audioDone ? 'Đã phát xong đề bài' : 'Nhấn phát để nghe đề bài',
+                                    style: TextStyle(color: ThemeService.getSecondaryTextColor(context), fontSize: 15, fontWeight: FontWeight.w500),
+                                  ),
+                      ),
+                    ),
+
+                    // Player controls row
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          onPressed: _stopPlayback,
+                          icon: Icon(Icons.stop, color: ThemeService.getPrimaryTextColor(context), size: 28),
+                          style: IconButton.styleFrom(
+                            backgroundColor: ThemeService.getAccentColor(context),
+                            side: BorderSide(color: ThemeService.getBorderColor(context), width: 1.5),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        IconButton(
+                          onPressed: _isPlaying ? _pausePlayback : _startPlayback,
+                          icon: const Icon(Icons.play_arrow, color: Colors.white, size: 36),
+                          style: IconButton.styleFrom(
+                            backgroundColor: const Color(0xFFE94560), 
+                            padding: const EdgeInsets.all(12),
+                            side: BorderSide(color: ThemeService.getBorderColor(context), width: 1.5),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        // Speed adjustment toggle (Normal 1.0x / Slow 0.8x)
+                        TextButton(
+                          onPressed: () {
+                            setState(() {
+                              _speedFactor = _speedFactor == 1.0 ? 0.8 : 1.0;
+                            });
+                            if (_isPlaying) {
+                              _playNextItem();
+                            }
+                          },
+                          style: TextButton.styleFrom(
+                            backgroundColor: ThemeService.getAccentColor(context),
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              side: BorderSide(color: ThemeService.getBorderColor(context), width: 1.5),
+                            ),
+                          ),
+                          child: Text(
+                            'Tốc độ: ${_speedFactor}x',
+                            style: TextStyle(color: ThemeService.getPrimaryTextColor(context), fontSize: 13, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ],
+                    ),
+                    _buildPlaybackTimeline(),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // Question text
+              if (_showTranscript) ...[
+                Text(
+                  'Câu hỏi:',
+                  style: TextStyle(color: ThemeService.getSecondaryTextColor(context), fontSize: 14, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  q.questionTextJa,
+                  style: TextStyle(color: ThemeService.getPrimaryTextColor(context), fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 20),
+              ],
+
+              // Options container
+              Text(
+                'Chọn câu trả lời:',
+                style: TextStyle(color: ThemeService.getSecondaryTextColor(context), fontSize: 14, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 12),
+
+              ...List.generate(q.options.length, (index) {
+                final isCorrect = index == q.correctOptionIndex;
+                final isSelected = _selectedOptionIndex == index;
+
+                Color bg = ThemeService.getCardColor(context);
+                Color border = ThemeService.getBorderColor(context);
+                Color textColor = ThemeService.getPrimaryTextColor(context);
+
+                if (_isAnswered) {
+                  if (isCorrect) {
+                    bg = isDark ? Colors.green.withValues(alpha: 0.2) : const Color(0xFFDCFCE7);
+                    border = Colors.green.shade700;
+                    textColor = isDark ? Colors.green : Colors.green.shade800;
+                  } else if (isSelected) {
+                    bg = isDark ? Colors.red.withValues(alpha: 0.2) : const Color(0xFFFEE2E2);
+                    border = Colors.red.shade700;
+                    textColor = isDark ? Colors.red : Colors.red.shade800;
+                  } else {
+                    bg = ThemeService.getCardColor(context).withValues(alpha: 0.5);
+                    textColor = ThemeService.getMutedTextColor(context);
+                    border = ThemeService.getBorderColor(context).withValues(alpha: 0.3);
+                  }
+                }
+
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: ElevatedButton(
+                    onPressed: _isAnswered ? null : () => _selectOption(index),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: bg,
+                      foregroundColor: textColor,
+                      disabledBackgroundColor: bg,
+                      disabledForegroundColor: textColor,
+                      side: BorderSide(color: border, width: isSelected || (_isAnswered && isCorrect) ? 2.2 : 1.5),
+                      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      elevation: 0,
+                    ),
+                    child: Row(
+                      children: [
+                        if (is3or4 && _showTranscript) ...[
+                          IconButton(
+                            onPressed: () => TtsService.speak(q.optionAudioTexts[index], rate: _getPlatformRate()),
+                            icon: const Icon(Icons.volume_up, color: Color(0xFFE94560), size: 20),
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                          ),
+                          const SizedBox(width: 8),
+                        ],
+                        Expanded(
+                          child: Text(
+                            is3or4 && !_showTranscript
+                                ? 'Đáp án ${index + 1}'
+                                : q.options[index],
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }),
+
+              // Transcript reveal block
+              if (_showTranscript) ...[
+                const SizedBox(height: 20),
+                Divider(color: ThemeService.getBorderColor(context).withValues(alpha: 0.2)),
+                const SizedBox(height: 12),
+                const Text(
+                  'Giải thích & Dịch nghĩa:',
+                  style: TextStyle(color: Color(0xFFE94560), fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: ThemeService.getCardColor(context),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: ThemeService.getBorderColor(context), width: 2.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: ThemeService.getBorderColor(context),
+                        offset: const Offset(4, 4),
+                        blurRadius: 0,
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        q.explanationVi,
+                        style: TextStyle(color: ThemeService.getSecondaryTextColor(context), fontSize: 14, height: 1.4),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Bản thoại (Transcript):',
+                        style: TextStyle(color: ThemeService.getPrimaryTextColor(context), fontSize: 15, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 8),
+                      ...q.scriptLines.map((line) {
+                        final parts = line.split('：');
+                        final speaker = parts.length > 1 ? '${parts[0]}：' : '';
+                        final dialogue = parts.length > 1 ? parts.sublist(1).join('：') : line;
+
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              IconButton(
+                                onPressed: () => TtsService.speak(dialogue, rate: _getPlatformRate()),
+                                icon: Icon(Icons.volume_up, color: ThemeService.getSecondaryTextColor(context), size: 18),
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: RichText(
+                                  text: TextSpan(
+                                    style: TextStyle(fontSize: 14, color: ThemeService.getPrimaryTextColor(context), height: 1.4),
+                                    children: [
+                                      if (speaker.isNotEmpty)
+                                        TextSpan(
+                                          text: speaker,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold, 
+                                            color: isDark ? const Color(0xFF4ADE80) : const Color(0xFF16A34A),
+                                          ),
+                                        ),
+                                      TextSpan(text: dialogue),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }),
+                    ],
+                  ),
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   String _getQuestionTranslation(String questionJa) {
     if (questionJa.contains('学生はこれから何をしますか')) {
@@ -600,13 +632,15 @@ class _ListeningQuizScreenState extends State<ListeningQuizScreen> {
 
   Widget _buildPlaybackTimeline() {
     if (_sequence.isEmpty) return const SizedBox();
+    final isDark = ThemeService.isDarkMode.value;
 
     return Container(
       margin: const EdgeInsets.only(top: 16),
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
       decoration: BoxDecoration(
-        color: Colors.black26,
+        color: isDark ? Colors.black26 : Colors.grey.shade100,
         borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: ThemeService.getBorderColor(context).withValues(alpha: 0.2)),
       ),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
@@ -617,17 +651,17 @@ class _ListeningQuizScreenState extends State<ListeningQuizScreen> {
             final isActive = _isPlaying && _currentSeqIndex == index;
             final isPast = _isPlaying && _currentSeqIndex > index;
 
-            Color textColor = Colors.white38;
+            Color textColor = ThemeService.getMutedTextColor(context);
             Color bgColor = Colors.transparent;
-            BorderSide border = const BorderSide(color: Colors.white10);
+            BorderSide border = BorderSide(color: ThemeService.getBorderColor(context).withValues(alpha: 0.1));
 
             if (isActive) {
               textColor = Colors.white;
               bgColor = const Color(0xFFE94560);
-              border = const BorderSide(color: Color(0xFFE94560), width: 1.5);
+              border = BorderSide(color: ThemeService.getBorderColor(context), width: 1.5);
             } else if (isPast) {
-              textColor = Colors.white70;
-              bgColor = const Color(0xFF0F3460).withValues(alpha: 0.4);
+              textColor = ThemeService.getSecondaryTextColor(context);
+              bgColor = isDark ? const Color(0xFF0F3460).withValues(alpha: 0.4) : const Color(0xFFE2E8F0);
               border = BorderSide.none;
             }
 

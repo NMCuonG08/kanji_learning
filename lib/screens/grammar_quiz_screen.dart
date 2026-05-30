@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/grammar.dart';
 import '../data/grammar_quiz_data.dart';
 import '../database/db.dart';
+import '../services/theme_service.dart';
 
 class GrammarQuizScreen extends StatefulWidget {
   const GrammarQuizScreen({super.key});
@@ -82,11 +83,15 @@ class _GrammarQuizScreenState extends State<GrammarQuizScreen> {
         Navigator.pop(context);
       },
       child: Scaffold(
-        backgroundColor: const Color(0xFF1A1A2E),
+        backgroundColor: ThemeService.getBgColor(context),
         appBar: AppBar(
           title: const Text('Trắc Nghiệm Ngữ Pháp', style: TextStyle(fontWeight: FontWeight.bold)),
-          backgroundColor: const Color(0xFF16213E),
-          foregroundColor: Colors.white,
+          backgroundColor: ThemeService.getCardColor(context),
+          foregroundColor: ThemeService.getPrimaryTextColor(context),
+          elevation: 0,
+          shape: Border(
+            bottom: BorderSide(color: ThemeService.getBorderColor(context), width: 1.5),
+          ),
         ),
         body: _isLoading
             ? const Center(child: CircularProgressIndicator(color: Color(0xFFE94560)))
@@ -97,6 +102,7 @@ class _GrammarQuizScreenState extends State<GrammarQuizScreen> {
 
   Widget _buildQuiz() {
     final q = _quizQuestions[_currentIndex];
+    final isDark = ThemeService.isDarkMode.value;
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -108,13 +114,14 @@ class _GrammarQuizScreenState extends State<GrammarQuizScreen> {
               children: [
                 Text(
                   'Câu ${_currentIndex + 1}/${_quizQuestions.length}',
-                  style: const TextStyle(color: Colors.white70, fontSize: 14),
+                  style: TextStyle(color: ThemeService.getSecondaryTextColor(context), fontSize: 14, fontWeight: FontWeight.bold),
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: const Color(0xFFE94560),
                     borderRadius: BorderRadius.circular(6),
+                    border: Border.all(color: ThemeService.getBorderColor(context), width: 1.2),
                   ),
                   child: Text(
                     'Bài ${q.lesson}',
@@ -126,36 +133,45 @@ class _GrammarQuizScreenState extends State<GrammarQuizScreen> {
             const SizedBox(height: 10),
             LinearProgressIndicator(
               value: (_currentIndex + 1) / _quizQuestions.length,
-              backgroundColor: Colors.white12,
+              backgroundColor: isDark ? Colors.white12 : Colors.black12,
               color: const Color(0xFFE94560),
+              minHeight: 6,
+              borderRadius: BorderRadius.circular(4),
             ),
             const SizedBox(height: 24),
             // Question Card
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: const Color(0xFF16213E),
+                color: ThemeService.getCardColor(context),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: const Color(0xFF0F3460), width: 1.5),
+                border: Border.all(color: ThemeService.getBorderColor(context), width: 2.0),
+                boxShadow: [
+                  BoxShadow(
+                    color: ThemeService.getBorderColor(context),
+                    offset: const Offset(4, 4),
+                    blurRadius: 0,
+                  ),
+                ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
                     q.question,
-                    style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                    style: TextStyle(color: ThemeService.getPrimaryTextColor(context), fontSize: 24, fontWeight: FontWeight.bold),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 12),
                   Text(
                     q.translation,
-                    style: const TextStyle(color: Colors.white54, fontSize: 16, fontStyle: FontStyle.italic),
+                    style: TextStyle(color: ThemeService.getMutedTextColor(context), fontSize: 16, fontStyle: FontStyle.italic),
                     textAlign: TextAlign.center,
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 28),
             // Option Buttons
             ...q.options.asMap().entries.map((entry) {
               final index = entry.key;
@@ -163,26 +179,28 @@ class _GrammarQuizScreenState extends State<GrammarQuizScreen> {
               final isSelected = _selectedOptionIndex == index;
               final isCorrect = q.correctOptionIndex == index;
               
-              Color bg = const Color(0xFF16213E);
-              Color border = const Color(0xFF0F3460);
-              Color text = Colors.white;
+              Color bg = ThemeService.getCardColor(context);
+              Color border = ThemeService.getBorderColor(context);
+              Color text = ThemeService.getPrimaryTextColor(context);
 
               if (_isAnswered) {
                 if (isCorrect) {
-                  bg = Colors.green.withValues(alpha: 0.2);
-                  border = Colors.green;
-                  text = Colors.green;
+                  bg = isDark ? Colors.green.withValues(alpha: 0.2) : const Color(0xFFDCFCE7);
+                  border = Colors.green.shade700;
+                  text = isDark ? Colors.green : Colors.green.shade800;
                 } else if (isSelected) {
-                  bg = Colors.red.withValues(alpha: 0.2);
-                  border = Colors.red;
-                  text = Colors.red;
+                  bg = isDark ? Colors.red.withValues(alpha: 0.2) : const Color(0xFFFEE2E2);
+                  border = Colors.red.shade700;
+                  text = isDark ? Colors.red : Colors.red.shade800;
                 } else {
-                  bg = const Color(0xFF16213E).withValues(alpha: 0.5);
-                  text = Colors.white30;
+                  bg = ThemeService.getCardColor(context).withValues(alpha: 0.5);
+                  text = ThemeService.getMutedTextColor(context);
+                  border = ThemeService.getBorderColor(context).withValues(alpha: 0.3);
                 }
               } else if (isSelected) {
-                bg = const Color(0xFFE94560).withValues(alpha: 0.2);
+                bg = const Color(0xFFE94560).withValues(alpha: 0.15);
                 border = const Color(0xFFE94560);
+                text = const Color(0xFFE94560);
               }
 
               return Padding(
@@ -194,7 +212,10 @@ class _GrammarQuizScreenState extends State<GrammarQuizScreen> {
                     foregroundColor: text,
                     disabledBackgroundColor: bg,
                     disabledForegroundColor: text,
-                    side: BorderSide(color: border, width: isSelected || (_isAnswered && isCorrect) ? 2 : 1),
+                    side: BorderSide(
+                      color: border, 
+                      width: (isSelected || (_isAnswered && (isCorrect || isSelected))) ? 2.2 : 1.5
+                    ),
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     elevation: 0,
@@ -208,27 +229,32 @@ class _GrammarQuizScreenState extends State<GrammarQuizScreen> {
             }),
             // Explanation & Next Button
             if (_isAnswered) ...[
+              const SizedBox(height: 8),
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF0F3460).withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.white10),
+                  color: ThemeService.getAccentColor(context),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: ThemeService.getBorderColor(context), width: 1.5),
                 ),
                 child: Text(
                   q.explanation,
-                  style: const TextStyle(color: Colors.white70, fontSize: 14),
+                  style: TextStyle(color: ThemeService.getSecondaryTextColor(context), fontSize: 14, height: 1.4),
                   textAlign: TextAlign.center,
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: _onNextTap,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFE94560),
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: BorderSide(color: ThemeService.getBorderColor(context), width: 1.5),
+                  ),
+                  elevation: 0,
                 ),
                 child: Text(
                   _currentIndex == _quizQuestions.length - 1 ? 'Xem kết quả' : 'Tiếp theo',
@@ -258,12 +284,12 @@ class _GrammarQuizScreenState extends State<GrammarQuizScreen> {
             const SizedBox(height: 20),
             Text(
               '$percent%',
-              style: const TextStyle(fontSize: 56, fontWeight: FontWeight.bold, color: Colors.white),
+              style: TextStyle(fontSize: 56, fontWeight: FontWeight.bold, color: ThemeService.getPrimaryTextColor(context)),
             ),
             const SizedBox(height: 8),
             Text(
               '$_score đúng / ${_quizQuestions.length - _score} sai',
-              style: const TextStyle(fontSize: 18, color: Colors.white70),
+              style: TextStyle(fontSize: 18, color: ThemeService.getSecondaryTextColor(context)),
             ),
             const SizedBox(height: 32),
             ElevatedButton(
@@ -272,14 +298,18 @@ class _GrammarQuizScreenState extends State<GrammarQuizScreen> {
                 backgroundColor: const Color(0xFFE94560),
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 32),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  side: BorderSide(color: ThemeService.getBorderColor(context), width: 1.5),
+                ),
+                elevation: 0,
               ),
               child: const Text('Làm lại', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             ),
             const SizedBox(height: 12),
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Về trang chính', style: TextStyle(color: Colors.white54)),
+              child: Text('Về trang chính', style: TextStyle(color: ThemeService.getMutedTextColor(context))),
             ),
           ],
         ),

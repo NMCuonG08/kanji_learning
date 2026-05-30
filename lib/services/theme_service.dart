@@ -23,7 +23,7 @@ class ThemeService {
 
   // Color Helpers
   static Color getBgColor(BuildContext context) {
-    return isDarkMode.value ? const Color(0xFF1A1A2E) : const Color(0xFFF1F5F9);
+    return isDarkMode.value ? const Color(0xFF1A1A2E) : const Color(0xFFFAFAFA);
   }
 
   static Color getCardColor(BuildContext context) {
@@ -31,23 +31,23 @@ class ThemeService {
   }
 
   static Color getAccentColor(BuildContext context) {
-    return isDarkMode.value ? const Color(0xFF0F3460) : const Color(0xFFE2E8F0);
+    return isDarkMode.value ? const Color(0xFF0F3460) : const Color(0xFFF1F5F9);
   }
 
   static Color getBorderColor(BuildContext context) {
-    return isDarkMode.value ? const Color(0xFF0F3460) : const Color(0xFFCBD5E1);
+    return isDarkMode.value ? const Color(0xFF0F3460) : Colors.black;
   }
 
   static Color getPrimaryTextColor(BuildContext context) {
-    return isDarkMode.value ? Colors.white : const Color(0xFF0F172A);
+    return isDarkMode.value ? Colors.white : Colors.black;
   }
 
   static Color getSecondaryTextColor(BuildContext context) {
-    return isDarkMode.value ? Colors.white70 : const Color(0xFF475569);
+    return isDarkMode.value ? Colors.white70 : const Color(0xFF1E293B);
   }
 
   static Color getMutedTextColor(BuildContext context) {
-    return isDarkMode.value ? Colors.white38 : const Color(0xFF94A3B8);
+    return isDarkMode.value ? Colors.white38 : const Color(0xFF475569);
   }
 
   static Color getHighlightColor(BuildContext context) {
@@ -55,6 +55,6 @@ class ThemeService {
   }
 
   static Color getShadowColor(BuildContext context) {
-    return isDarkMode.value ? Colors.black45 : Colors.black.withValues(alpha: 0.06);
+    return isDarkMode.value ? Colors.black45 : Colors.black.withValues(alpha: 0.08);
   }
 }

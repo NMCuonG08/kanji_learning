@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import '../models/kanji.dart';
 import '../services/tts_service.dart';
+import '../services/theme_service.dart';
 
 class MatchGameScreen extends StatefulWidget {
   final List<Kanji> pool;
@@ -111,7 +112,7 @@ class _MatchGameScreenState extends State<MatchGameScreen> {
         }
       },
       child: Scaffold(
-        backgroundColor: const Color(0xFF1A1A2E),
+        backgroundColor: ThemeService.getBgColor(context),
         appBar: AppBar(
           title: Text(
             _gameMode == 'meaning'
@@ -121,8 +122,8 @@ class _MatchGameScreenState extends State<MatchGameScreen> {
                     : 'Game Nối Kanji',
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
-          backgroundColor: const Color(0xFF16213E),
-          foregroundColor: Colors.white,
+          backgroundColor: ThemeService.getCardColor(context),
+          foregroundColor: ThemeService.getPrimaryTextColor(context),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () {
@@ -132,6 +133,9 @@ class _MatchGameScreenState extends State<MatchGameScreen> {
                 Navigator.pop(context);
               }
             },
+          ),
+          shape: Border(
+            bottom: BorderSide(color: ThemeService.getBorderColor(context), width: 1.5),
           ),
         ),
         body: _gameMode == null
@@ -153,7 +157,7 @@ class _MatchGameScreenState extends State<MatchGameScreen> {
               decoration: BoxDecoration(
                 color: const Color(0xFFE94560).withValues(alpha: 0.1),
                 shape: BoxShape.circle,
-                border: Border.all(color: const Color(0xFFE94560).withValues(alpha: 0.3), width: 2),
+                border: Border.all(color: ThemeService.getBorderColor(context), width: 2),
               ),
               child: const Icon(
                 Icons.extension,
@@ -162,15 +166,15 @@ class _MatchGameScreenState extends State<MatchGameScreen> {
               ),
             ),
             const SizedBox(height: 24),
-            const Text(
+            Text(
               'Game Nối Từ Kanji',
-              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white, letterSpacing: 0.5),
+              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: ThemeService.getPrimaryTextColor(context), letterSpacing: 0.5),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'Chọn chế độ chơi ôn tập để bắt đầu thử thách ghép cặp',
-              style: TextStyle(fontSize: 14, color: Colors.white60),
+              style: TextStyle(fontSize: 14, color: ThemeService.getSecondaryTextColor(context)),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 40),
@@ -190,7 +194,7 @@ class _MatchGameScreenState extends State<MatchGameScreen> {
                 });
               },
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
             _buildModeCard(
               title: 'Kanji ↔ Cách đọc',
               subtitle: 'Ghép nối chữ Kanji với phát âm Onyomi (Katakana) và Kunyomi (Hiragana).',
@@ -210,9 +214,9 @@ class _MatchGameScreenState extends State<MatchGameScreen> {
             const SizedBox(height: 40),
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text(
+              child: Text(
                 'Quay lại trang chính',
-                style: TextStyle(color: Colors.white54, fontSize: 15, decoration: TextDecoration.underline),
+                style: TextStyle(color: ThemeService.getMutedTextColor(context), fontSize: 15, decoration: TextDecoration.underline),
               ),
             ),
           ],
@@ -235,11 +239,12 @@ class _MatchGameScreenState extends State<MatchGameScreen> {
         decoration: BoxDecoration(
           gradient: gradient,
           borderRadius: BorderRadius.circular(16),
-          boxShadow: const [
+          border: Border.all(color: ThemeService.getBorderColor(context), width: 2.0),
+          boxShadow: [
             BoxShadow(
-              color: Colors.black26,
-              blurRadius: 10,
-              offset: Offset(0, 4),
+              color: ThemeService.getBorderColor(context),
+              offset: const Offset(4, 4),
+              blurRadius: 0,
             ),
           ],
         ),
@@ -285,6 +290,7 @@ class _MatchGameScreenState extends State<MatchGameScreen> {
   }
 
   Widget _buildGame() {
+    final isDark = ThemeService.isDarkMode.value;
     return Padding(
       padding: const EdgeInsets.all(12),
       child: Column(
@@ -300,46 +306,48 @@ class _MatchGameScreenState extends State<MatchGameScreen> {
               Row(children: [
                 const Icon(Icons.cancel, color: Colors.red, size: 18),
                 const SizedBox(width: 4),
-                Text('$_wrongCount', style: TextStyle(color: _wrongCount > 0 ? Colors.red : Colors.white38, fontSize: 16)),
+                Text('$_wrongCount', style: TextStyle(color: _wrongCount > 0 ? Colors.red : ThemeService.getMutedTextColor(context), fontSize: 16, fontWeight: FontWeight.bold)),
               ]),
             ],
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           LinearProgressIndicator(
             value: _matchedCount / _batch.length,
-            backgroundColor: Colors.white12,
+            backgroundColor: isDark ? Colors.white12 : Colors.black12,
             color: const Color(0xFFE94560),
+            minHeight: 6,
+            borderRadius: BorderRadius.circular(4),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           Text(
             _gameMode == 'meaning'
                 ? 'Chọn 1 chữ bên trái → 1 nghĩa tiếng Việt bên phải'
                 : 'Chọn 1 chữ bên trái → 1 cách đọc bên phải',
-            style: const TextStyle(color: Colors.white54, fontSize: 12),
+            style: TextStyle(color: ThemeService.getSecondaryTextColor(context), fontSize: 13, fontWeight: FontWeight.w600),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           Expanded(
             child: LayoutBuilder(
               builder: (context, constraints) {
                 final availableHeight = constraints.maxHeight;
-                final itemHeight = (availableHeight - (_batch.length - 1) * 5) / _batch.length;
+                final itemHeight = (availableHeight - (_batch.length - 1) * 6) / _batch.length;
                 return Row(
                   children: [
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: List.generate(_batch.length, (i) => Padding(
-                          padding: EdgeInsets.only(bottom: i < _batch.length - 1 ? 5 : 0),
+                          padding: EdgeInsets.only(bottom: i < _batch.length - 1 ? 6 : 0),
                           child: SizedBox(height: itemHeight, child: _buildKanjiItem(i)),
                         )),
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: List.generate(_shuffledMeanings.length, (i) => Padding(
-                          padding: EdgeInsets.only(bottom: i < _shuffledMeanings.length - 1 ? 5 : 0),
+                          padding: EdgeInsets.only(bottom: i < _shuffledMeanings.length - 1 ? 6 : 0),
                           child: SizedBox(height: itemHeight, child: _buildMeaningItem(i)),
                         )),
                       ),
@@ -358,36 +366,43 @@ class _MatchGameScreenState extends State<MatchGameScreen> {
     final matched = _matchedKanji.contains(i);
     final selected = _selectedKanjiIndex == i;
     final isWrong = _showWrong && _wrongKanjiIndex == i;
-    Color bg, border;
+    final isDark = ThemeService.isDarkMode.value;
+    Color bg, border, textColor;
+
     if (matched) {
-      bg = Colors.green.withValues(alpha: 0.15);
-      border = Colors.green;
+      bg = isDark ? Colors.green.withValues(alpha: 0.15) : const Color(0xFFDCFCE7);
+      border = Colors.green.shade700;
+      textColor = isDark ? Colors.green : Colors.green.shade800;
     } else if (isWrong) {
-      bg = Colors.red.withValues(alpha: 0.25);
-      border = Colors.red;
+      bg = isDark ? Colors.red.withValues(alpha: 0.25) : const Color(0xFFFEE2E2);
+      border = Colors.red.shade700;
+      textColor = isDark ? Colors.red : Colors.red.shade800;
     } else if (selected) {
-      bg = const Color(0xFFE94560).withValues(alpha: 0.25);
+      bg = const Color(0xFFE94560).withValues(alpha: 0.15);
       border = const Color(0xFFE94560);
+      textColor = const Color(0xFFE94560);
     } else {
-      bg = const Color(0xFF16213E);
-      border = const Color(0xFF0F3460);
+      bg = ThemeService.getCardColor(context);
+      border = ThemeService.getBorderColor(context);
+      textColor = ThemeService.getPrimaryTextColor(context);
     }
+
     return GestureDetector(
       onTap: matched ? null : () => _onKanjiTap(i),
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(vertical: 4),
         decoration: BoxDecoration(
           color: bg,
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: border, width: matched || selected || isWrong ? 2.5 : 1),
+          border: Border.all(color: border, width: matched || selected || isWrong ? 2.5 : 1.5),
         ),
         child: Center(
           child: Text(
             _batch[i].character,
             style: TextStyle(
               fontSize: 28, fontWeight: FontWeight.bold,
-              color: matched ? Colors.green : isWrong ? Colors.red : Colors.white,
+              color: textColor,
             ),
           ),
         ),
@@ -399,19 +414,25 @@ class _MatchGameScreenState extends State<MatchGameScreen> {
     final matched = _matchedMeaning.contains(i);
     final selected = _selectedMeaningIndex == i;
     final isWrong = _showWrong && _wrongMeaningIndex == i;
-    Color bg, border;
+    final isDark = ThemeService.isDarkMode.value;
+    Color bg, border, textColor;
+
     if (matched) {
-      bg = Colors.green.withValues(alpha: 0.15);
-      border = Colors.green;
+      bg = isDark ? Colors.green.withValues(alpha: 0.15) : const Color(0xFFDCFCE7);
+      border = Colors.green.shade700;
+      textColor = isDark ? Colors.green : Colors.green.shade800;
     } else if (isWrong) {
-      bg = Colors.red.withValues(alpha: 0.25);
-      border = Colors.red;
+      bg = isDark ? Colors.red.withValues(alpha: 0.25) : const Color(0xFFFEE2E2);
+      border = Colors.red.shade700;
+      textColor = isDark ? Colors.red : Colors.red.shade800;
     } else if (selected) {
-      bg = const Color(0xFF0F3460).withValues(alpha: 0.5);
-      border = const Color(0xFFE94560);
+      bg = isDark ? const Color(0xFF0F3460).withValues(alpha: 0.5) : const Color(0xFFEFF6FF);
+      border = isDark ? const Color(0xFFE94560) : Colors.blue.shade700;
+      textColor = isDark ? Colors.white : Colors.blue.shade800;
     } else {
-      bg = const Color(0xFF16213E);
-      border = const Color(0xFF0F3460);
+      bg = ThemeService.getCardColor(context);
+      border = ThemeService.getBorderColor(context);
+      textColor = ThemeService.getPrimaryTextColor(context);
     }
 
     String displayText = '';
@@ -431,12 +452,12 @@ class _MatchGameScreenState extends State<MatchGameScreen> {
     return GestureDetector(
       onTap: matched ? null : () => _onMeaningTap(i),
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 6),
         decoration: BoxDecoration(
           color: bg,
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: border, width: matched || selected || isWrong ? 2.5 : 1),
+          border: Border.all(color: border, width: matched || selected || isWrong ? 2.5 : 1.5),
         ),
         child: Center(
           child: Text(
@@ -444,7 +465,7 @@ class _MatchGameScreenState extends State<MatchGameScreen> {
             style: TextStyle(
               fontSize: _gameMode == 'reading' ? 11 : 15,
               fontWeight: FontWeight.w600,
-              color: matched ? Colors.green : isWrong ? Colors.red : Colors.white,
+              color: textColor,
               height: 1.2,
             ),
             textAlign: TextAlign.center,
@@ -463,14 +484,23 @@ class _MatchGameScreenState extends State<MatchGameScreen> {
         children: [
           Icon(percent >= 80 ? Icons.emoji_events : Icons.thumb_up, size: 80, color: percent >= 80 ? Colors.amber : Colors.blue),
           const SizedBox(height: 20),
-          Text('$percent%', style: const TextStyle(fontSize: 56, fontWeight: FontWeight.bold, color: Colors.white)),
+          Text('$percent%', style: TextStyle(fontSize: 56, fontWeight: FontWeight.bold, color: ThemeService.getPrimaryTextColor(context))),
           const SizedBox(height: 8),
-          Text('$_matchedCount đúng / $_wrongCount sai', style: const TextStyle(fontSize: 18, color: Colors.white70)),
+          Text('$_matchedCount đúng / $_wrongCount sai', style: TextStyle(fontSize: 18, color: ThemeService.getSecondaryTextColor(context))),
           const SizedBox(height: 32),
           ElevatedButton(
             onPressed: () => setState(() => _startGame()),
-            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFE94560), foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 32), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-            child: const Text('Chơi lại', style: TextStyle(fontSize: 16)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFE94560), 
+              foregroundColor: Colors.white, 
+              padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 32), 
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: BorderSide(color: ThemeService.getBorderColor(context), width: 1.5),
+              ),
+              elevation: 0,
+            ),
+            child: const Text('Chơi lại', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           ),
           const SizedBox(height: 12),
           ElevatedButton(
@@ -478,18 +508,22 @@ class _MatchGameScreenState extends State<MatchGameScreen> {
               _gameMode = null;
             }),
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF0F3460),
-              foregroundColor: Colors.white,
+              backgroundColor: ThemeService.getCardColor(context),
+              foregroundColor: ThemeService.getPrimaryTextColor(context),
               padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 32),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
-                side: const BorderSide(color: Color(0xFFE94560), width: 1),
+                side: BorderSide(color: ThemeService.getBorderColor(context), width: 1.5),
               ),
+              elevation: 0,
             ),
-            child: const Text('Đổi chế độ', style: TextStyle(fontSize: 16)),
+            child: const Text('Đổi chế độ', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           ),
           const SizedBox(height: 16),
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Về trang chính', style: TextStyle(color: Colors.white54))),
+          TextButton(
+            onPressed: () => Navigator.pop(context), 
+            child: Text('Về trang chính', style: TextStyle(color: ThemeService.getMutedTextColor(context))),
+          ),
         ],
       ),
     );

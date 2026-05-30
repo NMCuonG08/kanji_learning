@@ -3,6 +3,7 @@ import '../data/listening_data.dart';
 import '../models/listening_question.dart';
 import '../database/db.dart';
 import 'listening_quiz_screen.dart';
+import '../services/theme_service.dart';
 
 class ListeningScreen extends StatefulWidget {
   const ListeningScreen({super.key});
@@ -75,7 +76,7 @@ class _ListeningScreenState extends State<ListeningScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1A2E),
+      backgroundColor: ThemeService.getBgColor(context),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator(color: Color(0xFFE94560)))
           : RefreshIndicator(
@@ -87,7 +88,7 @@ class _ListeningScreenState extends State<ListeningScreen> {
                   _buildIntroCard(),
                   const SizedBox(height: 16),
                   _buildFilterBar(),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 16),
                   _buildQuestionsList(),
                 ],
               ),
@@ -96,34 +97,38 @@ class _ListeningScreenState extends State<ListeningScreen> {
   }
 
   Widget _buildIntroCard() {
+    final isDark = ThemeService.isDarkMode.value;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF0F3460), Color(0xFF16213E)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        color: ThemeService.getCardColor(context),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFE94560).withValues(alpha: 0.3), width: 1.5),
+        border: Border.all(color: ThemeService.getBorderColor(context), width: 2.0),
+        boxShadow: [
+          BoxShadow(
+            color: ThemeService.getBorderColor(context),
+            offset: const Offset(4, 4),
+            blurRadius: 0,
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(Icons.headphones, color: Color(0xFFE94560), size: 24),
-              SizedBox(width: 8),
+              const Icon(Icons.headphones, color: Color(0xFFE94560), size: 24),
+              const SizedBox(width: 8),
               Text(
                 'Luyện Nghe JLPT N5',
-                style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                style: TextStyle(color: ThemeService.getPrimaryTextColor(context), fontSize: 20, fontWeight: FontWeight.bold),
               ),
             ],
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Phần thi nghe (聴解) gồm 4 dạng bài chính. Hãy bấm nút play bên trái để bắt đầu luyện nghe và trả lời trắc nghiệm nhé. Dữ liệu sẽ tự động lưu lại.',
-            style: TextStyle(color: Colors.white70, fontSize: 13, height: 1.4),
+            style: TextStyle(color: ThemeService.getSecondaryTextColor(context), fontSize: 13, height: 1.4),
           ),
           const SizedBox(height: 12),
           // Progress bar
@@ -132,7 +137,7 @@ class _ListeningScreenState extends State<ListeningScreen> {
             children: [
               Text(
                 'Tiến độ: ${_completedIds.length} / ${listeningQuestions.length} bài',
-                style: const TextStyle(color: Colors.white70, fontSize: 12),
+                style: TextStyle(color: ThemeService.getSecondaryTextColor(context), fontSize: 12, fontWeight: FontWeight.w600),
               ),
               Text(
                 '${(listeningQuestions.isEmpty ? 0 : (_completedIds.length / listeningQuestions.length * 100).toInt())}%',
@@ -145,7 +150,7 @@ class _ListeningScreenState extends State<ListeningScreen> {
             borderRadius: BorderRadius.circular(4),
             child: LinearProgressIndicator(
               value: listeningQuestions.isEmpty ? 0 : _completedIds.length / listeningQuestions.length,
-              backgroundColor: Colors.white12,
+              backgroundColor: isDark ? Colors.white12 : Colors.black12,
               color: const Color(0xFFE94560),
               minHeight: 6,
             ),
@@ -166,7 +171,7 @@ class _ListeningScreenState extends State<ListeningScreen> {
     ];
 
     return SizedBox(
-      height: 36,
+      height: 38,
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: filters.map((f) {
@@ -177,7 +182,7 @@ class _ListeningScreenState extends State<ListeningScreen> {
               label: Text(
                 f['label']!,
                 style: TextStyle(
-                  color: isSelected ? Colors.white : Colors.white70,
+                  color: isSelected ? Colors.white : ThemeService.getPrimaryTextColor(context),
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
                 ),
@@ -189,8 +194,8 @@ class _ListeningScreenState extends State<ListeningScreen> {
                 });
               },
               selectedColor: const Color(0xFFE94560),
-              backgroundColor: const Color(0xFF16213E),
-              side: BorderSide(color: isSelected ? const Color(0xFFE94560) : const Color(0xFF0F3460)),
+              backgroundColor: ThemeService.getCardColor(context),
+              side: BorderSide(color: isSelected ? const Color(0xFFE94560) : ThemeService.getBorderColor(context), width: 1.5),
               visualDensity: VisualDensity.compact,
               padding: const EdgeInsets.symmetric(horizontal: 4),
             ),
@@ -203,12 +208,12 @@ class _ListeningScreenState extends State<ListeningScreen> {
   Widget _buildQuestionsList() {
     final list = _filteredQuestions;
     if (list.isEmpty) {
-      return const Padding(
-        padding: EdgeInsets.symmetric(vertical: 40),
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 40),
         child: Center(
           child: Text(
             'Không tìm thấy bài nghe nào phù hợp.',
-            style: TextStyle(color: Colors.white54, fontSize: 14),
+            style: TextStyle(color: ThemeService.getMutedTextColor(context), fontSize: 14),
           ),
         ),
       );
@@ -223,11 +228,12 @@ class _ListeningScreenState extends State<ListeningScreen> {
         final isCompleted = _completedIds.contains(q.id);
 
         return Card(
-          color: const Color(0xFF16213E),
-          margin: const EdgeInsets.only(bottom: 10),
+          color: ThemeService.getCardColor(context),
+          margin: const EdgeInsets.only(bottom: 12),
+          elevation: 0,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
-            side: BorderSide(color: const Color(0xFF0F3460).withValues(alpha: 0.5)),
+            side: BorderSide(color: ThemeService.getBorderColor(context), width: 1.5),
           ),
           child: InkWell(
             onTap: () async {
@@ -254,10 +260,10 @@ class _ListeningScreenState extends State<ListeningScreen> {
                     decoration: BoxDecoration(
                       color: isCompleted
                           ? Colors.green.withValues(alpha: 0.15)
-                          : const Color(0xFF1A1A2E),
+                          : ThemeService.getAccentColor(context),
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: isCompleted ? Colors.green : const Color(0xFF0F3460),
+                        color: isCompleted ? Colors.green : ThemeService.getBorderColor(context),
                         width: 1.5,
                       ),
                     ),
@@ -278,7 +284,7 @@ class _ListeningScreenState extends State<ListeningScreen> {
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                               decoration: BoxDecoration(
                                 color: _getTaskTypeColor(q.taskType).withValues(alpha: 0.15),
-                                border: Border.all(color: _getTaskTypeColor(q.taskType)),
+                                border: Border.all(color: _getTaskTypeColor(q.taskType), width: 1.2),
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(
@@ -298,8 +304,8 @@ class _ListeningScreenState extends State<ListeningScreen> {
                         const SizedBox(height: 6),
                         Text(
                           q.situationVi,
-                          style: const TextStyle(
-                            color: Colors.white,
+                          style: TextStyle(
+                            color: ThemeService.getPrimaryTextColor(context),
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
                           ),
@@ -310,7 +316,7 @@ class _ListeningScreenState extends State<ListeningScreen> {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  const Icon(Icons.chevron_right, color: Colors.white30),
+                  Icon(Icons.chevron_right, color: ThemeService.getMutedTextColor(context)),
                 ],
               ),
             ),

@@ -5,6 +5,7 @@ import '../models/vocab.dart';
 import '../services/tts_service.dart';
 import '../database/db.dart';
 import 'vocab_match_game_screen.dart';
+import '../services/theme_service.dart';
 
 class TopicMeta {
   final String key;
@@ -184,9 +185,9 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           child: Container(
             decoration: BoxDecoration(
-              color: const Color(0xFF16213E),
+              color: ThemeService.getCardColor(context),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: const Color(0xFF0F3460)),
+              border: Border.all(color: ThemeService.getBorderColor(context), width: 1.5),
             ),
             child: Row(
               children: [
@@ -198,12 +199,13 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
                       decoration: BoxDecoration(
                         color: _isTopicMode ? const Color(0xFFE94560) : Colors.transparent,
                         borderRadius: BorderRadius.circular(10),
+                        border: _isTopicMode ? Border.all(color: ThemeService.getBorderColor(context), width: 1.2) : null,
                       ),
                       alignment: Alignment.center,
                       child: Text(
                         'Học theo chủ đề',
                         style: TextStyle(
-                          color: _isTopicMode ? Colors.white : Colors.white54,
+                          color: _isTopicMode ? Colors.white : ThemeService.getSecondaryTextColor(context),
                           fontWeight: FontWeight.bold,
                           fontSize: 13,
                         ),
@@ -219,12 +221,13 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
                       decoration: BoxDecoration(
                         color: !_isTopicMode ? const Color(0xFFE94560) : Colors.transparent,
                         borderRadius: BorderRadius.circular(10),
+                        border: !_isTopicMode ? Border.all(color: ThemeService.getBorderColor(context), width: 1.2) : null,
                       ),
                       alignment: Alignment.center,
                       child: Text(
                         'Tất cả từ vựng',
                         style: TextStyle(
-                          color: !_isTopicMode ? Colors.white : Colors.white54,
+                          color: !_isTopicMode ? Colors.white : ThemeService.getSecondaryTextColor(context),
                           fontWeight: FontWeight.bold,
                           fontSize: 13,
                         ),
@@ -269,6 +272,7 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                side: BorderSide(color: ThemeService.getBorderColor(context), width: 1.5),
               ),
             ),
           ),
@@ -308,6 +312,19 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
   }
 
   Widget _buildTopicCard(TopicMeta topic, int total, int mastered, double percent) {
+    final isDark = ThemeService.isDarkMode.value;
+    final gradientColors = isDark 
+        ? topic.gradient 
+        : [
+            Color.lerp(topic.gradient[0], Colors.white, 0.7) ?? topic.gradient[0],
+            Color.lerp(topic.gradient[1], Colors.white, 0.8) ?? topic.gradient[1],
+          ];
+
+    final primaryColor = isDark ? Colors.white : Colors.black;
+    final secondaryColor = isDark ? Colors.white70 : const Color(0xFF1E293B);
+    final indicatorBg = isDark ? Colors.white24 : Colors.black12;
+    final indicatorColor = isDark ? Colors.white : Colors.black;
+
     return GestureDetector(
       onTap: () async {
         await Navigator.push(
@@ -324,19 +341,24 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
       child: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: topic.gradient,
+            colors: gradientColors,
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: topic.gradient.first.withValues(alpha: 0.3),
-              blurRadius: 6,
-              offset: const Offset(0, 3),
+              color: isDark 
+                  ? topic.gradient.first.withValues(alpha: 0.3)
+                  : Colors.black.withValues(alpha: 0.1),
+              blurRadius: isDark ? 6 : 0,
+              offset: isDark ? const Offset(0, 3) : const Offset(4, 4),
             )
           ],
-          border: Border.all(color: Colors.white10),
+          border: Border.all(
+            color: ThemeService.getBorderColor(context), 
+            width: 1.5,
+          ),
         ),
         padding: const EdgeInsets.all(12),
         child: Column(
@@ -346,11 +368,11 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Icon(topic.icon, color: Colors.white, size: 26),
+                Icon(topic.icon, color: primaryColor, size: 26),
                 Text(
                   topic.titleJp,
-                  style: const TextStyle(
-                    color: Colors.white70,
+                  style: TextStyle(
+                    color: secondaryColor,
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
                   ),
@@ -360,8 +382,8 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
             const SizedBox(height: 4),
             Text(
               topic.titleVi,
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: primaryColor,
                 fontSize: 15,
                 fontWeight: FontWeight.bold,
               ),
@@ -377,11 +399,11 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
                   children: [
                     Text(
                       '$mastered / $total từ',
-                      style: const TextStyle(color: Colors.white70, fontSize: 10),
+                      style: TextStyle(color: secondaryColor, fontSize: 10),
                     ),
                     Text(
                       '${(percent * 100).toInt()}%',
-                      style: const TextStyle(color: Colors.white70, fontSize: 10, fontWeight: FontWeight.bold),
+                      style: TextStyle(color: secondaryColor, fontSize: 10, fontWeight: FontWeight.bold),
                     ),
                   ],
                 ),
@@ -391,8 +413,8 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
                   child: LinearProgressIndicator(
                     value: percent,
                     minHeight: 5,
-                    backgroundColor: Colors.white24,
-                    color: Colors.white,
+                    backgroundColor: indicatorBg,
+                    color: indicatorColor,
                   ),
                 ),
               ],
@@ -412,14 +434,25 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
           child: TextField(
             controller: _searchController,
             onChanged: (v) => setState(() => _searchQuery = v),
-            style: const TextStyle(color: Colors.white),
+            style: TextStyle(color: ThemeService.getPrimaryTextColor(context)),
             decoration: InputDecoration(
               hintText: 'Tìm từ vựng...',
-              hintStyle: const TextStyle(color: Colors.white38),
-              prefixIcon: const Icon(Icons.search, color: Colors.white54),
+              hintStyle: TextStyle(color: ThemeService.getMutedTextColor(context)),
+              prefixIcon: Icon(Icons.search, color: ThemeService.getSecondaryTextColor(context)),
               filled: true,
-              fillColor: const Color(0xFF16213E),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+              fillColor: ThemeService.getCardColor(context),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: ThemeService.getBorderColor(context), width: 1.5),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: ThemeService.getBorderColor(context), width: 1.5),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: ThemeService.getHighlightColor(context), width: 2.0),
+              ),
               contentPadding: const EdgeInsets.symmetric(vertical: 8),
             ),
           ),
@@ -429,13 +462,13 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('${filtered.length} từ', style: const TextStyle(color: Colors.white54, fontSize: 13)),
+              Text('${filtered.length} từ', style: TextStyle(color: ThemeService.getSecondaryTextColor(context), fontSize: 13, fontWeight: FontWeight.bold)),
             ],
           ),
         ),
         Expanded(
           child: filtered.isEmpty
-              ? const Center(child: Text('Không tìm thấy', style: TextStyle(color: Colors.white38)))
+              ? Center(child: Text('Không tìm thấy', style: TextStyle(color: ThemeService.getMutedTextColor(context))))
               : ListView.builder(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   itemCount: filtered.length,
@@ -453,13 +486,14 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
 
   Widget _buildVocabCardRow(VocabWord v, bool isMastered) {
     return Card(
-      color: const Color(0xFF16213E),
-      margin: const EdgeInsets.only(bottom: 6),
+      color: ThemeService.getCardColor(context),
+      margin: const EdgeInsets.only(bottom: 8),
+      elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
         side: BorderSide(
-          color: isMastered ? Colors.green.withValues(alpha: 0.5) : const Color(0xFF0F3460).withValues(alpha: 0.5),
-          width: isMastered ? 1.5 : 1,
+          color: isMastered ? Colors.green.shade700 : ThemeService.getBorderColor(context),
+          width: isMastered ? 2.0 : 1.5,
         ),
       ),
       child: Padding(
@@ -468,7 +502,7 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
           children: [
             IconButton(
               onPressed: () => TtsService.speak(v.reading),
-              icon: const Icon(Icons.volume_up, color: Colors.white54, size: 20),
+              icon: Icon(Icons.volume_up, color: ThemeService.getSecondaryTextColor(context), size: 20),
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
             ),
@@ -481,12 +515,16 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
                     crossAxisAlignment: CrossAxisAlignment.baseline,
                     textBaseline: TextBaseline.alphabetic,
                     children: [
-                      Text(v.word, style: const TextStyle(fontSize: 19, fontWeight: FontWeight.bold, color: Colors.white)),
+                      Text(v.word, style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold, color: ThemeService.getPrimaryTextColor(context))),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           v.reading,
-                          style: const TextStyle(fontSize: 13, color: Color(0xFF0F9D58), fontWeight: FontWeight.w500),
+                          style: TextStyle(
+                            fontSize: 13, 
+                            color: ThemeService.isDarkMode.value ? const Color(0xFF4ADE80) : const Color(0xFF16A34A), 
+                            fontWeight: FontWeight.bold,
+                          ),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
@@ -494,7 +532,7 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
                   ),
                   const SizedBox(height: 2),
                   Text(v.meaningVi, style: const TextStyle(fontSize: 14, color: Color(0xFFE94560), fontWeight: FontWeight.bold)),
-                  Text(v.partOfSpeech, style: const TextStyle(fontSize: 11, color: Colors.white38)),
+                  Text(v.partOfSpeech, style: TextStyle(fontSize: 11, color: ThemeService.getMutedTextColor(context))),
                 ],
               ),
             ),
@@ -503,7 +541,7 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
               onPressed: () => _toggleProgress(v.id),
               icon: Icon(
                 isMastered ? Icons.check_circle : Icons.check_circle_outline,
-                color: isMastered ? Colors.green : Colors.white24,
+                color: isMastered ? Colors.green : ThemeService.isDarkMode.value ? Colors.white24 : Colors.black26,
                 size: 24,
               ),
               padding: EdgeInsets.zero,
@@ -589,12 +627,15 @@ class _VocabTopicDetailScreenState extends State<VocabTopicDetailScreen> {
     final percent = totalInTopic > 0 ? (masteredInTopic / totalInTopic) : 0.0;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1A2E),
+      backgroundColor: ThemeService.getBgColor(context),
       appBar: AppBar(
         title: Text(widget.topic.titleVi, style: const TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: widget.topic.gradient.first,
         foregroundColor: Colors.white,
         elevation: 0,
+        shape: Border(
+          bottom: BorderSide(color: ThemeService.getBorderColor(context), width: 1.5),
+        ),
       ),
       body: Column(
         children: [
@@ -603,13 +644,23 @@ class _VocabTopicDetailScreenState extends State<VocabTopicDetailScreen> {
             width: double.infinity,
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: widget.topic.gradient,
+                colors: ThemeService.isDarkMode.value 
+                    ? widget.topic.gradient 
+                    : [
+                        Color.lerp(widget.topic.gradient[0], Colors.white, 0.7) ?? widget.topic.gradient[0],
+                        Color.lerp(widget.topic.gradient[1], Colors.white, 0.8) ?? widget.topic.gradient[1],
+                      ],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
               ),
               borderRadius: const BorderRadius.only(
                 bottomLeft: Radius.circular(20),
                 bottomRight: Radius.circular(20),
+              ),
+              border: Border(
+                bottom: BorderSide(color: ThemeService.getBorderColor(context), width: 2.0),
+                left: BorderSide(color: ThemeService.getBorderColor(context), width: 2.0),
+                right: BorderSide(color: ThemeService.getBorderColor(context), width: 2.0),
               ),
             ),
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 20),
@@ -618,11 +669,15 @@ class _VocabTopicDetailScreenState extends State<VocabTopicDetailScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(widget.topic.icon, color: Colors.white, size: 34),
+                    Icon(widget.topic.icon, color: ThemeService.isDarkMode.value ? Colors.white : Colors.black, size: 34),
                     const SizedBox(width: 10),
                     Text(
                       widget.topic.titleJp,
-                      style: const TextStyle(color: Colors.white70, fontSize: 17, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        color: ThemeService.isDarkMode.value ? Colors.white70 : const Color(0xFF1E293B), 
+                        fontSize: 17, 
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ],
                 ),
@@ -632,11 +687,19 @@ class _VocabTopicDetailScreenState extends State<VocabTopicDetailScreen> {
                   children: [
                     Text(
                       'Đã thuộc: $masteredInTopic / $totalInTopic từ',
-                      style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w500),
+                      style: TextStyle(
+                        color: ThemeService.isDarkMode.value ? Colors.white : Colors.black, 
+                        fontSize: 13, 
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                     Text(
                       'Tiến độ: ${(percent * 100).toInt()}%',
-                      style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        color: ThemeService.isDarkMode.value ? Colors.white : Colors.black, 
+                        fontSize: 13, 
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ],
                 ),
@@ -646,8 +709,8 @@ class _VocabTopicDetailScreenState extends State<VocabTopicDetailScreen> {
                   child: LinearProgressIndicator(
                     value: percent,
                     minHeight: 6,
-                    backgroundColor: Colors.white24,
-                    color: Colors.white,
+                    backgroundColor: ThemeService.isDarkMode.value ? Colors.white24 : Colors.black12,
+                    color: ThemeService.isDarkMode.value ? Colors.white : Colors.black,
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -698,11 +761,12 @@ class _VocabTopicDetailScreenState extends State<VocabTopicDetailScreen> {
                   icon: const Icon(Icons.style),
                   label: const Text('Luyện Flashcard (Bộ 15 từ)', style: TextStyle(fontWeight: FontWeight.bold)),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: widget.topic.gradient.first,
+                    backgroundColor: ThemeService.getCardColor(context),
+                    foregroundColor: ThemeService.getPrimaryTextColor(context),
                     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    elevation: 4,
+                    side: BorderSide(color: ThemeService.getBorderColor(context), width: 1.5),
+                    elevation: 0,
                   ),
                 ),
               ],
@@ -718,14 +782,25 @@ class _VocabTopicDetailScreenState extends State<VocabTopicDetailScreen> {
                   child: TextField(
                     controller: _searchController,
                     onChanged: (v) => setState(() => _searchQuery = v),
-                    style: const TextStyle(color: Colors.white),
+                    style: TextStyle(color: ThemeService.getPrimaryTextColor(context)),
                     decoration: InputDecoration(
                       hintText: 'Tìm trong chủ đề...',
-                      hintStyle: const TextStyle(color: Colors.white38),
-                      prefixIcon: const Icon(Icons.search, color: Colors.white54),
+                      hintStyle: TextStyle(color: ThemeService.getMutedTextColor(context)),
+                      prefixIcon: Icon(Icons.search, color: ThemeService.getSecondaryTextColor(context)),
                       filled: true,
-                      fillColor: const Color(0xFF16213E),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                      fillColor: ThemeService.getCardColor(context),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: ThemeService.getBorderColor(context), width: 1.5),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: ThemeService.getBorderColor(context), width: 1.5),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: ThemeService.getHighlightColor(context), width: 2.0),
+                      ),
                       contentPadding: const EdgeInsets.symmetric(vertical: 8),
                     ),
                   ),
@@ -734,13 +809,17 @@ class _VocabTopicDetailScreenState extends State<VocabTopicDetailScreen> {
                 ChoiceChip(
                   label: Text(
                     _showOnlyUnlearned ? 'Chưa thuộc' : 'Tất cả',
-                    style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      color: _showOnlyUnlearned ? Colors.white : ThemeService.getPrimaryTextColor(context), 
+                      fontSize: 12, 
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   selected: _showOnlyUnlearned,
                   onSelected: (val) => setState(() => _showOnlyUnlearned = val),
                   selectedColor: const Color(0xFFE94560),
-                  backgroundColor: const Color(0xFF16213E),
-                  side: BorderSide(color: _showOnlyUnlearned ? const Color(0xFFE94560) : const Color(0xFF0F3460)),
+                  backgroundColor: ThemeService.getCardColor(context),
+                  side: BorderSide(color: _showOnlyUnlearned ? const Color(0xFFE94560) : ThemeService.getBorderColor(context), width: 1.5),
                   visualDensity: VisualDensity.compact,
                 ),
               ],
@@ -754,7 +833,7 @@ class _VocabTopicDetailScreenState extends State<VocabTopicDetailScreen> {
               children: [
                 Text(
                   '${words.length} từ${_showOnlyUnlearned ? ' chưa thuộc' : ''}',
-                  style: const TextStyle(color: Colors.white54, fontSize: 13),
+                  style: TextStyle(color: ThemeService.getSecondaryTextColor(context), fontSize: 13, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -763,10 +842,10 @@ class _VocabTopicDetailScreenState extends State<VocabTopicDetailScreen> {
           // Scrollable Words List
           Expanded(
             child: words.isEmpty
-                ? const Center(
+                ? Center(
                     child: Text(
                       'Không tìm thấy từ vựng nào',
-                      style: TextStyle(color: Colors.white38, fontSize: 14),
+                      style: TextStyle(color: ThemeService.getMutedTextColor(context), fontSize: 14),
                     ),
                   )
                 : ListView.builder(
@@ -787,13 +866,14 @@ class _VocabTopicDetailScreenState extends State<VocabTopicDetailScreen> {
 
   Widget _buildVocabCard(VocabWord v, bool isMastered) {
     return Card(
-      color: const Color(0xFF16213E),
+      color: ThemeService.getCardColor(context),
       margin: const EdgeInsets.only(bottom: 8),
+      elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(
-          color: isMastered ? Colors.green.withValues(alpha: 0.5) : const Color(0xFF0F3460).withValues(alpha: 0.5),
-          width: isMastered ? 1.5 : 1,
+          color: isMastered ? Colors.green.shade700 : ThemeService.getBorderColor(context),
+          width: isMastered ? 2.0 : 1.5,
         ),
       ),
       child: Padding(
@@ -803,7 +883,7 @@ class _VocabTopicDetailScreenState extends State<VocabTopicDetailScreen> {
             // Left audio button (ergonomic)
             IconButton(
               onPressed: () => TtsService.speak(v.reading),
-              icon: const Icon(Icons.volume_up, color: Colors.white54, size: 22),
+              icon: Icon(Icons.volume_up, color: ThemeService.getSecondaryTextColor(context), size: 22),
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(minWidth: 38, minHeight: 38),
             ),
@@ -818,13 +898,17 @@ class _VocabTopicDetailScreenState extends State<VocabTopicDetailScreen> {
                     children: [
                       Text(
                         v.word,
-                        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: ThemeService.getPrimaryTextColor(context)),
                       ),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
                           v.reading,
-                          style: const TextStyle(fontSize: 14, color: Color(0xFF0F9D58), fontWeight: FontWeight.w500),
+                          style: TextStyle(
+                            fontSize: 14, 
+                            color: ThemeService.isDarkMode.value ? const Color(0xFF4ADE80) : const Color(0xFF16A34A), 
+                            fontWeight: FontWeight.bold,
+                          ),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
@@ -838,7 +922,7 @@ class _VocabTopicDetailScreenState extends State<VocabTopicDetailScreen> {
                   const SizedBox(height: 2),
                   Text(
                     v.partOfSpeech,
-                    style: const TextStyle(fontSize: 11, color: Colors.white38),
+                    style: TextStyle(fontSize: 11, color: ThemeService.getMutedTextColor(context)),
                   ),
                 ],
               ),
@@ -849,7 +933,7 @@ class _VocabTopicDetailScreenState extends State<VocabTopicDetailScreen> {
               onPressed: () => _toggleProgress(v.id),
               icon: Icon(
                 isMastered ? Icons.check_circle : Icons.check_circle_outline,
-                color: isMastered ? Colors.green : Colors.white24,
+                color: isMastered ? Colors.green : ThemeService.isDarkMode.value ? Colors.white24 : Colors.black26,
                 size: 26,
               ),
               padding: EdgeInsets.zero,
@@ -983,7 +1067,7 @@ class _VocabFlashcardScreenState extends State<VocabFlashcardScreen> with Ticker
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1A2E),
+      backgroundColor: ThemeService.getBgColor(context),
       appBar: AppBar(
         title: Text(
           widget.isReviewMode ? 'Ôn tập Flashcard' : 'Flashcard N5',
@@ -992,6 +1076,9 @@ class _VocabFlashcardScreenState extends State<VocabFlashcardScreen> with Ticker
         backgroundColor: widget.topic.gradient.first,
         foregroundColor: Colors.white,
         elevation: 0,
+        shape: Border(
+          bottom: BorderSide(color: ThemeService.getBorderColor(context), width: 1.5),
+        ),
         leading: IconButton(
           icon: const Icon(Icons.close),
           onPressed: () => Navigator.pop(context),
@@ -1017,11 +1104,11 @@ class _VocabFlashcardScreenState extends State<VocabFlashcardScreen> with Ticker
             children: [
               Text(
                 'Đã thuộc: $_masteredInSession / $_initialBatchSize',
-                style: const TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w500),
+                style: TextStyle(color: ThemeService.getSecondaryTextColor(context), fontSize: 13, fontWeight: FontWeight.w500),
               ),
               Text(
                 'Còn lại: ${_activeQueue.length} từ trong lượt',
-                style: const TextStyle(color: Colors.white54, fontSize: 12),
+                style: TextStyle(color: ThemeService.getMutedTextColor(context), fontSize: 12),
               ),
             ],
           ),
@@ -1031,7 +1118,7 @@ class _VocabFlashcardScreenState extends State<VocabFlashcardScreen> with Ticker
             child: LinearProgressIndicator(
               value: progressVal,
               minHeight: 6,
-              backgroundColor: Colors.white12,
+              backgroundColor: ThemeService.isDarkMode.value ? Colors.white12 : Colors.black12,
               color: Colors.green,
             ),
           ),
@@ -1079,7 +1166,7 @@ class _VocabFlashcardScreenState extends State<VocabFlashcardScreen> with Ticker
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.transparent,
                     foregroundColor: const Color(0xFFE94560),
-                    side: const BorderSide(color: Color(0xFFE94560), width: 1.5),
+                    side: BorderSide(color: ThemeService.isDarkMode.value ? const Color(0xFFE94560) : Colors.black, width: 1.5),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                     elevation: 0,
@@ -1098,7 +1185,8 @@ class _VocabFlashcardScreenState extends State<VocabFlashcardScreen> with Ticker
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                    elevation: 4,
+                    side: BorderSide(color: ThemeService.getBorderColor(context), width: 1.5),
+                    elevation: ThemeService.isDarkMode.value ? 4 : 0,
                   ),
                 ),
               ),
@@ -1111,18 +1199,21 @@ class _VocabFlashcardScreenState extends State<VocabFlashcardScreen> with Ticker
   }
 
   Widget _buildCardFront(VocabWord v) {
+    final isDark = ThemeService.isDarkMode.value;
     return Container(
       width: double.infinity,
       height: 320,
       decoration: BoxDecoration(
-        color: const Color(0xFF16213E),
+        color: ThemeService.getCardColor(context),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: widget.topic.gradient.first.withValues(alpha: 0.5), width: 2),
+        border: Border.all(color: ThemeService.getBorderColor(context), width: 2),
         boxShadow: [
           BoxShadow(
-            color: widget.topic.gradient.first.withValues(alpha: 0.2),
-            blurRadius: 16,
-            offset: const Offset(0, 8),
+            color: isDark 
+                ? widget.topic.gradient.first.withValues(alpha: 0.2)
+                : Colors.black.withValues(alpha: 0.1),
+            blurRadius: isDark ? 16 : 0,
+            offset: isDark ? const Offset(0, 8) : const Offset(4, 4),
           ),
         ],
       ),
@@ -1132,30 +1223,34 @@ class _VocabFlashcardScreenState extends State<VocabFlashcardScreen> with Ticker
         children: [
           IconButton(
             onPressed: () => TtsService.speak(v.reading),
-            icon: const Icon(Icons.volume_up, color: Colors.white54, size: 28),
+            icon: Icon(Icons.volume_up, color: ThemeService.getSecondaryTextColor(context), size: 28),
             constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
           ),
           const SizedBox(height: 12),
           Text(
             v.word,
-            style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: Colors.white),
+            style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: ThemeService.getPrimaryTextColor(context)),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 8),
           Text(
             v.reading,
-            style: const TextStyle(fontSize: 22, color: Color(0xFF0F9D58), fontWeight: FontWeight.w500),
+            style: TextStyle(
+              fontSize: 22, 
+              color: isDark ? const Color(0xFF4ADE80) : const Color(0xFF16A34A), 
+              fontWeight: FontWeight.bold,
+            ),
             textAlign: TextAlign.center,
           ),
           const Spacer(),
-          const Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.flip_camera_android, color: Colors.white30, size: 16),
-              SizedBox(width: 6),
+              Icon(Icons.flip_camera_android, color: ThemeService.getMutedTextColor(context), size: 16),
+              const SizedBox(width: 6),
               Text(
                 'Chạm để lật thẻ 🔄',
-                style: TextStyle(color: Colors.white30, fontSize: 12, fontStyle: FontStyle.italic),
+                style: TextStyle(color: ThemeService.getMutedTextColor(context), fontSize: 12, fontStyle: FontStyle.italic),
               ),
             ],
           ),
@@ -1165,18 +1260,21 @@ class _VocabFlashcardScreenState extends State<VocabFlashcardScreen> with Ticker
   }
 
   Widget _buildCardBack(VocabWord v) {
+    final isDark = ThemeService.isDarkMode.value;
     return Container(
       width: double.infinity,
       height: 320,
       decoration: BoxDecoration(
-        color: const Color(0xFF0F3460),
+        color: ThemeService.getAccentColor(context),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.green.withValues(alpha: 0.5), width: 2),
+        border: Border.all(color: ThemeService.getBorderColor(context), width: 2),
         boxShadow: [
           BoxShadow(
-            color: Colors.green.withValues(alpha: 0.1),
-            blurRadius: 16,
-            offset: const Offset(0, 8),
+            color: isDark 
+                ? Colors.green.withValues(alpha: 0.1)
+                : Colors.black.withValues(alpha: 0.1),
+            blurRadius: isDark ? 16 : 0,
+            offset: isDark ? const Offset(0, 8) : const Offset(4, 4),
           ),
         ],
       ),
@@ -1186,7 +1284,7 @@ class _VocabFlashcardScreenState extends State<VocabFlashcardScreen> with Ticker
         children: [
           Text(
             widget.topic.titleVi,
-            style: const TextStyle(color: Colors.white38, fontSize: 13, fontWeight: FontWeight.bold),
+            style: TextStyle(color: ThemeService.getMutedTextColor(context), fontSize: 13, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 24),
           Text(
@@ -1197,18 +1295,18 @@ class _VocabFlashcardScreenState extends State<VocabFlashcardScreen> with Ticker
           const SizedBox(height: 12),
           Text(
             'Từ loại: ${v.partOfSpeech}',
-            style: const TextStyle(fontSize: 14, color: Colors.white70, fontStyle: FontStyle.italic),
+            style: TextStyle(fontSize: 14, color: ThemeService.getSecondaryTextColor(context), fontStyle: FontStyle.italic),
             textAlign: TextAlign.center,
           ),
           const Spacer(),
-          const Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.flip_camera_android, color: Colors.white30, size: 16),
-              SizedBox(width: 6),
+              Icon(Icons.flip_camera_android, color: ThemeService.getMutedTextColor(context), size: 16),
+              const SizedBox(width: 6),
               Text(
                 'Chạm để lật thẻ 🔄',
-                style: TextStyle(color: Colors.white30, fontSize: 12, fontStyle: FontStyle.italic),
+                style: TextStyle(color: ThemeService.getMutedTextColor(context), fontSize: 12, fontStyle: FontStyle.italic),
               ),
             ],
           ),
@@ -1239,9 +1337,9 @@ class _VocabFlashcardScreenState extends State<VocabFlashcardScreen> with Ticker
               ),
             ),
             const SizedBox(height: 28),
-            const Text(
+            Text(
               'Hoàn thành xuất sắc! 🎉',
-              style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.white),
+              style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: ThemeService.getPrimaryTextColor(context)),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 12),
@@ -1249,7 +1347,7 @@ class _VocabFlashcardScreenState extends State<VocabFlashcardScreen> with Ticker
               widget.isReviewMode
                   ? 'Bạn đã ôn tập thành công bộ từ vựng của chủ đề này!'
                   : 'Bạn đã ghi nhớ thêm $_initialBatchSize từ vựng của chủ đề "${widget.topic.titleVi}"!',
-              style: const TextStyle(fontSize: 15, color: Colors.white70),
+              style: TextStyle(fontSize: 15, color: ThemeService.getSecondaryTextColor(context)),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 48),
@@ -1290,6 +1388,7 @@ class _VocabFlashcardScreenState extends State<VocabFlashcardScreen> with Ticker
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  side: BorderSide(color: ThemeService.getBorderColor(context), width: 1.5),
                 ),
               ),
             ),
@@ -1299,7 +1398,7 @@ class _VocabFlashcardScreenState extends State<VocabFlashcardScreen> with Ticker
               width: double.infinity,
               child: TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Quay về danh sách', style: TextStyle(color: Colors.white54, fontSize: 15)),
+                child: Text('Quay về danh sách', style: TextStyle(color: ThemeService.getSecondaryTextColor(context), fontSize: 15)),
               ),
             ),
           ],
