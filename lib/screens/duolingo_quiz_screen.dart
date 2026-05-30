@@ -20,6 +20,9 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
   int _score = 0;
   bool _isFinished = false;
   bool _isLoading = true;
+  bool _showHint = false;
+  bool _hasGivenUp = false;
+  int _correctPositionsCount = 0;
 
   @override
   void initState() {
@@ -48,6 +51,10 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
       _selectedTokens = [];
       _remainingJumbled = List<String>.from(challenge.jumbledTokens);
       _isAnswerChecked = false;
+      _isCorrect = false;
+      _showHint = false;
+      _hasGivenUp = false;
+      _correctPositionsCount = 0;
     });
 
     // Autoplay Japanese prompt sound if available
@@ -74,6 +81,32 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
     });
   }
 
+  int _calculateCorrectPositions(DuolingoChallenge challenge) {
+    int count = 0;
+    for (int i = 0; i < _selectedTokens.length; i++) {
+      if (i < challenge.correctOrder.length && _selectedTokens[i] == challenge.correctOrder[i]) {
+        count++;
+      }
+    }
+    return count;
+  }
+
+  void _giveUp() {
+    final challenge = _challenges[_currentIndex];
+    setState(() {
+      _hasGivenUp = true;
+      _isAnswerChecked = true;
+      _isCorrect = false;
+      _showHint = false;
+    });
+
+    if (challenge.type == 'vi_to_jp') {
+      TtsService.speak(challenge.target);
+    } else {
+      TtsService.speak(challenge.prompt);
+    }
+  }
+
   void _checkAnswer() {
     final challenge = _challenges[_currentIndex];
     final joinedSelected = _selectedTokens.join(' ').replaceAll(' .', '.').replaceAll(' ,', ',');
@@ -93,18 +126,26 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
     }
 
     setState(() {
-      _isCorrect = isCorrect;
-      _isAnswerChecked = true;
       if (isCorrect) {
+        _isCorrect = true;
+        _isAnswerChecked = true;
+        _showHint = false;
         _score++;
+      } else {
+        _isCorrect = false;
+        _isAnswerChecked = false;
+        _showHint = true;
+        _correctPositionsCount = _calculateCorrectPositions(challenge);
       }
     });
 
-    // Play TTS speech of the Japanese sentence if correct/incorrect
-    if (challenge.type == 'vi_to_jp') {
-      TtsService.speak(challenge.target);
-    } else {
-      TtsService.speak(challenge.prompt);
+    // Play TTS speech of the Japanese sentence only if correct
+    if (isCorrect) {
+      if (challenge.type == 'vi_to_jp') {
+        TtsService.speak(challenge.target);
+      } else {
+        TtsService.speak(challenge.prompt);
+      }
     }
   }
 
@@ -205,6 +246,11 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
                 ),
                 const SizedBox(height: 8),
                 _buildAnswerSlots(challenge),
+
+                if (_showHint) ...[
+                  const SizedBox(height: 12),
+                  _buildHintCard(challenge),
+                ],
 
                 const SizedBox(height: 36),
 
@@ -422,6 +468,46 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
 
   Widget _buildBottomActionBar(DuolingoChallenge challenge) {
     if (!_isAnswerChecked) {
+      if (_showHint) {
+        return Container(
+          color: const Color(0xFF16213E),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          child: Row(
+            children: [
+              Expanded(
+                flex: 2,
+                child: OutlinedButton(
+                  onPressed: _giveUp,
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: const Color(0xFFE94560),
+                    side: const BorderSide(color: Color(0xFFE94560), width: 1.5),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  child: const Text('Đầu hàng 🏳️', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                flex: 3,
+                child: ElevatedButton(
+                  onPressed: _selectedTokens.isEmpty ? null : _checkAnswer,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFE94560),
+                    foregroundColor: Colors.white,
+                    disabledBackgroundColor: const Color(0xFF0F3460).withValues(alpha: 0.5),
+                    disabledForegroundColor: Colors.white30,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  child: const Text('Kiểm tra lại', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                ),
+              ),
+            ],
+          ),
+        );
+      }
+
       return Container(
         color: const Color(0xFF16213E),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -458,13 +544,17 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
           Row(
             children: [
               Icon(
-                _isCorrect ? Icons.check_circle : Icons.error,
+                _isCorrect 
+                    ? Icons.check_circle 
+                    : (_hasGivenUp ? Icons.flag : Icons.error),
                 color: accentColor,
                 size: 28,
               ),
               const SizedBox(width: 8),
               Text(
-                _isCorrect ? 'Chính xác! Cực kỳ xuất sắc! 🎉' : 'Chưa chính xác rồi!',
+                _isCorrect 
+                    ? 'Chính xác! Cực kỳ xuất sắc! 🎉' 
+                    : (_hasGivenUp ? 'Bạn đã chọn đầu hàng! 🏳️' : 'Chưa chính xác rồi!'),
                 style: TextStyle(color: accentColor, fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ],
@@ -575,6 +665,51 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildHintCard(DuolingoChallenge challenge) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.amber.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.amber.withValues(alpha: 0.4), width: 1.5),
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const Row(
+            children: [
+              Icon(Icons.lightbulb, color: Colors.amber, size: 24),
+              SizedBox(width: 8),
+              Text(
+                'GỢI Ý HỌC TẬP',
+                style: TextStyle(color: Colors.amber, fontSize: 14, fontWeight: FontWeight.bold, letterSpacing: 0.5),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          RichText(
+            text: TextSpan(
+              style: const TextStyle(color: Colors.white70, fontSize: 14, height: 1.4),
+              children: [
+                const TextSpan(text: 'Bạn đã xếp đúng '),
+                TextSpan(
+                  text: '$_correctPositionsCount / ${challenge.correctOrder.length}',
+                  style: const TextStyle(color: Colors.amber, fontWeight: FontWeight.bold, fontSize: 15),
+                ),
+                const TextSpan(text: ' từ đúng vị trí! Hãy điều chỉnh lại thứ tự hoặc kiểm tra các trợ từ nhé.'),
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            '💡 Mẹo: Nhấn vào các từ đã chọn để rút lại, sắp xếp lại rồi nhấn "Kiểm tra" để recheck câu nhé. Nếu bí quá, nhấn "Đầu hàng" ở dưới để xem đáp án đúng nha!',
+            style: TextStyle(color: Colors.white38, fontSize: 12, fontStyle: FontStyle.italic, height: 1.4),
+          ),
+        ],
       ),
     );
   }
