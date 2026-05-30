@@ -348,28 +348,34 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
     );
   }
 
-  Widget _buildFuriganaTextWidget(String kanji, String? furigana, {double fontSize = 16, double furiganaSize = 10}) {
-    if (furigana == null || furigana.isEmpty) {
-      return Padding(
-        padding: const EdgeInsets.only(top: 13), // Align with standard furigana spacing
-        child: Text(
-          kanji,
-          style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold, color: Colors.white),
-        ),
-      );
-    }
+  Widget _buildFuriganaTextWidget(
+    String kanji,
+    String? furigana, {
+    double fontSize = 16,
+    double furiganaSize = 10,
+    bool isTransparent = false,
+  }) {
+    final hasFurigana = furigana != null && furigana.isNotEmpty;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          furigana,
-          style: TextStyle(fontSize: furiganaSize, color: const Color(0xFF0F9D58), fontWeight: FontWeight.bold),
+          hasFurigana ? furigana : 'あ',
+          style: TextStyle(
+            fontSize: furiganaSize,
+            color: (hasFurigana && !isTransparent) ? const Color(0xFF0F9D58) : Colors.transparent,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         const SizedBox(height: 1),
         Text(
           kanji,
-          style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold, color: Colors.white),
+          style: TextStyle(
+            fontSize: fontSize,
+            fontWeight: FontWeight.bold,
+            color: isTransparent ? Colors.transparent : Colors.white,
+          ),
         ),
       ],
     );
@@ -419,17 +425,8 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
         return isSelected
             ? Opacity(
                 opacity: 0.15,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF0F3460),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.transparent),
-                  ),
-                  child: Text(
-                    token,
-                    style: const TextStyle(fontSize: 15, color: Colors.transparent, fontWeight: FontWeight.bold),
-                  ),
+                child: IgnorePointer(
+                  child: _buildWordChip(token, fReading, isTransparent: true),
                 ),
               )
             : GestureDetector(
@@ -440,7 +437,7 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
     );
   }
 
-  Widget _buildWordChip(String token, String? furigana, {double elevation = 0}) {
+  Widget _buildWordChip(String token, String? furigana, {double elevation = 0, bool isTransparent = false}) {
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xFF16213E),
@@ -456,13 +453,8 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
               ]
             : null,
       ),
-      padding: EdgeInsets.fromLTRB(14, furigana != null ? 4 : 10, 14, 10),
-      child: furigana != null
-          ? _buildFuriganaTextWidget(token, furigana, fontSize: 16, furiganaSize: 10)
-          : Text(
-              token,
-              style: const TextStyle(fontSize: 16, color: Colors.white, fontWeight: FontWeight.bold),
-            ),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+      child: _buildFuriganaTextWidget(token, furigana, fontSize: 16, furiganaSize: 10, isTransparent: isTransparent),
     );
   }
 
