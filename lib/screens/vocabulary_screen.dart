@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:math' as math;
 import '../data/vocab_data.dart';
 import '../models/vocab.dart';
 import '../services/tts_service.dart';
@@ -46,7 +47,7 @@ const List<TopicMeta> topicsList = [
   TopicMeta(
     key: 'tinh_tu_na',
     titleVi: 'Tính từ な',
-    titleJp: '形容動詞 (な)',
+    titleJp: '形容動詞 (na)',
     icon: Icons.star_half,
     gradient: [Color(0xFF8E24AA), Color(0xFFAB47BC)],
   ),
@@ -259,7 +260,7 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
                     builder: (_) => VocabMatchGameScreen(pool: pool),
                   ),
                 );
-                _loadProgress(); // Reload progress after playing game
+                _loadProgress();
               },
               icon: const Icon(Icons.extension),
               label: const Text('Game Nối Từ Vựng'),
@@ -649,6 +650,61 @@ class _VocabTopicDetailScreenState extends State<VocabTopicDetailScreen> {
                     color: Colors.white,
                   ),
                 ),
+                const SizedBox(height: 16),
+                // Flashcard learning trigger ( BITE-SIZED CHUNKS )
+                ElevatedButton.icon(
+                  onPressed: () async {
+                    // Extract all unlearned words in this category
+                    final unlearned = vocabList
+                        .where((v) => v.category == widget.topic.key && !_localProgress.containsKey(v.id))
+                        .toList();
+                    
+                    // Shuffle to keep it fun and non-discouraging
+                    final listToLearn = List<VocabWord>.from(unlearned)..shuffle();
+                    // Chunk it down to max 15 words!
+                    final batch = listToLearn.take(15).toList();
+
+                    // If zero unlearned words exist, offer to review all words
+                    final finalBatch = batch.isNotEmpty
+                        ? batch
+                        : (List<VocabWord>.from(vocabList.where((v) => v.category == widget.topic.key))..shuffle()).take(15).toList();
+
+                    if (!context.mounted) return;
+                    if (finalBatch.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Không có từ vựng nào trong chủ đề này để học!')),
+                      );
+                      return;
+                    }
+
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => VocabFlashcardScreen(
+                          topic: widget.topic,
+                          wordsBatch: finalBatch,
+                          initialProgress: _localProgress,
+                          isReviewMode: unlearned.isEmpty,
+                        ),
+                      ),
+                    );
+                    
+                    // Reload progress when returning
+                    final updatedProgress = await KanjiDatabase.getVocabProgress();
+                    setState(() {
+                      _localProgress = updatedProgress;
+                    });
+                  },
+                  icon: const Icon(Icons.style),
+                  label: const Text('Luyện Flashcard (Bộ 15 từ)', style: TextStyle(fontWeight: FontWeight.bold)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: widget.topic.gradient.first,
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    elevation: 4,
+                  ),
+                ),
               ],
             ),
           ),
@@ -798,6 +854,435 @@ class _VocabTopicDetailScreenState extends State<VocabTopicDetailScreen> {
               ),
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(minWidth: 38, minHeight: 38),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class VocabFlashcardScreen extends StatefulWidget {
+  final TopicMeta topic;
+  final List<VocabWord> wordsBatch;
+  final Map<int, String> initialProgress;
+  final bool isReviewMode;
+
+  const VocabFlashcardScreen({
+    super.key,
+    required this.topic,
+    required this.wordsBatch,
+    required this.initialProgress,
+    required this.isReviewMode,
+  });
+
+  @override
+  State<VocabFlashcardScreen> createState() => _VocabFlashcardScreenState();
+}
+
+class _VocabFlashcardScreenState extends State<VocabFlashcardScreen> with TickerProviderStateMixin {
+  late List<VocabWord> _activeQueue;
+  late Map<int, String> _sessionProgress;
+  int _masteredInSession = 0;
+  int _initialBatchSize = 0;
+  bool _isFinished = false;
+
+  // Flipping controller
+  late AnimationController _flipController;
+  late Animation<double> _flipAnimation;
+  bool _isCardFront = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _activeQueue = List<VocabWord>.from(widget.wordsBatch);
+    _initialBatchSize = _activeQueue.length;
+    _sessionProgress = Map<int, String>.from(widget.initialProgress);
+
+    _flipController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 320),
+    );
+    _flipAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _flipController, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _flipController.dispose();
+    super.dispose();
+  }
+
+  void _flipCard() {
+    if (_isCardFront) {
+      _flipController.forward();
+    } else {
+      _flipController.reverse();
+    }
+    setState(() {
+      _isCardFront = !_isCardFront;
+    });
+  }
+
+  void _flipToFrontSilent() {
+    _flipController.value = 0.0;
+    _isCardFront = true;
+  }
+
+  void _onKeepPracticing() {
+    // Put current card at the end of active recall queue (Leitner system)
+    if (_activeQueue.isEmpty) return;
+    
+    final currentWord = _activeQueue.first;
+    
+    // Perform a smooth visual transition
+    setState(() {
+      _activeQueue.add(currentWord);
+      _activeQueue.removeAt(0);
+      _flipToFrontSilent();
+    });
+  }
+
+  Future<void> _onMastered() async {
+    if (_activeQueue.isEmpty) return;
+    
+    final currentWord = _activeQueue.first;
+    
+    // Save to database
+    await KanjiDatabase.saveVocabProgress(currentWord.id);
+    
+    setState(() {
+      _sessionProgress[currentWord.id] = DateTime.now().toIso8601String();
+      _activeQueue.removeAt(0);
+      _masteredInSession++;
+      _flipToFrontSilent();
+      
+      if (_activeQueue.isEmpty) {
+        _isFinished = true;
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF1A1A2E),
+      appBar: AppBar(
+        title: Text(
+          widget.isReviewMode ? 'Ôn tập Flashcard' : 'Flashcard N5',
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        ),
+        backgroundColor: widget.topic.gradient.first,
+        foregroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: _isFinished ? _buildVictoryScreen() : _buildQuizSession(),
+    );
+  }
+
+  Widget _buildQuizSession() {
+    final currentWord = _activeQueue.first;
+    final progressVal = _initialBatchSize > 0
+        ? (_masteredInSession / _initialBatchSize).clamp(0.0, 1.0)
+        : 0.0;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      child: Column(
+        children: [
+          // Sleek progress indicators
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Đã thuộc: $_masteredInSession / $_initialBatchSize',
+                style: const TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w500),
+              ),
+              Text(
+                'Còn lại: ${_activeQueue.length} từ trong lượt',
+                style: const TextStyle(color: Colors.white54, fontSize: 12),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              value: progressVal,
+              minHeight: 6,
+              backgroundColor: Colors.white12,
+              color: Colors.green,
+            ),
+          ),
+          
+          const Spacer(),
+
+          // Stunning 3D Flippable Flashcard
+          GestureDetector(
+            onTap: _flipCard,
+            child: AnimatedBuilder(
+              animation: _flipAnimation,
+              builder: (context, child) {
+                // Compute 3D rotation angle
+                final angle = _flipAnimation.value * math.pi;
+                final isBack = angle >= math.pi / 2;
+
+                return Transform(
+                  transform: Matrix4.identity()
+                    ..setEntry(3, 2, 0.001) // perspective effect
+                    ..rotateY(angle),
+                  alignment: Alignment.center,
+                  child: isBack
+                      ? Transform(
+                          transform: Matrix4.identity()..rotateY(math.pi),
+                          alignment: Alignment.center,
+                          child: _buildCardBack(currentWord),
+                        )
+                      : _buildCardFront(currentWord),
+                );
+              },
+            ),
+          ),
+
+          const Spacer(),
+
+          // Leitner Active Recall Action Buttons
+          Row(
+            children: [
+              // Red "Chưa thuộc" button
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: _onKeepPracticing,
+                  icon: const Icon(Icons.refresh, size: 20),
+                  label: const Text('Chưa thuộc', style: TextStyle(fontWeight: FontWeight.bold)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    foregroundColor: const Color(0xFFE94560),
+                    side: const BorderSide(color: Color(0xFFE94560), width: 1.5),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    elevation: 0,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 14),
+              // Green "Đã thuộc" button
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: _onMastered,
+                  icon: const Icon(Icons.check, size: 20),
+                  label: const Text('Đã thuộc!', style: TextStyle(fontWeight: FontWeight.bold)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    elevation: 4,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCardFront(VocabWord v) {
+    return Container(
+      width: double.infinity,
+      height: 320,
+      decoration: BoxDecoration(
+        color: const Color(0xFF16213E),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: widget.topic.gradient.first.withValues(alpha: 0.5), width: 2),
+        boxShadow: [
+          BoxShadow(
+            color: widget.topic.gradient.first.withValues(alpha: 0.2),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          IconButton(
+            onPressed: () => TtsService.speak(v.reading),
+            icon: const Icon(Icons.volume_up, color: Colors.white54, size: 28),
+            constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            v.word,
+            style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold, color: Colors.white),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            v.reading,
+            style: const TextStyle(fontSize: 22, color: Color(0xFF0F9D58), fontWeight: FontWeight.w500),
+            textAlign: TextAlign.center,
+          ),
+          const Spacer(),
+          const Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.flip_camera_android, color: Colors.white30, size: 16),
+              SizedBox(width: 6),
+              Text(
+                'Chạm để lật thẻ 🔄',
+                style: TextStyle(color: Colors.white30, fontSize: 12, fontStyle: FontStyle.italic),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCardBack(VocabWord v) {
+    return Container(
+      width: double.infinity,
+      height: 320,
+      decoration: BoxDecoration(
+        color: const Color(0xFF0F3460),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.green.withValues(alpha: 0.5), width: 2),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.green.withValues(alpha: 0.1),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            widget.topic.titleVi,
+            style: const TextStyle(color: Colors.white38, fontSize: 13, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            v.meaningVi,
+            style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Color(0xFFE94560)),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Từ loại: ${v.partOfSpeech}',
+            style: const TextStyle(fontSize: 14, color: Colors.white70, fontStyle: FontStyle.italic),
+            textAlign: TextAlign.center,
+          ),
+          const Spacer(),
+          const Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.flip_camera_android, color: Colors.white30, size: 16),
+              SizedBox(width: 6),
+              Text(
+                'Chạm để lật thẻ 🔄',
+                style: TextStyle(color: Colors.white30, fontSize: 12, fontStyle: FontStyle.italic),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildVictoryScreen() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Glowing Trophy
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Colors.amber.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.amber, width: 2),
+              ),
+              child: const Icon(
+                Icons.emoji_events,
+                size: 80,
+                color: Colors.amber,
+              ),
+            ),
+            const SizedBox(height: 28),
+            const Text(
+              'Hoàn thành xuất sắc! 🎉',
+              style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.white),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              widget.isReviewMode
+                  ? 'Bạn đã ôn tập thành công bộ từ vựng của chủ đề này!'
+                  : 'Bạn đã ghi nhớ thêm $_initialBatchSize từ vựng của chủ đề "${widget.topic.titleVi}"!',
+              style: const TextStyle(fontSize: 15, color: Colors.white70),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 48),
+            // Learn more button
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  // Reload remaining unlearned words
+                  final unlearned = vocabList
+                      .where((v) => v.category == widget.topic.key && !_sessionProgress.containsKey(v.id))
+                      .toList();
+                  
+                  if (unlearned.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Tất cả từ vựng trong chủ đề này đã được thuộc!')),
+                    );
+                    Navigator.pop(context);
+                    return;
+                  }
+
+                  final nextBatch = (List<VocabWord>.from(unlearned)..shuffle()).take(15).toList();
+                  
+                  setState(() {
+                    _activeQueue = nextBatch;
+                    _initialBatchSize = _activeQueue.length;
+                    _masteredInSession = 0;
+                    _isFinished = false;
+                    _flipToFrontSilent();
+                  });
+                },
+                icon: const Icon(Icons.arrow_forward),
+                label: const Text('Học tiếp 15 từ mới', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            // Go back button
+            SizedBox(
+              width: double.infinity,
+              child: TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Quay về danh sách', style: TextStyle(color: Colors.white54, fontSize: 15)),
+              ),
             ),
           ],
         ),
