@@ -245,13 +245,7 @@ class _ListeningQuizScreenState extends State<ListeningQuizScreen> {
     final is3or4 = q.taskType == 'task3' || q.taskType == 'task4';
     final isDark = ThemeService.isDarkMode.value;
 
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, result) {
-        if (didPop) return;
-        Navigator.pop(context);
-      },
-      child: Scaffold(
+    return Scaffold(
         backgroundColor: ThemeService.getBgColor(context),
         appBar: AppBar(
           title: Text(_getTaskTypeTitle(q.taskType), style: const TextStyle(fontWeight: FontWeight.bold)),
@@ -589,9 +583,8 @@ class _ListeningQuizScreenState extends State<ListeningQuizScreen> {
             ],
           ),
         ),
-      ),
-    );
-  }
+      );
+    }
 
   String _getQuestionTranslation(String questionJa) {
     if (questionJa.contains('学生はこれから何をしますか')) {

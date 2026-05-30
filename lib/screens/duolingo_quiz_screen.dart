@@ -172,13 +172,7 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
       );
     }
 
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, result) {
-        if (didPop) return;
-        Navigator.pop(context);
-      },
-      child: Scaffold(
+    return Scaffold(
         backgroundColor: const Color(0xFF1A1A2E),
         appBar: AppBar(
           title: const Text('Ghép Câu Duolingo', style: TextStyle(fontWeight: FontWeight.bold)),
@@ -191,9 +185,8 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
           ),
         ),
         body: _isFinished ? _buildVictoryScreen() : _buildQuizSession(),
-      ),
-    );
-  }
+      );
+    }
 
   Widget _buildQuizSession() {
     final challenge = _challenges[_currentIndex];

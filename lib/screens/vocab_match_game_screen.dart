@@ -105,13 +105,7 @@ class _VocabMatchGameScreenState extends State<VocabMatchGameScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, result) {
-        if (didPop) return;
-        Navigator.pop(context);
-      },
-      child: Scaffold(
+    return Scaffold(
         backgroundColor: ThemeService.getBgColor(context),
         appBar: AppBar(
           title: const Text('Game Nối Từ Vựng', style: TextStyle(fontWeight: FontWeight.bold)),
@@ -123,9 +117,8 @@ class _VocabMatchGameScreenState extends State<VocabMatchGameScreen> {
           ),
         ),
         body: _gameComplete ? _buildResult() : _buildGame(),
-      ),
-    );
-  }
+      );
+    }
 
   Widget _buildGame() {
     final isDark = ThemeService.isDarkMode.value;

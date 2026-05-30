@@ -85,27 +85,14 @@ class _QuizScreenState extends State<QuizScreen> {
   @override
   Widget build(BuildContext context) {
     if (_currentIndex >= _quizItems.length) {
-      return PopScope(
-        canPop: false,
-        onPopInvokedWithResult: (didPop, result) {
-          if (didPop) return;
-          Navigator.pop(context);
-        },
-        child: _buildResultScreen(),
-      );
+      return _buildResultScreen();
     }
 
     final kanji = _quizItems[_currentIndex];
     final options = _generateOptions(kanji);
     final isDark = ThemeService.isDarkMode.value;
 
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, result) {
-        if (didPop) return;
-        Navigator.pop(context);
-      },
-      child: Scaffold(
+    return Scaffold(
         backgroundColor: ThemeService.getBgColor(context),
         appBar: AppBar(
           title: Text(widget.title, style: const TextStyle(fontWeight: FontWeight.bold)),
@@ -259,9 +246,8 @@ class _QuizScreenState extends State<QuizScreen> {
             ],
           ),
         ),
-      ),
-    );
-  }
+      );
+    }
 
   Widget _buildResultScreen() {
     final total = _correctCount + _wrongCount;

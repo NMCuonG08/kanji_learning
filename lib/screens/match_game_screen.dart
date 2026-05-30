@@ -101,14 +101,13 @@ class _MatchGameScreenState extends State<MatchGameScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final canPop = _gameMode == null || _gameComplete;
     return PopScope(
-      canPop: false,
+      canPop: canPop,
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;
         if (_gameMode != null && !_gameComplete) {
           setState(() => _gameMode = null);
-        } else {
-          Navigator.pop(context);
         }
       },
       child: Scaffold(
