@@ -282,7 +282,7 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
                         challenge.prompt,
                         style: const TextStyle(color: Colors.white, fontSize: 19, fontWeight: FontWeight.bold),
                       )
-                    : _buildSentenceWithFurigana(challenge.prompt, challenge.correctOrder, challenge.furigana),
+                    : _buildSentenceWithFurigana(challenge.prompt, challenge.jpPromptTokens ?? [], challenge.furigana),
               ],
             ),
           ),

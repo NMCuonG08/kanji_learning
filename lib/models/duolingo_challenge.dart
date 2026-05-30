@@ -7,6 +7,7 @@ class DuolingoChallenge {
   final Map<String, String> furigana; // Map of Kanji words to their Furigana readings
   final String type; // 'vi_to_jp' (dịch sang tiếng Nhật) or 'jp_to_vi' (dịch sang tiếng Việt)
   final String explanation; // Educational explanation of the grammar and vocabulary
+  final List<String>? jpPromptTokens; // Optional list of Japanese tokens for the prompt (when type is jp_to_vi)
 
   const DuolingoChallenge({
     required this.id,
@@ -17,5 +18,6 @@ class DuolingoChallenge {
     required this.furigana,
     required this.type,
     required this.explanation,
+    this.jpPromptTokens,
   });
 }
