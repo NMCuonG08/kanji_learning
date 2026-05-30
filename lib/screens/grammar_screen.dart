@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../data/grammar_data.dart';
 import '../services/tts_service.dart';
 import 'grammar_quiz_screen.dart';
+import 'duolingo_quiz_screen.dart';
 
 class GrammarScreen extends StatefulWidget {
   final Map<int, Map<String, dynamic>> progress;
@@ -30,24 +31,46 @@ class _GrammarScreenState extends State<GrammarScreen> {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const GrammarQuizScreen()),
-                );
-              },
-              icon: const Icon(Icons.quiz),
-              label: const Text('Trắc Nghiệm Ngữ Pháp'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFE94560),
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          child: Row(
+            children: [
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const GrammarQuizScreen()),
+                    );
+                  },
+                  icon: const Icon(Icons.quiz, size: 18),
+                  label: const Text('Trắc Nghiệm', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFE94560),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
+                ),
               ),
-            ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const DuolingoQuizScreen()),
+                    );
+                  },
+                  icon: const Icon(Icons.style, size: 18),
+                  label: const Text('Ghép Câu Duolingo', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.purple,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
         Expanded(
