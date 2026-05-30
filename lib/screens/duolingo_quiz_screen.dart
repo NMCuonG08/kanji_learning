@@ -67,6 +67,7 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
 
   void _selectToken(String token) {
     if (_isAnswerChecked) return;
+    TtsService.speak(token);
     setState(() {
       _selectedTokens.add(token);
       _remainingJumbled.remove(token);
@@ -75,6 +76,7 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
 
   void _deselectToken(String token) {
     if (_isAnswerChecked) return;
+    TtsService.speak(token);
     setState(() {
       _selectedTokens.remove(token);
       _remainingJumbled.add(token);
@@ -399,15 +401,64 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
           : Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: _selectedTokens.map((token) {
+              children: List.generate(_selectedTokens.length, (index) {
+                final token = _selectedTokens[index];
                 final isJp = challenge.type == 'vi_to_jp';
                 final fReading = isJp ? challenge.furigana[token] : null;
+                final isLocked = _isAnswerChecked && !_showHint;
 
-                return GestureDetector(
-                  onTap: () => _deselectToken(token),
-                  child: _buildWordChip(token, fReading),
+                return DragTarget<int>(
+                  onWillAcceptWithDetails: (details) => !isLocked && details.data != index,
+                  onAcceptWithDetails: (details) {
+                    if (isLocked) return;
+                    final draggedIndex = details.data;
+                    setState(() {
+                      final item = _selectedTokens.removeAt(draggedIndex);
+                      _selectedTokens.insert(index, item);
+                    });
+                  },
+                  builder: (context, candidateData, rejectedData) {
+                    final isCandidate = candidateData.isNotEmpty;
+
+                    final chipWidget = AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        border: isCandidate
+                            ? Border.all(color: const Color(0xFFE94560), width: 2)
+                            : null,
+                      ),
+                      child: GestureDetector(
+                        onTap: () => _deselectToken(token),
+                        child: _buildWordChip(token, fReading),
+                      ),
+                    );
+
+                    if (isLocked) {
+                      return chipWidget;
+                    }
+
+                    return Draggable<int>(
+                      data: index,
+                      onDragStarted: () {
+                        TtsService.speak(token);
+                      },
+                      feedback: Material(
+                        color: Colors.transparent,
+                        child: Opacity(
+                          opacity: 0.85,
+                          child: _buildWordChip(token, fReading, elevation: 6),
+                        ),
+                      ),
+                      childWhenDragging: Opacity(
+                        opacity: 0.25,
+                        child: _buildWordChip(token, fReading),
+                      ),
+                      child: chipWidget,
+                    );
+                  },
                 );
-              }).toList(),
+              }),
             ),
     );
   }

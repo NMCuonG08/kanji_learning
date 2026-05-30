@@ -25,8 +25,9 @@ Future<void> ttsSpeak(String text, {double? rate}) async {
   if (text.isEmpty) return;
   _synth.cancel();
   final u = SpeechSynthesisUtterance(text);
-  u.lang = 'ja-JP';
-  u.rate = rate ?? 0.9;
+  final isJapanese = RegExp(r'[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]').hasMatch(text);
+  u.lang = isJapanese ? 'ja-JP' : 'vi-VN';
+  u.rate = rate ?? (isJapanese ? 0.9 : 1.0);
   _synth.speak(u);
 }
 

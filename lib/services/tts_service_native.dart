@@ -14,10 +14,14 @@ Future<void> ttsInit() async {
 Future<void> ttsSpeak(String text, {double? rate}) async {
   if (text.isEmpty) return;
   if (!_init) await ttsInit();
+  
+  final isJapanese = RegExp(r'[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]').hasMatch(text);
+  await _tts?.setLanguage(isJapanese ? 'ja-JP' : 'vi-VN');
+  
   if (rate != null) {
     await _tts?.setSpeechRate(rate);
   } else {
-    await _tts?.setSpeechRate(0.5);
+    await _tts?.setSpeechRate(isJapanese ? 0.5 : 0.55);
   }
   await _tts?.speak(text);
 }
