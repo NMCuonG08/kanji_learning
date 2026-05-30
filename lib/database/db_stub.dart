@@ -6,6 +6,7 @@ Future<void> dbResetAllProgress() async {}
 
 Future<void> dbSaveVocabProgress(int vocabId) async {}
 Future<Map<int, String>> dbGetVocabProgress() async => {};
+Future<void> dbDeleteVocabProgress(int vocabId) async {}
 Future<void> dbResetVocabProgress() async {}
 
 Future<void> dbSaveListeningProgress(int questionId) async {}

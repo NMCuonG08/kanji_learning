@@ -169,6 +169,11 @@ Future<Map<int, String>> dbGetVocabProgress() async {
   return result;
 }
 
+Future<void> dbDeleteVocabProgress(int vocabId) async {
+  final db = await _getDb();
+  await db.delete('vocab_progress', where: 'vocabId = ?', whereArgs: [vocabId]);
+}
+
 Future<void> dbResetVocabProgress() async {
   final db = await _getDb();
   await db.delete('vocab_progress');

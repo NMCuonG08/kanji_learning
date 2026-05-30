@@ -127,6 +127,17 @@ Future<void> dbSaveVocabProgress(int vocabId) async {
   await prefs.setString(_webVocabDbKey, jsonEncode(stringKeyedData));
 }
 
+Future<void> dbDeleteVocabProgress(int vocabId) async {
+  final data = await dbGetVocabProgress();
+  data.remove(vocabId);
+  final prefs = await SharedPreferences.getInstance();
+  final Map<String, String> stringKeyedData = {};
+  data.forEach((key, value) {
+    stringKeyedData[key.toString()] = value;
+  });
+  await prefs.setString(_webVocabDbKey, jsonEncode(stringKeyedData));
+}
+
 Future<void> dbResetVocabProgress() async {
   final prefs = await SharedPreferences.getInstance();
   await prefs.remove(_webVocabDbKey);

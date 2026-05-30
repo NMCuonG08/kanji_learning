@@ -10,6 +10,7 @@ class KanjiDatabase {
 
   static Future<void> saveVocabProgress(int vocabId) => dbSaveVocabProgress(vocabId);
   static Future<Map<int, String>> getVocabProgress() => dbGetVocabProgress();
+  static Future<void> deleteVocabProgress(int vocabId) => dbDeleteVocabProgress(vocabId);
   static Future<void> resetVocabProgress() => dbResetVocabProgress();
 
   static Future<void> saveListeningProgress(int questionId) => dbSaveListeningProgress(questionId);
