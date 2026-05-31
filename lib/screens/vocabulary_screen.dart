@@ -4,7 +4,6 @@ import '../data/vocab_data.dart';
 import '../models/vocab.dart';
 import '../services/tts_service.dart';
 import '../database/db.dart';
-import 'vocab_match_game_screen.dart';
 import '../services/theme_service.dart';
 
 class TopicMeta {
@@ -257,11 +256,10 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
 
                 final pool = eligible.length >= 10 ? eligible : vocabList;
                 if (!context.mounted) return;
-                await Navigator.push(
+                await Navigator.pushNamed(
                   context,
-                  MaterialPageRoute(
-                    builder: (_) => VocabMatchGameScreen(pool: pool),
-                  ),
+                  '/vocab-match-game',
+                  arguments: {'pool': pool},
                 );
                 _loadProgress();
               },
@@ -327,14 +325,13 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
 
     return GestureDetector(
       onTap: () async {
-        await Navigator.push(
+        await Navigator.pushNamed(
           context,
-          MaterialPageRoute(
-            builder: (_) => VocabTopicDetailScreen(
-              topic: topic,
-              initialProgress: _vocabProgress,
-            ),
-          ),
+          '/vocab-topic-detail',
+          arguments: {
+            'topic': topic,
+            'initialProgress': _vocabProgress,
+          },
         );
         _loadProgress();
       },
@@ -746,16 +743,15 @@ class _VocabTopicDetailScreenState extends State<VocabTopicDetailScreen> {
                       return;
                     }
 
-                    await Navigator.push(
+                    await Navigator.pushNamed(
                       context,
-                      MaterialPageRoute(
-                        builder: (_) => VocabFlashcardScreen(
-                          topic: widget.topic,
-                          wordsBatch: finalBatch,
-                          initialProgress: _localProgress,
-                          isReviewMode: unlearned.isEmpty,
-                        ),
-                      ),
+                      '/vocab-flashcard',
+                      arguments: {
+                        'topic': widget.topic,
+                        'wordsBatch': finalBatch,
+                        'initialProgress': _localProgress,
+                        'isReviewMode': unlearned.isEmpty,
+                      },
                     );
                     
                     // Reload progress when returning

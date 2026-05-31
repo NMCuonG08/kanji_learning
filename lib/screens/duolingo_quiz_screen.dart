@@ -47,6 +47,7 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
   }
 
   void _loadCurrentChallenge() {
+    TtsService.stop(); // Stop any ongoing speech from the previous question immediately
     final challenge = _challenges[_currentIndex];
     setState(() {
       _selectedTokens = [];
@@ -68,7 +69,10 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
 
   void _selectToken(String token) {
     if (_isAnswerChecked) return;
-    TtsService.speak(token);
+    final challenge = _challenges[_currentIndex];
+    if (challenge.type == 'vi_to_jp') {
+      TtsService.speak(token);
+    }
     setState(() {
       _selectedTokens.add(token);
       _remainingJumbled.remove(token);
@@ -77,7 +81,10 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
 
   void _deselectToken(String token) {
     if (_isAnswerChecked) return;
-    TtsService.speak(token);
+    final challenge = _challenges[_currentIndex];
+    if (challenge.type == 'vi_to_jp') {
+      TtsService.speak(token);
+    }
     setState(() {
       _selectedTokens.remove(token);
       _remainingJumbled.add(token);
@@ -277,6 +284,53 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
     );
   }
 
+  void _showExplanationDialog(DuolingoChallenge challenge) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: ThemeService.getCardColor(context),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: BorderSide(color: ThemeService.getBorderColor(context), width: 2.0),
+          ),
+          title: Row(
+            children: [
+              const Icon(Icons.lightbulb, color: Colors.amber, size: 28),
+              const SizedBox(width: 8),
+              Text(
+                'Gợi Ý Học Tập',
+                style: TextStyle(
+                  color: ThemeService.getPrimaryTextColor(context),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          content: SingleChildScrollView(
+            child: Text(
+              challenge.explanation,
+              style: TextStyle(
+                color: ThemeService.getSecondaryTextColor(context),
+                fontSize: 14,
+                height: 1.4,
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              style: TextButton.styleFrom(
+                foregroundColor: const Color(0xFFE94560),
+              ),
+              child: const Text('Đã hiểu', style: TextStyle(fontWeight: FontWeight.bold)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Widget _buildPromptBubble(DuolingoChallenge challenge) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -314,13 +368,27 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
                       challenge.type == 'vi_to_jp' ? 'Dịch sang tiếng Nhật:' : 'Dịch sang tiếng Việt:',
                       style: const TextStyle(color: Color(0xFFE94560), fontSize: 12, fontWeight: FontWeight.bold),
                     ),
-                    if (challenge.type == 'jp_to_vi')
-                      IconButton(
-                        onPressed: () => TtsService.speak(challenge.prompt),
-                        icon: Icon(Icons.volume_up, color: ThemeService.getSecondaryTextColor(context), size: 20),
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                      ),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          onPressed: () => _showExplanationDialog(challenge),
+                          icon: const Icon(Icons.lightbulb, color: Colors.amber, size: 20),
+                          tooltip: 'Xem gợi ý ngữ pháp & từ vựng',
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                        ),
+                        if (challenge.type == 'jp_to_vi') ...[
+                          const SizedBox(width: 10),
+                          IconButton(
+                            onPressed: () => TtsService.speak(challenge.prompt),
+                            icon: Icon(Icons.volume_up, color: ThemeService.getSecondaryTextColor(context), size: 20),
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                          ),
+                        ],
+                      ],
+                    ),
                   ],
                 ),
                 const SizedBox(height: 8),
@@ -442,7 +510,9 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
                     return Draggable<int>(
                       data: index,
                       onDragStarted: () {
-                        TtsService.speak(token);
+                        if (challenge.type == 'vi_to_jp') {
+                          TtsService.speak(token);
+                        }
                       },
                       feedback: Material(
                         color: Colors.transparent,
@@ -595,11 +665,24 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
                 size: 28,
               ),
               const SizedBox(width: 8),
-              Text(
-                _isCorrect 
-                    ? 'Chính xác! Cực kỳ xuất sắc! 🎉' 
-                    : (_hasGivenUp ? 'Bạn đã chọn đầu hàng! 🏳️' : 'Chưa chính xác rồi!'),
-                style: TextStyle(color: accentColor, fontSize: 18, fontWeight: FontWeight.bold),
+              Expanded(
+                child: Text(
+                  _isCorrect 
+                      ? 'Chính xác! Cực kỳ xuất sắc! 🎉' 
+                      : (_hasGivenUp ? 'Bạn đã chọn đầu hàng! 🏳️' : 'Chưa chính xác rồi!'),
+                  style: TextStyle(color: accentColor, fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ),
+              IconButton(
+                onPressed: () {
+                  if (challenge.type == 'vi_to_jp') {
+                    TtsService.speak(challenge.target);
+                  } else {
+                    TtsService.speak(challenge.prompt);
+                  }
+                },
+                icon: Icon(Icons.volume_up, color: accentColor, size: 24),
+                tooltip: 'Nghe cả câu tiếng Nhật',
               ),
             ],
           ),
@@ -610,9 +693,22 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
               style: TextStyle(color: ThemeService.getMutedTextColor(context), fontSize: 10, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 4),
-            Text(
-              challenge.target,
-              style: TextStyle(color: ThemeService.getPrimaryTextColor(context), fontSize: 16, fontWeight: FontWeight.bold),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    challenge.target,
+                    style: TextStyle(color: ThemeService.getPrimaryTextColor(context), fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                if (challenge.type == 'vi_to_jp')
+                  IconButton(
+                    onPressed: () => TtsService.speak(challenge.target),
+                    icon: const Icon(Icons.volume_up, color: Colors.red, size: 20),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+              ],
             ),
           ],
           const SizedBox(height: 16),

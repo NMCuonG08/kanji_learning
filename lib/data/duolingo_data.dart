@@ -235,4 +235,239 @@ final List<DuolingoChallenge> duolingoChallenges = [
     type: "vi_to_jp",
     explanation: "🌟 NGỮ PHÁP BÀI 18:\n- Cấu trúc: [趣味は + Động từ thể từ điển (V辞書形) + ことです] dùng để danh từ hóa động từ để biểu đạt sở thích là hành động nào đó.\n- '見ます' thể từ điển là '見る'. '趣味' (しゅみ) là sở thích.",
   ),
+
+  // 16. Bài 11: Chỉ lượng từ (Vi -> Jp)
+  const DuolingoChallenge(
+    id: 16,
+    prompt: "Có 4 quả táo ở trên bàn.",
+    target: "テーブルの上にりんごが四つあります。",
+    correctOrder: ["テーブル", "の", "上に", "りんご", "が", "四つ", "あります"],
+    jumbledTokens: ["あります", "りんご", "が", "の", "四つ", "テーブル", "上に", "犬", "います"],
+    furigana: {
+      "上": "うえ",
+      "四つ": "よっつ",
+    },
+    type: "vi_to_jp",
+    explanation: "🌟 NGỮ PHÁP BÀI 11:\n- Lượng từ chỉ vật tròn/nhỏ: '四つ' (よっつ - 4 quả/cái).\n- Lượng từ đứng ngay trước động từ mà nó bổ nghĩa: 'りんごが四つあります'.\n- 'テーブルの上' là trên bàn.",
+  ),
+
+  // 17. Bài 12: So sánh hơn (Jp -> Vi)
+  const DuolingoChallenge(
+    id: 17,
+    prompt: "きょうはきのうよりさむいです。",
+    target: "Hôm nay lạnh hơn hôm qua.",
+    correctOrder: ["Hôm nay", "lạnh hơn", "hôm qua."],
+    jumbledTokens: ["lạnh hơn", "Hôm nay", "hôm qua.", "nóng hơn", "Hôm qua", "ngày mai"],
+    furigana: {},
+    type: "jp_to_vi",
+    jpPromptTokens: ["きょう", "は", "きのう", "より", "さむい", "です"],
+    explanation: "🌟 NGỮ PHÁP BÀI 12:\n- Cấu trúc so sánh hơn: [N1 は N2 より A です] (N1 thì ... hơn N2).\n- 'より' là từ so sánh ('hơn'). 'さむい' là lạnh.",
+  ),
+
+  // 18. Bài 13: Mục đích di chuyển (Vi -> Jp)
+  const DuolingoChallenge(
+    id: 18,
+    prompt: "Tôi đi đến siêu thị để mua sắm.",
+    target: "スーパーへ買い物に行きます。",
+    correctOrder: ["スーパー", "へ", "買い物", "に", "行きます"],
+    jumbledTokens: ["買い物", "スーパー", "へ", "に", "行きます", "来ます", "食べに", "デパート"],
+    furigana: {
+      "買い物": "かいもの",
+      "行": "い",
+    },
+    type: "vi_to_jp",
+    explanation: "🌟 NGỮ PHÁP BÀI 13:\n- Cấu trúc chỉ mục đích di chuyển: [Danh từ chỉ hành động + に + 行きます/来ます/帰ります].\n- '買い物' (かいもの) là việc mua sắm. '買い物に行きます' = đi để mua sắm.",
+  ),
+
+  // 19. Bài 14: Đang làm gì 〜ています (Jp -> Vi)
+  const DuolingoChallenge(
+    id: 19,
+    prompt: "ミラーさんは本を読んでいます。",
+    target: "Anh Miller đang đọc sách.",
+    correctOrder: ["Anh Miller", "đang đọc", "sách."],
+    jumbledTokens: ["đang đọc", "đang viết", "sách.", "Anh Miller", "báo", "chị Sato"],
+    furigana: {
+      "本": "ほん",
+      "読": "よ",
+    },
+    type: "jp_to_vi",
+    jpPromptTokens: ["ミラーさん", "は", "本", "を", "読んでいます"],
+    explanation: "🌟 NGỮ PHÁP BÀI 14:\n- Cấu trúc hiện tại tiếp diễn: [V-て + います] biểu thị hành động đang diễn ra.\n- '読みます' (đọc) chia thể て là '読んで'. '本' (ほん) là sách.",
+  ),
+
+  // 20. Bài 15: Xin phép làm gì (Vi -> Jp)
+  const DuolingoChallenge(
+    id: 20,
+    prompt: "Tôi ngồi ở đây có được không?",
+    target: "ここに座ってもいいですか。",
+    correctOrder: ["ここ", "に", "座って", "も", "いい", "ですか"],
+    jumbledTokens: ["座って", "ですか", "ここ", "に", "いい", "も", "入って", "đầu"],
+    furigana: {
+      "座": "すわ",
+    },
+    type: "vi_to_jp",
+    explanation: "🌟 NGỮ PHÁP BÀI 15:\n- Cấu trúc xin phép: [V-て + もいいですか] (Tôi làm ... có được không?).\n- '座ります' (ngồi) chia thể て là '座って'. Đi với giới từ 'に' chỉ vị trí ngồi.",
+  ),
+
+  // 21. Bài 15: Cấm làm gì 〜てはいけません (Jp -> Vi)
+  const DuolingoChallenge(
+    id: 21,
+    prompt: "ここで写真を撮ってはいけません。",
+    target: "Không được chụp ảnh ở đây.",
+    correctOrder: ["Không được", "chụp ảnh", "ở đây."],
+    jumbledTokens: ["chụp ảnh", "Không được", "ở đây.", "Hãy", "vẽ tranh", "ở đằng kia"],
+    furigana: {
+      "写真": "しゃしん",
+      "撮": "と",
+    },
+    type: "jp_to_vi",
+    jpPromptTokens: ["ここ", "で", "写真", "を", "撮って", "は", "いけません"],
+    explanation: "🌟 NGỮ PHÁP BÀI 15:\n- Cấu trúc cấm đoán: [V-て + はいけません] (Không được làm ...).\n- '撮ります' (chụp) chia thể て là '撮って'. '写真' (しゃしん) là ảnh.",
+  ),
+
+  // 22. Bài 16: Liên kết động từ thể て (Vi -> Jp)
+  const DuolingoChallenge(
+    id: 22,
+    prompt: "Hôm qua tôi đã xem phim rồi đi ngủ.",
+    target: "昨日映画を見て寝ました。",
+    correctOrder: ["昨日", "映画", "を", "見て", "寝ました"],
+    jumbledTokens: ["見て", "映画", "を", "昨日", "寝ました", "勉強しました", "行きました", "朝"],
+    furigana: {
+      "昨日": "きのう",
+      "映画": "えいが",
+      "見": "み",
+      "寝": "ね",
+    },
+    type: "vi_to_jp",
+    explanation: "🌟 NGỮ PHÁP BÀI 16:\n- Cách nối các hành động theo trình tự thời gian: [V1-て + V2-て + ... + V3].\n- Thì của cả câu được quyết định ở động từ cuối cùng: '寝ました' (quá khứ).",
+  ),
+
+  // 23. Bài 17: Hãy đừng làm gì (Jp -> Vi)
+  const DuolingoChallenge(
+    id: 23,
+    prompt: "忘れないでください。",
+    target: "Xin đừng quên.",
+    correctOrder: ["Xin", "đừng", "quên."],
+    jumbledTokens: ["Xin", "đừng", "quên.", "hãy", "nhớ", "nói"],
+    furigana: {
+      "忘": "わす",
+    },
+    type: "jp_to_vi",
+    jpPromptTokens: ["忘れ", "ないde", "ください"],
+    explanation: "🌟 NGỮ PHÁP BÀI 17:\n- Cấu trúc yêu cầu lịch sự không làm việc gì: [V-ない + でください] (Xin đừng...).\n- '忘れます' (quên) chia thể ない là '忘れない'.",
+  ),
+
+  // 24. Bài 17: Phải làm gì 〜なければなりません (Vi -> Jp)
+  const DuolingoChallenge(
+    id: 24,
+    prompt: "Tôi phải uống thuốc.",
+    target: "薬を飲まなければなりません。",
+    correctOrder: ["薬", "を", "飲まなければ", "なりません"],
+    jumbledTokens: ["飲まなければ", "薬", "を", "なりません", "いけません", "食べなければ", "本"],
+    furigana: {
+      "薬": "くすり",
+      "飲": "の",
+    },
+    type: "vi_to_jp",
+    explanation: "🌟 NGỮ PHÁP BÀI 17:\n- Cấu trúc biểu thị nghĩa vụ bắt buộc: [V-ない bỏ い + ければなりません] (Phải làm gì).\n- '薬を飲みます' = uống thuốc. Động từ '飲みます' chia thể ない -> '飲まない' -> '飲まなければなりません'.",
+  ),
+
+  // 25. Bài 19: Đã từng làm gì 〜たことがあります (Jp -> Vi)
+  const DuolingoChallenge(
+    id: 25,
+    prompt: "富士山に登ったことがあります。",
+    target: "Tôi đã từng leo núi Phú Sĩ.",
+    correctOrder: ["Tôi", "đã từng", "leo", "núi Phú Sĩ."],
+    jumbledTokens: ["núi Phú Sĩ.", "Tôi", "chưa từng", "leo", "đã từng", "ngắm"],
+    furigana: {
+      "富士山": "ふじさん",
+      "登": "のぼ",
+    },
+    type: "jp_to_vi",
+    jpPromptTokens: ["富士山", "に", "登った", "こと", "が", "あります"],
+    explanation: "🌟 NGỮ PHÁP BÀI 19:\n- Cấu trúc nói về kinh nghiệm trong quá khứ: [V-た + ことがあります] (Đã từng làm...).\n- '登ります' (leo) chia thể quá khứ ngắn V-た là '登った'. '富士山' là núi Phú Sĩ.",
+  ),
+
+  // 26. Bài 20: Thể thông thường (Vi -> Jp)
+  const DuolingoChallenge(
+    id: 26,
+    prompt: "Hôm nay bạn rảnh không?",
+    target: "今日暇。",
+    correctOrder: ["今日", "暇"],
+    jumbledTokens: ["暇", "今日", "忙しい", "ですか", "昨日", "は"],
+    furigana: {
+      "今日": "きょう",
+      "暇": "ひま",
+    },
+    type: "vi_to_jp",
+    explanation: "🌟 NGỮ PHÁP BÀI 20:\n- Thể thông thường (xuồng xã) trong giao tiếp hàng ngày.\n- Khi hỏi bằng tính từ đuôi な ở thể thông thường, lược bỏ 'だ' ở cuối câu và lên giọng ở cuối câu: '今日暇？' (Hôm nay rảnh không?).",
+  ),
+
+  // 27. Bài 21: Tôi nghĩ rằng 〜と思います (Jp -> Vi)
+  const DuolingoChallenge(
+    id: 27,
+    prompt: "明日は雨が降ると思います。",
+    target: "Tôi nghĩ ngày mai trời sẽ mưa.",
+    correctOrder: ["Tôi nghĩ", "ngày mai", "trời", "sẽ mưa."],
+    jumbledTokens: ["ngày mai", "hôm nay", "sẽ mưa.", "sẽ nắng", "trời", "Tôi nghĩ"],
+    furigana: {
+      "明日": "あした",
+      "雨": "あめ",
+      "降": "ふ",
+      "思": "おmo",
+    },
+    type: "jp_to_vi",
+    jpPromptTokens: ["明日", "は", "雨", "が", "降る", "と", "思います"],
+    explanation: "🌟 NGỮ PHÁP BÀI 21:\n- Cấu trúc biểu thị ý kiến, suy đoán cá nhân: [Mệnh đề thể thông thường + と思います] (Tôi nghĩ rằng...).\n- '降ります' (mưa rơi) chia thể thông thường là '降る'.",
+  ),
+
+  // 28. Bài 22: Định ngữ bổ nghĩa cho danh từ (Vi -> Jp)
+  const DuolingoChallenge(
+    id: 28,
+    prompt: "Đây là bức ảnh tôi đã chụp hôm qua.",
+    target: "これは昨日撮った写真です。",
+    correctOrder: ["これ", "は", "昨日", "撮った", "写真", "です"],
+    jumbledTokens: ["撮った", "写真", "です", "これ", "昨日", "は", "見る", "カメラ"],
+    furigana: {
+      "昨日": "きのう",
+      "撮": "と",
+      "写真": "しゃしん",
+    },
+    type: "vi_to_jp",
+    explanation: "🌟 NGỮ PHÁP BÀI 22:\n- Cấu trúc định ngữ bổ nghĩa cho danh từ: [Động từ thể thông thường + Danh từ].\n- '昨日撮った写真' = bức ảnh đã chụp hôm qua. Động từ bổ nghĩa đứng trước danh từ.",
+  ),
+
+  // 29. Bài 23: Khi làm gì 〜とき (Jp -> Vi)
+  const DuolingoChallenge(
+    id: 29,
+    prompt: "図書館で本を借りるとき,カードが必要です。",
+    target: "Khi mượn sách ở thư viện cần có thẻ.",
+    correctOrder: ["Khi mượn sách", "ở thư viện", "cần có", "thẻ."],
+    jumbledTokens: ["Khi mượn sách", "ở thư viện", "cần có", "thẻ.", "mua sách", "hiệu sách"],
+    furigana: {
+      "図書館": "としょかん",
+      "本": "ほん",
+      "借": "か",
+      "必要": "ひつよう",
+    },
+    type: "jp_to_vi",
+    jpPromptTokens: ["図書館", "で", "本", "を", "借りる", "とき", "カード", "が", "必要", "です"],
+    explanation: "🌟 NGỮ PHÁP BÀI 23:\n- Cấu trúc liên kết thời gian: [V-thông thường + とき] (Khi...).\n- '借りるとき' = khi mượn. '必要' (ひつよう) nghĩa là cần thiết / cần có.",
+  ),
+
+  // 30. Bài 24: Cho nhận hành động 〜てくれます (Vi -> Jp)
+  const DuolingoChallenge(
+    id: 30,
+    prompt: "Mẹ mua cho tôi chiếc áo len.",
+    target: "母は私にセーターを買ってくれました。",
+    correctOrder: ["母", "は", "私", "に", "セーター", "を", "買って", "くれました"],
+    jumbledTokens: ["買って", "くれました", "母", "は", "私", "に", "セーター", "を", "đáp", "báo"],
+    furigana: {
+      "母": "は{",
+      "私": "わたし",
+      "買": "か",
+    },
+    type: "vi_to_jp",
+    explanation: "🌟 NGỮ PHÁP BÀI 24:\n- Cấu trúc cho nhận: [Ai đó + は + Tôi + に + V-て + くれます] (Ai đó làm việc gì tốt giúp đỡ tôi).\n- 'セーター' là áo len. '買います' chia thể て là '買って'.",
+  ),
 ];

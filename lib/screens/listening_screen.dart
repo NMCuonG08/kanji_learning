@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../data/listening_data.dart';
 import '../models/listening_question.dart';
 import '../database/db.dart';
-import 'listening_quiz_screen.dart';
 import '../services/theme_service.dart';
 
 class ListeningScreen extends StatefulWidget {
@@ -245,14 +244,13 @@ class _ListeningScreenState extends State<ListeningScreen> {
             color: Colors.transparent,
             child: InkWell(
               onTap: () async {
-                await Navigator.push(
+                await Navigator.pushNamed(
                   context,
-                  MaterialPageRoute(
-                    builder: (_) => ListeningQuizScreen(
-                      question: q,
-                      onComplete: _loadProgress,
-                    ),
-                  ),
+                  '/listening-quiz',
+                  arguments: {
+                    'question': q,
+                    'onComplete': _loadProgress,
+                  },
                 );
                 _loadProgress();
               },

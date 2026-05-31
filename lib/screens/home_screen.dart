@@ -2,11 +2,8 @@ import 'package:flutter/material.dart';
 import '../data/kanji_data.dart';
 import '../models/kanji.dart';
 import '../database/db.dart';
-import 'quiz_screen.dart';
-import 'detail_screen.dart';
 import 'grammar_screen.dart';
 import 'vocabulary_screen.dart';
-import 'match_game_screen.dart';
 import 'listening_screen.dart';
 import '../services/theme_service.dart';
 
@@ -186,7 +183,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     : () async {
                         final list = _dueKanji..shuffle();
                         final batch = list.take(10).toList();
-                        await Navigator.push(context, MaterialPageRoute(builder: (_) => QuizScreen(kanjiList: batch, title: 'Học mới ($dueCount)')));
+                        await Navigator.pushNamed(
+                          context,
+                          '/quiz',
+                          arguments: {'kanjiList': batch, 'title': 'Học mới ($dueCount)'},
+                        );
                         _loadProgress();
                       },
                 icon: const Icon(Icons.school),
@@ -209,7 +210,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     : () async {
                         final list = _reviewableKanji..shuffle();
                         final batch = list.take(10).toList();
-                        await Navigator.push(context, MaterialPageRoute(builder: (_) => QuizScreen(kanjiList: batch, title: 'Ôn tập')));
+                        await Navigator.pushNamed(
+                          context,
+                          '/quiz',
+                          arguments: {'kanjiList': batch, 'title': 'Ôn tập'},
+                        );
                         _loadProgress();
                       },
                 icon: const Icon(Icons.replay),
@@ -232,7 +237,11 @@ class _HomeScreenState extends State<HomeScreen> {
           child: ElevatedButton.icon(
             onPressed: () async {
               final pool = List<Kanji>.from(kanjiList)..shuffle();
-              await Navigator.push(context, MaterialPageRoute(builder: (_) => MatchGameScreen(pool: pool)));
+              await Navigator.pushNamed(
+                context,
+                '/match-game',
+                arguments: {'pool': pool},
+              );
               _loadProgress();
             },
             icon: const Icon(Icons.extension),
@@ -280,9 +289,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
             return GestureDetector(
               onTap: () async {
-                await Navigator.push(
+                await Navigator.pushNamed(
                   context,
-                  MaterialPageRoute(builder: (_) => DetailScreen(kanji: kanji, mastery: mastery)),
+                  '/detail',
+                  arguments: {'kanji': kanji, 'mastery': mastery},
                 );
                 _loadProgress();
               },

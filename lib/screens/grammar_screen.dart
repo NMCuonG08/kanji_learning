@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import '../data/grammar_data.dart';
 import '../services/tts_service.dart';
 import '../services/theme_service.dart';
-import 'grammar_quiz_screen.dart';
-import 'duolingo_quiz_screen.dart';
 
 class GrammarScreen extends StatefulWidget {
   final Map<int, Map<String, dynamic>> progress;
@@ -37,10 +35,7 @@ class _GrammarScreenState extends State<GrammarScreen> {
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const GrammarQuizScreen()),
-                    );
+                    Navigator.pushNamed(context, '/grammar-quiz');
                   },
                   icon: const Icon(Icons.quiz, size: 18),
                   label: const Text('Trắc Nghiệm', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
@@ -57,10 +52,7 @@ class _GrammarScreenState extends State<GrammarScreen> {
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const DuolingoQuizScreen()),
-                    );
+                    Navigator.pushNamed(context, '/duolingo-quiz');
                   },
                   icon: const Icon(Icons.style, size: 18),
                   label: const Text('Ghép Câu Duolingo', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
