@@ -13,16 +13,16 @@ class ApiService {
     if (kIsWeb) {
       final origin = Uri.base.origin;
       // If we run 'flutter run -d chrome' locally, the app will run on port 8080+
-      // but the backend runs on port 3082. In this case, redirect to port 3082 directly.
-      if (origin.contains('localhost:') && !origin.contains(':3082') && !origin.contains(':8082')) {
-        return 'http://localhost:3082';
+      // but the backend runs on port 3686. In this case, redirect to port 3686 directly.
+      if (origin.contains('localhost:') && !origin.contains(':3686') && !origin.contains(':8686')) {
+        return 'http://localhost:3686';
       }
       return origin;
     }
     if (defaultTargetPlatform == TargetPlatform.android) {
-      return 'http://10.0.2.2:3082'; // Standard Android loopback IP
+      return 'http://10.0.2.2:3686'; // Standard Android loopback IP
     }
-    return 'http://localhost:3082';
+    return 'http://localhost:3686';
   }
 
   static String? get currentUsername => _username;

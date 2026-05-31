@@ -9,7 +9,7 @@ services:
       MYSQL_ROOT_PASSWORD: kanji_master_secure_password_2026
       MYSQL_DATABASE: kanji_learning
     ports:
-      - '3308:3306'
+      - '3386:3306'
     volumes:
       - mysql_data:/var/lib/mysql
 
@@ -19,14 +19,14 @@ services:
     container_name: kanji_backend
     restart: always
     environment:
-      PORT: 3082
+      PORT: 3686
       DB_HOST: db
       DB_USER: root
       DB_PASSWORD: kanji_master_secure_password_2026
       DB_NAME: kanji_learning
       JWT_SECRET: kanji_master_super_jwt_secret_key_2026
     ports:
-      - '3082:3082'
+      - '3686:3686'
     depends_on:
       - db
 
@@ -37,7 +37,7 @@ services:
     container_name: kanji_frontend
     restart: always
     ports:
-      - '8082:8082'
+      - '8686:8686'
     depends_on:
       - backend
 

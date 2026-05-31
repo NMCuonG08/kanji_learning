@@ -14,6 +14,6 @@ COPY . .
 # Delete local .env inside container to strictly respect docker-compose.yml values
 RUN rm -f .env
 
-EXPOSE 3082
+EXPOSE 3686
 
 CMD ["node", "index.js"]
