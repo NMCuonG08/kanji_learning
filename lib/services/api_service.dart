@@ -10,11 +10,19 @@ class ApiService {
 
   // Dynamic base URL resolver based on active platform
   static String get baseUrl {
-    if (kIsWeb) return 'http://localhost:3000';
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      return 'http://10.0.2.2:3000'; // Standard Android loopback IP
+    if (kIsWeb) {
+      final origin = Uri.base.origin;
+      // If we run 'flutter run -d chrome' locally, the app will run on port 8080+
+      // but the backend runs on port 3082. In this case, redirect to port 3082 directly.
+      if (origin.contains('localhost:') && !origin.contains(':3082') && !origin.contains(':8082')) {
+        return 'http://localhost:3082';
+      }
+      return origin;
     }
-    return 'http://localhost:3000';
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      return 'http://10.0.2.2:3082'; // Standard Android loopback IP
+    }
+    return 'http://localhost:3082';
   }
 
   static String? get currentUsername => _username;

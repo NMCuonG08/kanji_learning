@@ -14,10 +14,23 @@ const pool = mysql.createPool({
 
 async function initDb() {
   let connection;
-  try {
-    connection = await pool.getConnection();
-    console.log('Connected to MySQL Database Pool successfully.');
+  let retries = 10;
+  while (retries > 0) {
+    try {
+      connection = await pool.getConnection();
+      console.log('Connected to MySQL Database Pool successfully.');
+      break;
+    } catch (err) {
+      retries--;
+      console.log(`Failed to connect to MySQL database. Retries left: ${retries}. Error: ${err.message}`);
+      if (retries === 0) {
+        throw err;
+      }
+      await new Promise(resolve => setTimeout(resolve, 3000));
+    }
+  }
 
+  try {
     // 1. Create users table
     await connection.query(`
       CREATE TABLE IF NOT EXISTS users (
