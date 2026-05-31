@@ -6,6 +6,7 @@ import 'grammar_screen.dart';
 import 'vocabulary_screen.dart';
 import 'listening_screen.dart';
 import '../services/theme_service.dart';
+import '../services/api_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -71,6 +72,16 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () async {
                 await ThemeService.toggleTheme();
                 setState(() {});
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.logout),
+              tooltip: 'Đăng xuất',
+              onPressed: () async {
+                await ApiService.logout();
+                if (context.mounted) {
+                  Navigator.pushReplacementNamed(context, '/auth');
+                }
               },
             ),
           ],

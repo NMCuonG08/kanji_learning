@@ -1,6 +1,17 @@
+version: '3.8'
+
 services:
-  kanji-app:
-    build: .
+  db:
+    image: mysql:8.0
+    container_name: kanji_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password_here
+      MYSQL_DATABASE: kanji_learning
     ports:
-      - "8080:80"
-    restart: unless-stopped
+      - '3306:3306'
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:

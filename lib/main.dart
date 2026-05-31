@@ -8,14 +8,17 @@ import 'screens/grammar_quiz_screen.dart';
 import 'screens/duolingo_quiz_screen.dart';
 import 'screens/vocab_match_game_screen.dart';
 import 'screens/vocabulary_screen.dart';
+import 'screens/auth_screen.dart';
 import 'models/kanji.dart';
 import 'models/listening_question.dart';
 import 'models/vocab.dart';
 import 'services/theme_service.dart';
+import 'services/api_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await ThemeService.loadThemePreference();
+  await ApiService.init();
   runApp(const KanjiApp());
 }
 
@@ -27,33 +30,41 @@ class KanjiApp extends StatelessWidget {
     return ValueListenableBuilder<bool>(
       valueListenable: ThemeService.isDarkMode,
       builder: (context, isDark, _) {
-        return MaterialApp(
-          title: 'Kanji Master',
-          debugShowCheckedModeBanner: false,
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: const Color(0xFFE94560),
-              brightness: isDark ? Brightness.dark : Brightness.light,
-            ),
-            useMaterial3: true,
-            scaffoldBackgroundColor: isDark ? const Color(0xFF1A1A2E) : const Color(0xFFFAFAFA),
-            appBarTheme: AppBarTheme(
-              backgroundColor: isDark ? const Color(0xFF16213E) : const Color(0xFFFAFAFA),
-              foregroundColor: isDark ? Colors.white : Colors.black,
-              elevation: 0,
-            ),
-          ),
-          initialRoute: '/',
-          onGenerateRoute: (settings) {
-            final name = settings.name ?? '/';
-            
-            // Check routing match
-            switch (name) {
-              case '/':
-                return MaterialPageRoute(
-                  settings: settings,
-                  builder: (context) => const HomeScreen(),
-                );
+        return ValueListenableBuilder<bool>(
+          valueListenable: ApiService.isLoggedIn,
+          builder: (context, isLoggedIn, _) {
+            return MaterialApp(
+              title: 'Kanji Master',
+              debugShowCheckedModeBanner: false,
+              theme: ThemeData(
+                colorScheme: ColorScheme.fromSeed(
+                  seedColor: const Color(0xFFE94560),
+                  brightness: isDark ? Brightness.dark : Brightness.light,
+                ),
+                useMaterial3: true,
+                scaffoldBackgroundColor: isDark ? const Color(0xFF1A1A2E) : const Color(0xFFFAFAFA),
+                appBarTheme: AppBarTheme(
+                  backgroundColor: isDark ? const Color(0xFF16213E) : const Color(0xFFFAFAFA),
+                  foregroundColor: isDark ? Colors.white : Colors.black,
+                  elevation: 0,
+                ),
+              ),
+              initialRoute: isLoggedIn ? '/' : '/auth',
+              onGenerateRoute: (settings) {
+                final name = settings.name ?? '/';
+                
+                // Check routing match
+                switch (name) {
+                  case '/':
+                    return MaterialPageRoute(
+                      settings: settings,
+                      builder: (context) => const HomeScreen(),
+                    );
+                  case '/auth':
+                    return MaterialPageRoute(
+                      settings: settings,
+                      builder: (context) => const AuthScreen(),
+                    );
               case '/quiz':
                 final args = settings.arguments as Map<String, dynamic>? ?? {};
                 final list = args['kanjiList'] as List<Kanji>? ?? [];
@@ -141,5 +152,7 @@ class KanjiApp extends StatelessWidget {
         );
       },
     );
+  },
+);
   }
 }
