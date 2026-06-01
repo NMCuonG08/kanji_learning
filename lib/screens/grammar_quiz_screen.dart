@@ -30,16 +30,31 @@ class _GrammarQuizScreenState extends State<GrammarQuizScreen> {
     setState(() => _isLoading = true);
     
     final completedIds = await KanjiDatabase.getGrammarProgress();
-    var pool = grammarQuestions.where((q) => !completedIds.contains(q.id)).toList();
+    final uncompleted = grammarQuestions.where((q) => !completedIds.contains(q.id)).toList();
     
-    if (pool.length < 5) {
-      pool = List<GrammarQuestion>.from(grammarQuestions);
+    List<GrammarQuestion> quizList = [];
+    if (uncompleted.isEmpty) {
+      // Đã hoàn thành toàn bộ 50 câu! Reset lại và tải ngẫu nhiên từ toàn bộ kho
+      final allQuestions = List<GrammarQuestion>.from(grammarQuestions)..shuffle();
+      quizList = allQuestions.take(10).toList();
+    } else if (uncompleted.length >= 10) {
+      // Có nhiều hơn hoặc bằng 10 câu chưa làm
+      final shuffledUncompleted = List<GrammarQuestion>.from(uncompleted)..shuffle();
+      quizList = shuffledUncompleted.take(10).toList();
+    } else {
+      // Còn ít hơn 10 câu chưa làm: Lấy toàn bộ câu chưa làm, sau đó bồi thêm câu đã làm cho đủ 10 câu
+      final shuffledUncompleted = List<GrammarQuestion>.from(uncompleted)..shuffle();
+      quizList.addAll(shuffledUncompleted);
+      
+      final completed = grammarQuestions.where((q) => completedIds.contains(q.id)).toList();
+      final shuffledCompleted = List<GrammarQuestion>.from(completed)..shuffle();
+      
+      final needed = 10 - quizList.length;
+      quizList.addAll(shuffledCompleted.take(needed));
     }
     
-    final shuffled = List<GrammarQuestion>.from(pool)..shuffle();
-    
     setState(() {
-      _quizQuestions = shuffled.take(10).toList();
+      _quizQuestions = quizList;
       _currentIndex = 0;
       _selectedOptionIndex = null;
       _isAnswered = false;
@@ -150,22 +165,9 @@ class _GrammarQuizScreenState extends State<GrammarQuizScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(
-                    q.question,
-                    style: TextStyle(color: ThemeService.getPrimaryTextColor(context), fontSize: 24, fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.center,
-                  ),
+                  _buildQuestionText(q.question, context),
                   const SizedBox(height: 8),
-                  Text(
-                    q.reading,
-                    style: const TextStyle(
-                      color: Color(0xFF0F9D58), // Tông màu xanh lá đồng bộ với Furigana của Duolingo
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 0.5,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
+                  _buildReadingText(q.reading, context),
                   const SizedBox(height: 12),
                   Text(
                     q.translation,
@@ -318,6 +320,81 @@ class _GrammarQuizScreenState extends State<GrammarQuizScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildQuestionText(String questionText, BuildContext context) {
+    if (questionText.contains('[   ]')) {
+      final parts = questionText.split('[   ]');
+      return RichText(
+        textAlign: TextAlign.center,
+        text: TextSpan(
+          style: TextStyle(
+            color: ThemeService.getPrimaryTextColor(context),
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Outfit',
+          ),
+          children: [
+            TextSpan(text: parts[0]),
+            const TextSpan(
+              text: ' ____ ',
+              style: TextStyle(
+                color: Color(0xFFE94560), // Màu đỏ Neobrutalist chủ đạo cực kỳ nổi bật
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            if (parts.length > 1) TextSpan(text: parts[1]),
+          ],
+        ),
+      );
+    }
+    return Text(
+      questionText,
+      style: TextStyle(
+        color: ThemeService.getPrimaryTextColor(context),
+        fontSize: 24,
+        fontWeight: FontWeight.bold,
+      ),
+      textAlign: TextAlign.center,
+    );
+  }
+
+  Widget _buildReadingText(String readingText, BuildContext context) {
+    if (readingText.contains('[   ]')) {
+      final parts = readingText.split('[   ]');
+      return RichText(
+        textAlign: TextAlign.center,
+        text: TextSpan(
+          style: const TextStyle(
+            color: Color(0xFF0F9D58),
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 0.5,
+          ),
+          children: [
+            TextSpan(text: parts[0]),
+            const TextSpan(
+              text: ' ____ ',
+              style: TextStyle(
+                color: Color(0xFFE94560), // Màu đỏ đồng bộ cho ô trống điền khuyết
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            if (parts.length > 1) TextSpan(text: parts[1]),
+          ],
+        ),
+      );
+    }
+    return Text(
+      readingText,
+      style: const TextStyle(
+        color: Color(0xFF0F9D58),
+        fontSize: 16,
+        fontWeight: FontWeight.bold,
+        letterSpacing: 0.5,
+      ),
+      textAlign: TextAlign.center,
     );
   }
 }
