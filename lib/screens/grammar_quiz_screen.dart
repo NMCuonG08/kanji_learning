@@ -155,10 +155,21 @@ class _GrammarQuizScreenState extends State<GrammarQuizScreen> {
                     style: TextStyle(color: ThemeService.getPrimaryTextColor(context), fontSize: 24, fontWeight: FontWeight.bold),
                     textAlign: TextAlign.center,
                   ),
+                  const SizedBox(height: 8),
+                  Text(
+                    q.reading,
+                    style: const TextStyle(
+                      color: Color(0xFF0F9D58), // Tông màu xanh lá đồng bộ với Furigana của Duolingo
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.5,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
                   const SizedBox(height: 12),
                   Text(
                     q.translation,
-                    style: TextStyle(color: ThemeService.getMutedTextColor(context), fontSize: 16, fontStyle: FontStyle.italic),
+                    style: TextStyle(color: ThemeService.getMutedTextColor(context), fontSize: 15, fontStyle: FontStyle.italic),
                     textAlign: TextAlign.center,
                   ),
                 ],

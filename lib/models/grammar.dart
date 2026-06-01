@@ -24,6 +24,7 @@ class GrammarQuestion {
   final int id;
   final int lesson;
   final String question;
+  final String reading; // Phiên âm Hiragana của câu hỏi để người dùng dễ đọc
   final String translation;
   final List<String> options;
   final int correctOptionIndex;
@@ -33,6 +34,7 @@ class GrammarQuestion {
     required this.id,
     required this.lesson,
     required this.question,
+    required this.reading,
     required this.translation,
     required this.options,
     required this.correctOptionIndex,
