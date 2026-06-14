@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 const String _webKanjiDbKey = 'kanji_progress';
 const String _webVocabDbKey = 'vocab_progress';
+const String _webDuolingoDbKey = 'duolingo_progress';
 
 // === Kanji Progress ===
 Future<Map<int, Map<String, dynamic>>> dbGetAllProgress() async {
@@ -39,7 +40,7 @@ Future<void> dbSetStatus(int kanjiId, String status) async {
   final nextReview = status == 'learned'
       ? now.add(const Duration(days: 5))
       : now.add(const Duration(hours: 1));
-  
+
   if (!data.containsKey(kanjiId)) {
     data[kanjiId] = {
       'kanjiId': kanjiId,
@@ -51,7 +52,9 @@ Future<void> dbSetStatus(int kanjiId, String status) async {
       'status': status,
     };
   } else {
-    final Map<String, dynamic> entry = Map<String, dynamic>.from(data[kanjiId]!);
+    final Map<String, dynamic> entry = Map<String, dynamic>.from(
+      data[kanjiId]!,
+    );
     entry['status'] = status;
     entry['lastReviewed'] = now.toIso8601String();
     entry['nextReviewAt'] = nextReview.toIso8601String();
@@ -63,7 +66,9 @@ Future<void> dbSetStatus(int kanjiId, String status) async {
 Future<void> dbSaveProgress(int kanjiId, bool correct) async {
   final dataMap = await dbGetAllProgress();
   final now = DateTime.now();
-  final nextReview = correct ? now.add(const Duration(hours: 24)) : now.add(const Duration(hours: 1));
+  final nextReview = correct
+      ? now.add(const Duration(hours: 24))
+      : now.add(const Duration(hours: 1));
   if (!dataMap.containsKey(kanjiId)) {
     dataMap[kanjiId] = {
       'kanjiId': kanjiId,
@@ -75,12 +80,15 @@ Future<void> dbSaveProgress(int kanjiId, bool correct) async {
       'status': 'learning',
     };
   } else {
-    final Map<String, dynamic> entry = Map<String, dynamic>.from(dataMap[kanjiId]!);
-    int correctCount = (entry['correctCount'] as num).toInt() + (correct ? 1 : 0);
+    final Map<String, dynamic> entry = Map<String, dynamic>.from(
+      dataMap[kanjiId]!,
+    );
+    int correctCount =
+        (entry['correctCount'] as num).toInt() + (correct ? 1 : 0);
     int wrongCount = (entry['wrongCount'] as num).toInt() + (correct ? 0 : 1);
     int mastery = (entry['masteryLevel'] as num).toInt();
     mastery = correct ? (mastery + 1).clamp(0, 5) : (mastery - 1).clamp(0, 5);
-    
+
     entry['correctCount'] = correctCount;
     entry['wrongCount'] = wrongCount;
     entry['lastReviewed'] = now.toIso8601String();
@@ -199,4 +207,31 @@ Future<List<int>> dbGetGrammarProgress() async {
 Future<void> dbResetGrammarProgress() async {
   final prefs = await SharedPreferences.getInstance();
   await prefs.remove(_webGrammarDbKey);
+}
+
+// === Duolingo Sentence Progress ===
+Future<void> dbSaveDuolingoProgress(int challengeId) async {
+  final progress = await dbGetDuolingoProgress();
+  if (!progress.contains(challengeId)) {
+    progress.add(challengeId);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_webDuolingoDbKey, jsonEncode(progress));
+  }
+}
+
+Future<List<int>> dbGetDuolingoProgress() async {
+  final prefs = await SharedPreferences.getInstance();
+  final String? jsonStr = prefs.getString(_webDuolingoDbKey);
+  if (jsonStr == null) return [];
+  try {
+    final List<dynamic> decoded = jsonDecode(jsonStr);
+    return decoded.cast<int>();
+  } catch (e) {
+    return [];
+  }
+}
+
+Future<void> dbResetDuolingoProgress() async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.remove(_webDuolingoDbKey);
 }

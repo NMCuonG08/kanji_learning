@@ -16,3 +16,7 @@ Future<void> dbResetListeningProgress() async {}
 Future<void> dbSaveGrammarProgress(int questionId) async {}
 Future<List<int>> dbGetGrammarProgress() async => [];
 Future<void> dbResetGrammarProgress() async {}
+
+Future<void> dbSaveDuolingoProgress(int challengeId) async {}
+Future<List<int>> dbGetDuolingoProgress() async => [];
+Future<void> dbResetDuolingoProgress() async {}

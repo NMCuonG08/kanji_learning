@@ -20,7 +20,7 @@ Future<Database> _getDb() async {
   final dbPath = await getDatabasesPath();
   _database = await openDatabase(
     join(dbPath, 'kanji_learning.db'),
-    version: 6,
+    version: 7,
     onCreate: (db, version) async {
       await db.execute('''
         CREATE TABLE progress(
@@ -51,13 +51,21 @@ Future<Database> _getDb() async {
           completedAt TEXT
         )
       ''');
+      await db.execute('''
+        CREATE TABLE duolingo_progress(
+          challengeId INTEGER PRIMARY KEY,
+          completedAt TEXT
+        )
+      ''');
     },
     onUpgrade: (db, oldVersion, newVersion) async {
       if (oldVersion < 2) {
         await db.execute('ALTER TABLE progress ADD COLUMN nextReviewAt TEXT');
       }
       if (oldVersion < 3) {
-        await db.execute("ALTER TABLE progress ADD COLUMN status TEXT DEFAULT 'new'");
+        await db.execute(
+          "ALTER TABLE progress ADD COLUMN status TEXT DEFAULT 'new'",
+        );
       }
       if (oldVersion < 4) {
         await db.execute('''
@@ -77,8 +85,16 @@ Future<Database> _getDb() async {
       }
       if (oldVersion < 6) {
         await db.execute('''
-          CREATE TABLE grammar_progress(
+          CREATE TABLE IF NOT EXISTS grammar_progress(
             questionId INTEGER PRIMARY KEY,
+            completedAt TEXT
+          )
+        ''');
+      }
+      if (oldVersion < 7) {
+        await db.execute('''
+          CREATE TABLE IF NOT EXISTS duolingo_progress(
+            challengeId INTEGER PRIMARY KEY,
             completedAt TEXT
           )
         ''');
@@ -88,38 +104,61 @@ Future<Database> _getDb() async {
   return _database!;
 }
 
-
 Future<void> dbSetStatus(int kanjiId, String status) async {
   final db = await _getDb();
   final now = DateTime.now();
   final nextReview = status == 'learned'
       ? now.add(const Duration(days: 5))
       : now.add(const Duration(hours: 1));
-  final existing = await db.query('progress', where: 'kanjiId = ?', whereArgs: [kanjiId]);
+  final existing = await db.query(
+    'progress',
+    where: 'kanjiId = ?',
+    whereArgs: [kanjiId],
+  );
   if (existing.isEmpty) {
     await db.insert('progress', {
-      'kanjiId': kanjiId, 'correctCount': 0, 'wrongCount': 0,
-      'lastReviewed': now.toIso8601String(), 'masteryLevel': 0,
-      'nextReviewAt': nextReview.toIso8601String(), 'status': status,
+      'kanjiId': kanjiId,
+      'correctCount': 0,
+      'wrongCount': 0,
+      'lastReviewed': now.toIso8601String(),
+      'masteryLevel': 0,
+      'nextReviewAt': nextReview.toIso8601String(),
+      'status': status,
     });
   } else {
-    await db.update('progress', {
-      'status': status, 'lastReviewed': now.toIso8601String(),
-      'nextReviewAt': nextReview.toIso8601String(),
-    }, where: 'kanjiId = ?', whereArgs: [kanjiId]);
+    await db.update(
+      'progress',
+      {
+        'status': status,
+        'lastReviewed': now.toIso8601String(),
+        'nextReviewAt': nextReview.toIso8601String(),
+      },
+      where: 'kanjiId = ?',
+      whereArgs: [kanjiId],
+    );
   }
 }
 
 Future<void> dbSaveProgress(int kanjiId, bool correct) async {
   final db = await _getDb();
-  final existing = await db.query('progress', where: 'kanjiId = ?', whereArgs: [kanjiId]);
+  final existing = await db.query(
+    'progress',
+    where: 'kanjiId = ?',
+    whereArgs: [kanjiId],
+  );
   final now = DateTime.now();
-  final nextReview = correct ? now.add(const Duration(hours: 24)) : now.add(const Duration(hours: 1));
+  final nextReview = correct
+      ? now.add(const Duration(hours: 24))
+      : now.add(const Duration(hours: 1));
   if (existing.isEmpty) {
     await db.insert('progress', {
-      'kanjiId': kanjiId, 'correctCount': correct ? 1 : 0, 'wrongCount': correct ? 0 : 1,
-      'lastReviewed': now.toIso8601String(), 'masteryLevel': correct ? 1 : 0,
-      'nextReviewAt': nextReview.toIso8601String(), 'status': 'learning',
+      'kanjiId': kanjiId,
+      'correctCount': correct ? 1 : 0,
+      'wrongCount': correct ? 0 : 1,
+      'lastReviewed': now.toIso8601String(),
+      'masteryLevel': correct ? 1 : 0,
+      'nextReviewAt': nextReview.toIso8601String(),
+      'status': 'learning',
     });
   } else {
     final row = existing.first;
@@ -127,11 +166,18 @@ Future<void> dbSaveProgress(int kanjiId, bool correct) async {
     int wrongCount = (row['wrongCount'] as int) + (correct ? 0 : 1);
     int mastery = row['masteryLevel'] as int;
     mastery = correct ? (mastery + 1).clamp(0, 5) : (mastery - 1).clamp(0, 5);
-    await db.update('progress', {
-      'correctCount': correctCount, 'wrongCount': wrongCount,
-      'lastReviewed': now.toIso8601String(), 'masteryLevel': mastery,
-      'nextReviewAt': nextReview.toIso8601String(),
-    }, where: 'kanjiId = ?', whereArgs: [kanjiId]);
+    await db.update(
+      'progress',
+      {
+        'correctCount': correctCount,
+        'wrongCount': wrongCount,
+        'lastReviewed': now.toIso8601String(),
+        'masteryLevel': mastery,
+        'nextReviewAt': nextReview.toIso8601String(),
+      },
+      where: 'kanjiId = ?',
+      whereArgs: [kanjiId],
+    );
   }
 }
 
@@ -217,4 +263,24 @@ Future<List<int>> dbGetGrammarProgress() async {
 Future<void> dbResetGrammarProgress() async {
   final db = await _getDb();
   await db.delete('grammar_progress');
+}
+
+Future<void> dbSaveDuolingoProgress(int challengeId) async {
+  final db = await _getDb();
+  final now = DateTime.now().toIso8601String();
+  await db.insert('duolingo_progress', {
+    'challengeId': challengeId,
+    'completedAt': now,
+  }, conflictAlgorithm: ConflictAlgorithm.replace);
+}
+
+Future<List<int>> dbGetDuolingoProgress() async {
+  final db = await _getDb();
+  final List<Map<String, dynamic>> rows = await db.query('duolingo_progress');
+  return rows.map((row) => row['challengeId'] as int).toList();
+}
+
+Future<void> dbResetDuolingoProgress() async {
+  final db = await _getDb();
+  await db.delete('duolingo_progress');
 }

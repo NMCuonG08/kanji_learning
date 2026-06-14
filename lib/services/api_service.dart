@@ -14,7 +14,9 @@ class ApiService {
       final origin = Uri.base.origin;
       // If we run 'flutter run -d chrome' locally, the app will run on port 8080+
       // but the backend runs on port 3686. In this case, redirect to port 3686 directly.
-      if (origin.contains('localhost:') && !origin.contains(':3686') && !origin.contains(':8686')) {
+      if (origin.contains('localhost:') &&
+          !origin.contains(':3686') &&
+          !origin.contains(':8686')) {
         return 'http://localhost:3686';
       }
       return origin;
@@ -37,7 +39,10 @@ class ApiService {
 
   // --- Auth API ---
 
-  static Future<Map<String, dynamic>> register(String username, String password) async {
+  static Future<Map<String, dynamic>> register(
+    String username,
+    String password,
+  ) async {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/api/auth/register'),
@@ -53,11 +58,17 @@ class ApiService {
         return {'success': false, 'message': data['error'] ?? 'Lỗi đăng ký!'};
       }
     } catch (e) {
-      return {'success': false, 'message': 'Không thể kết nối tới máy chủ backend!'};
+      return {
+        'success': false,
+        'message': 'Không thể kết nối tới máy chủ backend!',
+      };
     }
   }
 
-  static Future<Map<String, dynamic>> login(String username, String password) async {
+  static Future<Map<String, dynamic>> login(
+    String username,
+    String password,
+  ) async {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/api/auth/login'),
@@ -70,10 +81,16 @@ class ApiService {
         await _saveCredentials(data['token'], data['user']['username']);
         return {'success': true, 'message': data['message']};
       } else {
-        return {'success': false, 'message': data['error'] ?? 'Tài khoản hoặc mật khẩu không đúng!'};
+        return {
+          'success': false,
+          'message': data['error'] ?? 'Tài khoản hoặc mật khẩu không đúng!',
+        };
       }
     } catch (e) {
-      return {'success': false, 'message': 'Không thể kết nối tới máy chủ backend!'};
+      return {
+        'success': false,
+        'message': 'Không thể kết nối tới máy chủ backend!',
+      };
     }
   }
 
@@ -106,15 +123,25 @@ class ApiService {
   }
 
   static Future<http.Response> _get(String path) async {
-    return http.get(Uri.parse('$baseUrl$path'), headers: _headers);
+    return http
+        .get(Uri.parse('$baseUrl$path'), headers: _headers)
+        .timeout(const Duration(seconds: 5));
   }
 
   static Future<http.Response> _post(String path, dynamic body) async {
-    return http.post(Uri.parse('$baseUrl$path'), headers: _headers, body: jsonEncode(body));
+    return http
+        .post(
+          Uri.parse('$baseUrl$path'),
+          headers: _headers,
+          body: jsonEncode(body),
+        )
+        .timeout(const Duration(seconds: 5));
   }
 
   static Future<http.Response> _delete(String path) async {
-    return http.delete(Uri.parse('$baseUrl$path'), headers: _headers);
+    return http
+        .delete(Uri.parse('$baseUrl$path'), headers: _headers)
+        .timeout(const Duration(seconds: 5));
   }
 
   // --- Progress Synced API ---
@@ -175,7 +202,10 @@ class ApiService {
   static Future<void> saveVocabProgress(int vocabId, String timestamp) async {
     if (!isLoggedIn.value) return;
     try {
-      await _post('/api/vocab-progress', {'vocabId': vocabId, 'lastCorrectAt': timestamp});
+      await _post('/api/vocab-progress', {
+        'vocabId': vocabId,
+        'lastCorrectAt': timestamp,
+      });
     } catch (e) {
       debugPrint('Failed to save Vocab progress: $e');
     }
@@ -235,6 +265,30 @@ class ApiService {
       await _post('/api/grammar-progress', {'questionId': questionId});
     } catch (e) {
       debugPrint('Failed to save Grammar progress: $e');
+    }
+  }
+
+  // Duolingo sentence progress
+  static Future<List<int>> getDuolingoProgress() async {
+    if (!isLoggedIn.value) return [];
+    try {
+      final res = await _get('/api/duolingo-progress');
+      if (res.statusCode == 200) {
+        final List<dynamic> decoded = jsonDecode(res.body);
+        return decoded.cast<int>();
+      }
+    } catch (e) {
+      debugPrint('Failed to fetch Duolingo progress: $e');
+    }
+    return [];
+  }
+
+  static Future<void> saveDuolingoProgress(int challengeId) async {
+    if (!isLoggedIn.value) return;
+    try {
+      await _post('/api/duolingo-progress', {'challengeId': challengeId});
+    } catch (e) {
+      debugPrint('Failed to save Duolingo progress: $e');
     }
   }
 

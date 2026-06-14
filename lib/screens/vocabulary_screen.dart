@@ -246,20 +246,11 @@ class _VocabularyScreenState extends State<VocabularyScreen> {
             width: double.infinity,
             child: ElevatedButton.icon(
               onPressed: () async {
-                final progress = await KanjiDatabase.getVocabProgress();
-                final now = DateTime.now();
-                final eligible = vocabList.where((v) {
-                  if (!progress.containsKey(v.id)) return true;
-                  final lastCorrect = DateTime.parse(progress[v.id]!);
-                  return now.difference(lastCorrect).inHours >= 72; // 3 days
-                }).toList();
-
-                final pool = eligible.length >= 10 ? eligible : vocabList;
                 if (!context.mounted) return;
                 await Navigator.pushNamed(
                   context,
                   '/vocab-match-game',
-                  arguments: {'pool': pool},
+                  arguments: {'pool': vocabList},
                 );
                 _loadProgress();
               },

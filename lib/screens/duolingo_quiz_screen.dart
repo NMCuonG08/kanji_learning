@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../data/duolingo_data.dart';
+import '../database/db.dart';
 import '../models/duolingo_challenge.dart';
 import '../services/tts_service.dart';
 import '../services/theme_service.dart';
@@ -32,18 +33,45 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
     _startQuiz();
   }
 
-  void _startQuiz() {
+  Future<void> _startQuiz() async {
     setState(() => _isLoading = true);
-    // Shuffle and pick 10 challenges
-    final shuffled = List<DuolingoChallenge>.from(duolingoChallenges)..shuffle();
+
+    final completedIds = await KanjiDatabase.getDuolingoProgress();
+    final uncompleted = duolingoChallenges
+        .where((c) => !completedIds.contains(c.id))
+        .toList();
+
+    final quizList = <DuolingoChallenge>[];
+    if (uncompleted.isEmpty) {
+      final shuffled = List<DuolingoChallenge>.from(duolingoChallenges)
+        ..shuffle();
+      quizList.addAll(shuffled.take(10));
+    } else if (uncompleted.length >= 10) {
+      final shuffledUncompleted = List<DuolingoChallenge>.from(uncompleted)
+        ..shuffle();
+      quizList.addAll(shuffledUncompleted.take(10));
+    } else {
+      final shuffledUncompleted = List<DuolingoChallenge>.from(uncompleted)
+        ..shuffle();
+      quizList.addAll(shuffledUncompleted);
+
+      final completed = duolingoChallenges
+          .where((c) => completedIds.contains(c.id))
+          .toList();
+      final shuffledCompleted = List<DuolingoChallenge>.from(completed)
+        ..shuffle();
+      quizList.addAll(shuffledCompleted.take(10 - quizList.length));
+    }
+
+    if (!mounted) return;
     setState(() {
-      _challenges = shuffled.take(10).toList();
+      _challenges = quizList;
       _currentIndex = 0;
       _score = 0;
       _isFinished = false;
       _isLoading = false;
-      _loadCurrentChallenge();
     });
+    _loadCurrentChallenge();
   }
 
   void _loadCurrentChallenge() {
@@ -94,7 +122,8 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
   int _calculateCorrectPositions(DuolingoChallenge challenge) {
     int count = 0;
     for (int i = 0; i < _selectedTokens.length; i++) {
-      if (i < challenge.correctOrder.length && _selectedTokens[i] == challenge.correctOrder[i]) {
+      if (i < challenge.correctOrder.length &&
+          _selectedTokens[i] == challenge.correctOrder[i]) {
         count++;
       }
     }
@@ -117,21 +146,45 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
     }
   }
 
-  void _checkAnswer() {
+  Future<void> _checkAnswer() async {
     final challenge = _challenges[_currentIndex];
-    final joinedSelected = _selectedTokens.join(' ').replaceAll(' .', '.').replaceAll(' ,', ',');
-    final joinedTarget = challenge.correctOrder.join(' ').replaceAll(' .', '.').replaceAll(' ,', ',');
+    final joinedSelected = _selectedTokens
+        .join(' ')
+        .replaceAll(' .', '.')
+        .replaceAll(' ,', ',');
+    final joinedTarget = challenge.correctOrder
+        .join(' ')
+        .replaceAll(' .', '.')
+        .replaceAll(' ,', ',');
 
     bool isCorrect = false;
     if (challenge.type == 'vi_to_jp') {
       // For Japanese, ignore spaces and punctuations for flexibility
-      final cleanSelected = _selectedTokens.join('').replaceAll('。', '').replaceAll('、', '').replaceAll('・', '').replaceAll(' ', '');
-      final cleanCorrect = challenge.correctOrder.join('').replaceAll('。', '').replaceAll('、', '').replaceAll('・', '').replaceAll(' ', '');
+      final cleanSelected = _selectedTokens
+          .join('')
+          .replaceAll('。', '')
+          .replaceAll('、', '')
+          .replaceAll('・', '')
+          .replaceAll(' ', '');
+      final cleanCorrect = challenge.correctOrder
+          .join('')
+          .replaceAll('。', '')
+          .replaceAll('、', '')
+          .replaceAll('・', '')
+          .replaceAll(' ', '');
       isCorrect = cleanSelected == cleanCorrect;
     } else {
       // For Vietnamese, clean up punctuation and trailing spaces
-      final cleanSelected = joinedSelected.trim().toLowerCase().replaceAll('.', '').replaceAll('?', '');
-      final cleanCorrect = joinedTarget.trim().toLowerCase().replaceAll('.', '').replaceAll('?', '');
+      final cleanSelected = joinedSelected
+          .trim()
+          .toLowerCase()
+          .replaceAll('.', '')
+          .replaceAll('?', '');
+      final cleanCorrect = joinedTarget
+          .trim()
+          .toLowerCase()
+          .replaceAll('.', '')
+          .replaceAll('?', '');
       isCorrect = cleanSelected == cleanCorrect;
     }
 
@@ -151,6 +204,7 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
 
     // Play TTS speech of the Japanese sentence only if correct
     if (isCorrect) {
+      await KanjiDatabase.saveDuolingoProgress(challenge.id);
       if (challenge.type == 'vi_to_jp') {
         TtsService.speak(challenge.target);
       } else {
@@ -175,25 +229,30 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
     if (_isLoading) {
       return const Scaffold(
         backgroundColor: Color(0xFF1A1A2E),
-        body: Center(child: CircularProgressIndicator(color: Color(0xFFE94560))),
+        body: Center(
+          child: CircularProgressIndicator(color: Color(0xFFE94560)),
+        ),
       );
     }
 
     return Scaffold(
-        backgroundColor: const Color(0xFF1A1A2E),
-        appBar: AppBar(
-          title: const Text('Ghép Câu Duolingo', style: TextStyle(fontWeight: FontWeight.bold)),
-          backgroundColor: const Color(0xFF16213E),
-          foregroundColor: Colors.white,
-          elevation: 0,
-          leading: IconButton(
-            icon: const Icon(Icons.close),
-            onPressed: () => Navigator.pop(context),
-          ),
+      backgroundColor: const Color(0xFF1A1A2E),
+      appBar: AppBar(
+        title: const Text(
+          'Ghép Câu Duolingo',
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        body: _isFinished ? _buildVictoryScreen() : _buildQuizSession(),
-      );
-    }
+        backgroundColor: const Color(0xFF16213E),
+        foregroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: _isFinished ? _buildVictoryScreen() : _buildQuizSession(),
+    );
+  }
 
   Widget _buildQuizSession() {
     final challenge = _challenges[_currentIndex];
@@ -212,11 +271,19 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
                 children: [
                   Text(
                     'Thử thách ${_currentIndex + 1}/${_challenges.length}',
-                    style: const TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   Text(
                     'Đúng: $_score',
-                    style: const TextStyle(color: Colors.green, fontSize: 13, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      color: Colors.green,
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ],
               ),
@@ -243,7 +310,7 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const SizedBox(height: 12),
-                
+
                 // Prompt bubble box (Duolingo Style)
                 _buildPromptBubble(challenge),
 
@@ -252,7 +319,12 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
                 // Selected Answer slots area
                 const Text(
                   'CÂU TRẢ LỜI CỦA BẠN:',
-                  style: TextStyle(color: Colors.white38, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1),
+                  style: TextStyle(
+                    color: Colors.white38,
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 _buildAnswerSlots(challenge),
@@ -267,11 +339,16 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
                 // Jumbled Word Bank
                 const Text(
                   'BỘ TỪ VỰNG GỢI Ý:',
-                  style: TextStyle(color: Colors.white38, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1),
+                  style: TextStyle(
+                    color: Colors.white38,
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 1,
+                  ),
                 ),
                 const SizedBox(height: 12),
                 _buildJumbledBank(challenge),
-                
+
                 const SizedBox(height: 24),
               ],
             ),
@@ -292,7 +369,10 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
           backgroundColor: ThemeService.getCardColor(context),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
-            side: BorderSide(color: ThemeService.getBorderColor(context), width: 2.0),
+            side: BorderSide(
+              color: ThemeService.getBorderColor(context),
+              width: 2.0,
+            ),
           ),
           title: Row(
             children: [
@@ -323,7 +403,10 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
               style: TextButton.styleFrom(
                 foregroundColor: const Color(0xFFE94560),
               ),
-              child: const Text('Đã hiểu', style: TextStyle(fontWeight: FontWeight.bold)),
+              child: const Text(
+                'Đã hiểu',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
             ),
           ],
         );
@@ -343,11 +426,7 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
             shape: BoxShape.circle,
             border: Border.all(color: const Color(0xFFE94560), width: 1.5),
           ),
-          child: const Icon(
-            Icons.face,
-            color: Colors.white,
-            size: 32,
-          ),
+          child: const Icon(Icons.face, color: Colors.white, size: 32),
         ),
         const SizedBox(width: 12),
         Expanded(
@@ -355,7 +434,10 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
             decoration: BoxDecoration(
               color: ThemeService.getCardColor(context),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: ThemeService.getBorderColor(context), width: 1.5),
+              border: Border.all(
+                color: ThemeService.getBorderColor(context),
+                width: 1.5,
+              ),
             ),
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -365,15 +447,25 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      challenge.type == 'vi_to_jp' ? 'Dịch sang tiếng Nhật:' : 'Dịch sang tiếng Việt:',
-                      style: const TextStyle(color: Color(0xFFE94560), fontSize: 12, fontWeight: FontWeight.bold),
+                      challenge.type == 'vi_to_jp'
+                          ? 'Dịch sang tiếng Nhật:'
+                          : 'Dịch sang tiếng Việt:',
+                      style: const TextStyle(
+                        color: Color(0xFFE94560),
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         IconButton(
                           onPressed: () => _showExplanationDialog(challenge),
-                          icon: const Icon(Icons.lightbulb, color: Colors.amber, size: 20),
+                          icon: const Icon(
+                            Icons.lightbulb,
+                            color: Colors.amber,
+                            size: 20,
+                          ),
                           tooltip: 'Xem gợi ý ngữ pháp & từ vựng',
                           padding: EdgeInsets.zero,
                           constraints: const BoxConstraints(),
@@ -382,7 +474,13 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
                           const SizedBox(width: 10),
                           IconButton(
                             onPressed: () => TtsService.speak(challenge.prompt),
-                            icon: Icon(Icons.volume_up, color: ThemeService.getSecondaryTextColor(context), size: 20),
+                            icon: Icon(
+                              Icons.volume_up,
+                              color: ThemeService.getSecondaryTextColor(
+                                context,
+                              ),
+                              size: 20,
+                            ),
                             padding: EdgeInsets.zero,
                             constraints: const BoxConstraints(),
                           ),
@@ -392,14 +490,22 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
                   ],
                 ),
                 const SizedBox(height: 8),
-                
+
                 // Display sentence
                 challenge.type == 'vi_to_jp'
                     ? Text(
                         challenge.prompt,
-                        style: TextStyle(color: ThemeService.getPrimaryTextColor(context), fontSize: 19, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          color: ThemeService.getPrimaryTextColor(context),
+                          fontSize: 19,
+                          fontWeight: FontWeight.bold,
+                        ),
                       )
-                    : _buildSentenceWithFurigana(challenge.prompt, challenge.jpPromptTokens ?? [], challenge.furigana),
+                    : _buildSentenceWithFurigana(
+                        challenge.prompt,
+                        challenge.jpPromptTokens ?? [],
+                        challenge.furigana,
+                      ),
               ],
             ),
           ),
@@ -408,13 +514,22 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
     );
   }
 
-  Widget _buildSentenceWithFurigana(String targetSentence, List<String> jpTokens, Map<String, String> furigana) {
+  Widget _buildSentenceWithFurigana(
+    String targetSentence,
+    List<String> jpTokens,
+    Map<String, String> furigana,
+  ) {
     return Wrap(
       spacing: 6,
       runSpacing: 4,
       children: jpTokens.map((token) {
         final fReading = furigana[token];
-        return _buildFuriganaTextWidget(token, fReading, fontSize: 19, furiganaSize: 11);
+        return _buildFuriganaTextWidget(
+          token,
+          fReading,
+          fontSize: 19,
+          furiganaSize: 11,
+        );
       }).toList(),
     );
   }
@@ -435,7 +550,9 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
           hasFurigana ? furigana : 'あ',
           style: TextStyle(
             fontSize: furiganaSize,
-            color: (hasFurigana && !isTransparent) ? const Color(0xFF0F9D58) : Colors.transparent,
+            color: (hasFurigana && !isTransparent)
+                ? const Color(0xFF0F9D58)
+                : Colors.transparent,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -445,7 +562,9 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
           style: TextStyle(
             fontSize: fontSize,
             fontWeight: FontWeight.bold,
-            color: isTransparent ? Colors.transparent : ThemeService.getPrimaryTextColor(context),
+            color: isTransparent
+                ? Colors.transparent
+                : ThemeService.getPrimaryTextColor(context),
           ),
         ),
       ],
@@ -458,14 +577,21 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
       decoration: BoxDecoration(
         color: ThemeService.getCardColor(context).withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: ThemeService.getBorderColor(context).withValues(alpha: 0.5), width: 1.5),
+        border: Border.all(
+          color: ThemeService.getBorderColor(context).withValues(alpha: 0.5),
+          width: 1.5,
+        ),
       ),
       padding: const EdgeInsets.all(12),
       alignment: Alignment.center,
       child: _selectedTokens.isEmpty
           ? const Text(
               'Chạm các từ bên dưới để ghép câu...',
-              style: TextStyle(color: Colors.white38, fontSize: 13, fontStyle: FontStyle.italic),
+              style: TextStyle(
+                color: Colors.white38,
+                fontSize: 13,
+                fontStyle: FontStyle.italic,
+              ),
             )
           : Wrap(
               spacing: 8,
@@ -477,7 +603,8 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
                 final isLocked = _isAnswerChecked && !_showHint;
 
                 return DragTarget<int>(
-                  onWillAcceptWithDetails: (details) => !isLocked && details.data != index,
+                  onWillAcceptWithDetails: (details) =>
+                      !isLocked && details.data != index,
                   onAcceptWithDetails: (details) {
                     if (isLocked) return;
                     final draggedIndex = details.data;
@@ -494,7 +621,10 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
                         border: isCandidate
-                            ? Border.all(color: const Color(0xFFE94560), width: 2)
+                            ? Border.all(
+                                color: const Color(0xFFE94560),
+                                width: 2,
+                              )
                             : null,
                       ),
                       child: GestureDetector(
@@ -559,24 +689,38 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
     );
   }
 
-  Widget _buildWordChip(String token, String? furigana, {double elevation = 0, bool isTransparent = false}) {
+  Widget _buildWordChip(
+    String token,
+    String? furigana, {
+    double elevation = 0,
+    bool isTransparent = false,
+  }) {
     return Container(
       decoration: BoxDecoration(
         color: ThemeService.getCardColor(context),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: ThemeService.getBorderColor(context), width: 1.5),
+        border: Border.all(
+          color: ThemeService.getBorderColor(context),
+          width: 1.5,
+        ),
         boxShadow: elevation > 0
             ? [
                 BoxShadow(
                   color: ThemeService.getShadowColor(context),
                   blurRadius: 4,
                   offset: const Offset(0, 2),
-                )
+                ),
               ]
             : null,
       ),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-      child: _buildFuriganaTextWidget(token, furigana, fontSize: 16, furiganaSize: 10, isTransparent: isTransparent),
+      child: _buildFuriganaTextWidget(
+        token,
+        furigana,
+        fontSize: 16,
+        furiganaSize: 10,
+        isTransparent: isTransparent,
+      ),
     );
   }
 
@@ -594,11 +738,19 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
                   onPressed: _giveUp,
                   style: OutlinedButton.styleFrom(
                     foregroundColor: const Color(0xFFE94560),
-                    side: const BorderSide(color: Color(0xFFE94560), width: 1.5),
+                    side: const BorderSide(
+                      color: Color(0xFFE94560),
+                      width: 1.5,
+                    ),
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
-                  child: const Text('Đầu hàng 🏳️', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                  child: const Text(
+                    'Đầu hàng 🏳️',
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
               const SizedBox(width: 12),
@@ -609,12 +761,19 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFE94560),
                     foregroundColor: Colors.white,
-                    disabledBackgroundColor: const Color(0xFF0F3460).withValues(alpha: 0.5),
+                    disabledBackgroundColor: const Color(
+                      0xFF0F3460,
+                    ).withValues(alpha: 0.5),
                     disabledForegroundColor: Colors.white30,
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
-                  child: const Text('Kiểm tra lại', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                  child: const Text(
+                    'Kiểm tra lại',
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
             ],
@@ -632,12 +791,19 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFFE94560),
               foregroundColor: Colors.white,
-              disabledBackgroundColor: const Color(0xFF0F3460).withValues(alpha: 0.5),
+              disabledBackgroundColor: const Color(
+                0xFF0F3460,
+              ).withValues(alpha: 0.5),
               disabledForegroundColor: Colors.white30,
               padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
-            child: const Text('Kiểm tra', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            child: const Text(
+              'Kiểm tra',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
           ),
         ),
       );
@@ -658,8 +824,8 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
           Row(
             children: [
               Icon(
-                _isCorrect 
-                    ? Icons.check_circle 
+                _isCorrect
+                    ? Icons.check_circle
                     : (_hasGivenUp ? Icons.flag : Icons.error),
                 color: accentColor,
                 size: 28,
@@ -667,10 +833,16 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  _isCorrect 
-                      ? 'Chính xác! Cực kỳ xuất sắc! 🎉' 
-                      : (_hasGivenUp ? 'Bạn đã chọn đầu hàng! 🏳️' : 'Chưa chính xác rồi!'),
-                  style: TextStyle(color: accentColor, fontSize: 18, fontWeight: FontWeight.bold),
+                  _isCorrect
+                      ? 'Chính xác! Cực kỳ xuất sắc! 🎉'
+                      : (_hasGivenUp
+                            ? 'Bạn đã chọn đầu hàng! 🏳️'
+                            : 'Chưa chính xác rồi!'),
+                  style: TextStyle(
+                    color: accentColor,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               IconButton(
@@ -690,7 +862,11 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
             const SizedBox(height: 12),
             Text(
               'ĐÁP ÁN ĐÚNG:',
-              style: TextStyle(color: ThemeService.getMutedTextColor(context), fontSize: 10, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                color: ThemeService.getMutedTextColor(context),
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 4),
             Row(
@@ -698,13 +874,21 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
                 Expanded(
                   child: Text(
                     challenge.target,
-                    style: TextStyle(color: ThemeService.getPrimaryTextColor(context), fontSize: 16, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      color: ThemeService.getPrimaryTextColor(context),
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 if (challenge.type == 'vi_to_jp')
                   IconButton(
                     onPressed: () => TtsService.speak(challenge.target),
-                    icon: const Icon(Icons.volume_up, color: Colors.red, size: 20),
+                    icon: const Icon(
+                      Icons.volume_up,
+                      color: Colors.red,
+                      size: 20,
+                    ),
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
                   ),
@@ -718,11 +902,19 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
             decoration: BoxDecoration(
               color: ThemeService.getAccentColor(context),
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: ThemeService.getBorderColor(context).withValues(alpha: 0.15)),
+              border: Border.all(
+                color: ThemeService.getBorderColor(
+                  context,
+                ).withValues(alpha: 0.15),
+              ),
             ),
             child: Text(
               challenge.explanation,
-              style: TextStyle(color: ThemeService.getSecondaryTextColor(context), fontSize: 13, height: 1.4),
+              style: TextStyle(
+                color: ThemeService.getSecondaryTextColor(context),
+                fontSize: 13,
+                height: 1.4,
+              ),
             ),
           ),
           const SizedBox(height: 16),
@@ -732,9 +924,14 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
               backgroundColor: accentColor,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
-            child: const Text('Tiếp tục', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            child: const Text(
+              'Tiếp tục',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
           ),
         ],
       ),
@@ -766,7 +963,11 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
             const SizedBox(height: 28),
             const Text(
               'Cú Đúp Xuất Sắc! 🏆',
-              style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.white),
+              style: TextStyle(
+                fontSize: 26,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 12),
@@ -778,20 +979,29 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
             const SizedBox(height: 20),
             Text(
               '$_score đúng / ${_challenges.length - _score} chưa chính xác',
-              style: const TextStyle(fontSize: 18, color: Color(0xFFE94560), fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                fontSize: 18,
+                color: Color(0xFFE94560),
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 48),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
-                onPressed: _startQuiz,
+                onPressed: () => _startQuiz(),
                 icon: const Icon(Icons.replay),
-                label: const Text('Luyện tập tiếp', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                label: const Text(
+                  'Luyện tập tiếp',
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFE94560),
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                 ),
               ),
             ),
@@ -800,7 +1010,10 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
               width: double.infinity,
               child: TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('Quay lại mục Ngữ pháp', style: TextStyle(color: Colors.white54, fontSize: 15)),
+                child: const Text(
+                  'Quay lại mục Ngữ pháp',
+                  style: TextStyle(color: Colors.white54, fontSize: 15),
+                ),
               ),
             ),
           ],
@@ -814,7 +1027,10 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
       decoration: BoxDecoration(
         color: Colors.amber.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.amber.withValues(alpha: 0.4), width: 1.5),
+        border: Border.all(
+          color: Colors.amber.withValues(alpha: 0.4),
+          width: 1.5,
+        ),
       ),
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -826,28 +1042,50 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
               SizedBox(width: 8),
               Text(
                 'GỢI Ý HỌC TẬP',
-                style: TextStyle(color: Colors.amber, fontSize: 14, fontWeight: FontWeight.bold, letterSpacing: 0.5),
+                style: TextStyle(
+                  color: Colors.amber,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5,
+                ),
               ),
             ],
           ),
           const SizedBox(height: 10),
           RichText(
             text: TextSpan(
-              style: const TextStyle(color: Colors.white70, fontSize: 14, height: 1.4),
+              style: const TextStyle(
+                color: Colors.white70,
+                fontSize: 14,
+                height: 1.4,
+              ),
               children: [
                 const TextSpan(text: 'Bạn đã xếp đúng '),
                 TextSpan(
-                  text: '$_correctPositionsCount / ${challenge.correctOrder.length}',
-                  style: const TextStyle(color: Colors.amber, fontWeight: FontWeight.bold, fontSize: 15),
+                  text:
+                      '$_correctPositionsCount / ${challenge.correctOrder.length}',
+                  style: const TextStyle(
+                    color: Colors.amber,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                  ),
                 ),
-                const TextSpan(text: ' từ đúng vị trí! Hãy điều chỉnh lại thứ tự hoặc kiểm tra các trợ từ nhé.'),
+                const TextSpan(
+                  text:
+                      ' từ đúng vị trí! Hãy điều chỉnh lại thứ tự hoặc kiểm tra các trợ từ nhé.',
+                ),
               ],
             ),
           ),
           const SizedBox(height: 8),
           const Text(
             '💡 Mẹo: Nhấn vào các từ đã chọn để rút lại, sắp xếp lại rồi nhấn "Kiểm tra" để recheck câu nhé. Nếu bí quá, nhấn "Đầu hàng" ở dưới để xem đáp án đúng nha!',
-            style: TextStyle(color: Colors.white38, fontSize: 12, fontStyle: FontStyle.italic, height: 1.4),
+            style: TextStyle(
+              color: Colors.white38,
+              fontSize: 12,
+              fontStyle: FontStyle.italic,
+              height: 1.4,
+            ),
           ),
         ],
       ),

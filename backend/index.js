@@ -317,7 +317,47 @@ app.post('/api/grammar-progress', auth, async (req, res) => {
   }
 });
 
-// 12. POST Reset All User Progress
+// 12. GET Duolingo Sentence Progress
+app.get('/api/duolingo-progress', auth, async (req, res) => {
+  const userId = req.user.id;
+  try {
+    const [rows] = await pool.query(
+      'SELECT challengeId FROM duolingo_progress WHERE userId = ?',
+      [userId]
+    );
+
+    const result = rows.map(row => row.challengeId);
+    res.status(200).json(result);
+  } catch (err) {
+    console.error('Get Duolingo progress error:', err);
+    res.status(500).json({ error: 'Lá»—i táº£i tiáº¿n trĂ¬nh ghĂ©p cĂ¢u!' });
+  }
+});
+
+// 13. POST Save Duolingo Sentence Progress
+app.post('/api/duolingo-progress', auth, async (req, res) => {
+  const userId = req.user.id;
+  const { challengeId } = req.body;
+
+  if (challengeId === undefined) {
+    return res.status(400).json({ error: 'Thiáº¿u thĂ´ng sá»‘ challengeId!' });
+  }
+
+  const timestamp = new Date().toISOString();
+
+  try {
+    await pool.query(
+      'INSERT IGNORE INTO duolingo_progress (userId, challengeId, completedAt) VALUES (?, ?, ?)',
+      [userId, challengeId, timestamp]
+    );
+    res.status(200).json({ message: 'LÆ°u tiáº¿n trĂ¬nh ghĂ©p cĂ¢u thĂ nh cĂ´ng!' });
+  } catch (err) {
+    console.error('Save Duolingo progress error:', err);
+    res.status(500).json({ error: 'Lá»—i Ä‘á»“ng bá»™ tiáº¿n trĂ¬nh ghĂ©p cĂ¢u!' });
+  }
+});
+
+// 14. POST Reset All User Progress
 app.post('/api/reset-progress', auth, async (req, res) => {
   const userId = req.user.id;
   try {
@@ -325,6 +365,7 @@ app.post('/api/reset-progress', auth, async (req, res) => {
     await pool.query('DELETE FROM vocab_progress WHERE userId = ?', [userId]);
     await pool.query('DELETE FROM listening_progress WHERE userId = ?', [userId]);
     await pool.query('DELETE FROM grammar_progress WHERE userId = ?', [userId]);
+    await pool.query('DELETE FROM duolingo_progress WHERE userId = ?', [userId]);
 
     res.status(200).json({ message: 'Đặt lại toàn bộ tiến trình học thành công!' });
   } catch (err) {

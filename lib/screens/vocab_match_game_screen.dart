@@ -14,8 +14,8 @@ class VocabMatchGameScreen extends StatefulWidget {
 }
 
 class _VocabMatchGameScreenState extends State<VocabMatchGameScreen> {
-  late List<VocabWord> _batch;
-  late List<VocabWord> _shuffledMeanings;
+  List<VocabWord> _batch = [];
+  List<VocabWord> _shuffledMeanings = [];
   int? _selectedWordIndex;
   int? _selectedMeaningIndex;
   int _matchedCount = 0;
@@ -26,6 +26,7 @@ class _VocabMatchGameScreenState extends State<VocabMatchGameScreen> {
   int? _wrongWordIndex;
   int? _wrongMeaningIndex;
   bool _showWrong = false;
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -34,20 +35,47 @@ class _VocabMatchGameScreenState extends State<VocabMatchGameScreen> {
     _startGame();
   }
 
-  void _startGame() {
-    final shuffled = List<VocabWord>.from(widget.pool)..shuffle();
-    _batch = shuffled.take(10).toList();
-    _shuffledMeanings = List<VocabWord>.from(_batch)..shuffle(Random());
-    _selectedWordIndex = null;
-    _selectedMeaningIndex = null;
-    _matchedCount = 0;
-    _wrongCount = 0;
-    _matchedWord = {};
-    _matchedMeaning = {};
-    _gameComplete = false;
-    _showWrong = false;
-    _wrongWordIndex = null;
-    _wrongMeaningIndex = null;
+  Future<void> _startGame() async {
+    if (mounted) {
+      setState(() => _isLoading = true);
+    }
+
+    final progress = await KanjiDatabase.getVocabProgress();
+    final now = DateTime.now();
+    final eligible = widget.pool.where((v) {
+      final timestamp = progress[v.id];
+      if (timestamp == null) return true;
+      final lastCorrect = DateTime.tryParse(timestamp);
+      if (lastCorrect == null) return true;
+      return now.difference(lastCorrect).inHours >= 72;
+    }).toList()..shuffle();
+
+    final selected = <VocabWord>[];
+    selected.addAll(eligible.take(10));
+    if (selected.length < 10) {
+      final selectedIds = selected.map((v) => v.id).toSet();
+      final filler =
+          widget.pool.where((v) => !selectedIds.contains(v.id)).toList()
+            ..shuffle();
+      selected.addAll(filler.take(10 - selected.length));
+    }
+
+    if (!mounted) return;
+    setState(() {
+      _batch = selected;
+      _shuffledMeanings = List<VocabWord>.from(_batch)..shuffle(Random());
+      _selectedWordIndex = null;
+      _selectedMeaningIndex = null;
+      _matchedCount = 0;
+      _wrongCount = 0;
+      _matchedWord = {};
+      _matchedMeaning = {};
+      _gameComplete = false;
+      _showWrong = false;
+      _wrongWordIndex = null;
+      _wrongMeaningIndex = null;
+      _isLoading = false;
+    });
   }
 
   void _onWordTap(int index) {
@@ -71,7 +99,8 @@ class _VocabMatchGameScreenState extends State<VocabMatchGameScreen> {
     if (vocab.id == meaningVocab.id) {
       // Save progress so they won't encounter this word for 2-3 days
       await KanjiDatabase.saveVocabProgress(vocab.id);
-      
+      if (!mounted) return;
+
       setState(() {
         _matchedWord.add(_selectedWordIndex!);
         _matchedMeaning.add(_selectedMeaningIndex!);
@@ -106,19 +135,29 @@ class _VocabMatchGameScreenState extends State<VocabMatchGameScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: ThemeService.getBgColor(context),
-        appBar: AppBar(
-          title: const Text('Game Nối Từ Vựng', style: TextStyle(fontWeight: FontWeight.bold)),
-          backgroundColor: ThemeService.getCardColor(context),
-          foregroundColor: ThemeService.getPrimaryTextColor(context),
-          elevation: 0,
-          shape: Border(
-            bottom: BorderSide(color: ThemeService.getBorderColor(context), width: 1.5),
+      backgroundColor: ThemeService.getBgColor(context),
+      appBar: AppBar(
+        title: const Text(
+          'Game Nối Từ Vựng',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: ThemeService.getCardColor(context),
+        foregroundColor: ThemeService.getPrimaryTextColor(context),
+        elevation: 0,
+        shape: Border(
+          bottom: BorderSide(
+            color: ThemeService.getBorderColor(context),
+            width: 1.5,
           ),
         ),
-        body: _gameComplete ? _buildResult() : _buildGame(),
-      );
-    }
+      ),
+      body: _isLoading
+          ? const Center(
+              child: CircularProgressIndicator(color: Color(0xFFE94560)),
+            )
+          : (_gameComplete ? _buildResult() : _buildGame()),
+    );
+  }
 
   Widget _buildGame() {
     final isDark = ThemeService.isDarkMode.value;
@@ -129,16 +168,36 @@ class _VocabMatchGameScreenState extends State<VocabMatchGameScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(children: [
-                const Icon(Icons.check_circle, color: Colors.green, size: 18),
-                const SizedBox(width: 4),
-                Text('$_matchedCount/${_batch.length}', style: const TextStyle(color: Colors.green, fontSize: 16, fontWeight: FontWeight.bold)),
-              ]),
-              Row(children: [
-                const Icon(Icons.cancel, color: Colors.red, size: 18),
-                const SizedBox(width: 4),
-                Text('$_wrongCount', style: TextStyle(color: _wrongCount > 0 ? Colors.red : ThemeService.getMutedTextColor(context), fontSize: 16, fontWeight: FontWeight.bold)),
-              ]),
+              Row(
+                children: [
+                  const Icon(Icons.check_circle, color: Colors.green, size: 18),
+                  const SizedBox(width: 4),
+                  Text(
+                    '$_matchedCount/${_batch.length}',
+                    style: const TextStyle(
+                      color: Colors.green,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  const Icon(Icons.cancel, color: Colors.red, size: 18),
+                  const SizedBox(width: 4),
+                  Text(
+                    '$_wrongCount',
+                    style: TextStyle(
+                      color: _wrongCount > 0
+                          ? Colors.red
+                          : ThemeService.getMutedTextColor(context),
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
           const SizedBox(height: 8),
@@ -150,32 +209,56 @@ class _VocabMatchGameScreenState extends State<VocabMatchGameScreen> {
             borderRadius: BorderRadius.circular(4),
           ),
           const SizedBox(height: 8),
-          Text('Chọn từ bên trái → nghĩa tiếng Việt bên phải', style: TextStyle(color: ThemeService.getSecondaryTextColor(context), fontSize: 13, fontWeight: FontWeight.w600)),
+          Text(
+            'Chọn từ bên trái → nghĩa tiếng Việt bên phải',
+            style: TextStyle(
+              color: ThemeService.getSecondaryTextColor(context),
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
           const SizedBox(height: 16),
           Expanded(
             child: LayoutBuilder(
               builder: (context, constraints) {
                 final availableHeight = constraints.maxHeight;
-                final itemHeight = (availableHeight - (_batch.length - 1) * 6) / _batch.length;
+                final itemHeight =
+                    (availableHeight - (_batch.length - 1) * 6) / _batch.length;
                 return Row(
                   children: [
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: List.generate(_batch.length, (i) => Padding(
-                          padding: EdgeInsets.only(bottom: i < _batch.length - 1 ? 6 : 0),
-                          child: SizedBox(height: itemHeight, child: _buildWordItem(i)),
-                        )),
+                        children: List.generate(
+                          _batch.length,
+                          (i) => Padding(
+                            padding: EdgeInsets.only(
+                              bottom: i < _batch.length - 1 ? 6 : 0,
+                            ),
+                            child: SizedBox(
+                              height: itemHeight,
+                              child: _buildWordItem(i),
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: List.generate(_shuffledMeanings.length, (i) => Padding(
-                          padding: EdgeInsets.only(bottom: i < _shuffledMeanings.length - 1 ? 6 : 0),
-                          child: SizedBox(height: itemHeight, child: _buildMeaningItem(i)),
-                        )),
+                        children: List.generate(
+                          _shuffledMeanings.length,
+                          (i) => Padding(
+                            padding: EdgeInsets.only(
+                              bottom: i < _shuffledMeanings.length - 1 ? 6 : 0,
+                            ),
+                            child: SizedBox(
+                              height: itemHeight,
+                              child: _buildMeaningItem(i),
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -196,11 +279,15 @@ class _VocabMatchGameScreenState extends State<VocabMatchGameScreen> {
     Color bg, border, textColor;
 
     if (matched) {
-      bg = isDark ? Colors.green.withValues(alpha: 0.15) : const Color(0xFFDCFCE7);
+      bg = isDark
+          ? Colors.green.withValues(alpha: 0.15)
+          : const Color(0xFFDCFCE7);
       border = Colors.green.shade700;
       textColor = isDark ? Colors.green : Colors.green.shade800;
     } else if (isWrong) {
-      bg = isDark ? Colors.red.withValues(alpha: 0.25) : const Color(0xFFFEE2E2);
+      bg = isDark
+          ? Colors.red.withValues(alpha: 0.25)
+          : const Color(0xFFFEE2E2);
       border = Colors.red.shade700;
       textColor = isDark ? Colors.red : Colors.red.shade800;
     } else if (selected) {
@@ -220,7 +307,10 @@ class _VocabMatchGameScreenState extends State<VocabMatchGameScreen> {
         decoration: BoxDecoration(
           color: bg,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: border, width: matched || selected || isWrong ? 2.5 : 1.5),
+          border: Border.all(
+            color: border,
+            width: matched || selected || isWrong ? 2.5 : 1.5,
+          ),
         ),
         child: Center(
           child: SingleChildScrollView(
@@ -233,14 +323,18 @@ class _VocabMatchGameScreenState extends State<VocabMatchGameScreen> {
                   Text(
                     _batch[i].word,
                     style: TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
                       color: textColor,
                     ),
                   ),
                   if (_batch[i].word != _batch[i].reading)
                     Text(
                       _batch[i].reading,
-                      style: TextStyle(fontSize: 10, color: ThemeService.getMutedTextColor(context)),
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: ThemeService.getMutedTextColor(context),
+                      ),
                     ),
                 ],
               ),
@@ -259,15 +353,21 @@ class _VocabMatchGameScreenState extends State<VocabMatchGameScreen> {
     Color bg, border, textColor;
 
     if (matched) {
-      bg = isDark ? Colors.green.withValues(alpha: 0.15) : const Color(0xFFDCFCE7);
+      bg = isDark
+          ? Colors.green.withValues(alpha: 0.15)
+          : const Color(0xFFDCFCE7);
       border = Colors.green.shade700;
       textColor = isDark ? Colors.green : Colors.green.shade800;
     } else if (isWrong) {
-      bg = isDark ? Colors.red.withValues(alpha: 0.25) : const Color(0xFFFEE2E2);
+      bg = isDark
+          ? Colors.red.withValues(alpha: 0.25)
+          : const Color(0xFFFEE2E2);
       border = Colors.red.shade700;
       textColor = isDark ? Colors.red : Colors.red.shade800;
     } else if (selected) {
-      bg = isDark ? const Color(0xFF0F3460).withValues(alpha: 0.5) : const Color(0xFFEFF6FF);
+      bg = isDark
+          ? const Color(0xFF0F3460).withValues(alpha: 0.5)
+          : const Color(0xFFEFF6FF);
       border = isDark ? const Color(0xFFE94560) : Colors.blue.shade700;
       textColor = isDark ? Colors.white : Colors.blue.shade800;
     } else {
@@ -284,13 +384,17 @@ class _VocabMatchGameScreenState extends State<VocabMatchGameScreen> {
         decoration: BoxDecoration(
           color: bg,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: border, width: matched || selected || isWrong ? 2.5 : 1.5),
+          border: Border.all(
+            color: border,
+            width: matched || selected || isWrong ? 2.5 : 1.5,
+          ),
         ),
         child: Center(
           child: Text(
             _shuffledMeanings[i].meaningVi,
             style: TextStyle(
-              fontSize: 12, fontWeight: FontWeight.w600,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
               color: textColor,
             ),
             textAlign: TextAlign.center,
@@ -309,39 +413,68 @@ class _VocabMatchGameScreenState extends State<VocabMatchGameScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(percent >= 80 ? Icons.emoji_events : Icons.thumb_up, size: 80, color: percent >= 80 ? Colors.amber : Colors.blue),
+          Icon(
+            percent >= 80 ? Icons.emoji_events : Icons.thumb_up,
+            size: 80,
+            color: percent >= 80 ? Colors.amber : Colors.blue,
+          ),
           const SizedBox(height: 20),
-          Text('$percent%', style: TextStyle(fontSize: 56, fontWeight: FontWeight.bold, color: ThemeService.getPrimaryTextColor(context))),
+          Text(
+            '$percent%',
+            style: TextStyle(
+              fontSize: 56,
+              fontWeight: FontWeight.bold,
+              color: ThemeService.getPrimaryTextColor(context),
+            ),
+          ),
           const SizedBox(height: 8),
-          Text('$_matchedCount đúng / $_wrongCount sai', style: TextStyle(fontSize: 18, color: ThemeService.getSecondaryTextColor(context))),
+          Text(
+            '$_matchedCount đúng / $_wrongCount sai',
+            style: TextStyle(
+              fontSize: 18,
+              color: ThemeService.getSecondaryTextColor(context),
+            ),
+          ),
           const SizedBox(height: 8),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32),
             child: Text(
               'Các từ nối đúng sẽ không xuất hiện lại trong game nối từ vựng trong 3 ngày tới.',
-              style: TextStyle(color: ThemeService.getMutedTextColor(context), fontSize: 13),
+              style: TextStyle(
+                color: ThemeService.getMutedTextColor(context),
+                fontSize: 13,
+              ),
               textAlign: TextAlign.center,
             ),
           ),
           const SizedBox(height: 32),
           ElevatedButton(
-            onPressed: () => setState(() => _startGame()),
+            onPressed: () => _startGame(),
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFE94560), 
-              foregroundColor: Colors.white, 
-              padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 32), 
+              backgroundColor: const Color(0xFFE94560),
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 32),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
-                side: BorderSide(color: ThemeService.getBorderColor(context), width: 1.5),
+                side: BorderSide(
+                  color: ThemeService.getBorderColor(context),
+                  width: 1.5,
+                ),
               ),
               elevation: 0,
             ),
-            child: const Text('Chơi lại', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            child: const Text(
+              'Chơi lại',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
           ),
           const SizedBox(height: 12),
           TextButton(
-            onPressed: () => Navigator.pop(context), 
-            child: Text('Về trang chính', style: TextStyle(color: ThemeService.getMutedTextColor(context))),
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'Về trang chính',
+              style: TextStyle(color: ThemeService.getMutedTextColor(context)),
+            ),
           ),
         ],
       ),

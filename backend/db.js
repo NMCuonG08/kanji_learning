@@ -99,6 +99,19 @@ async function initDb() {
     `);
     console.log('Table "grammar_progress" verified/created.');
 
+    // 6. Create duolingo_progress table
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS duolingo_progress (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        userId INT NOT NULL,
+        challengeId INT NOT NULL,
+        completedAt VARCHAR(50),
+        UNIQUE KEY user_duolingo (userId, challengeId),
+        FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
+    console.log('Table "duolingo_progress" verified/created.');
+
   } catch (err) {
     console.error('Database initialization error:', err.message);
     throw err;

@@ -28,31 +28,39 @@ class _GrammarQuizScreenState extends State<GrammarQuizScreen> {
 
   Future<void> _loadAndStartQuiz() async {
     setState(() => _isLoading = true);
-    
+
     final completedIds = await KanjiDatabase.getGrammarProgress();
-    final uncompleted = grammarQuestions.where((q) => !completedIds.contains(q.id)).toList();
-    
+    final uncompleted = grammarQuestions
+        .where((q) => !completedIds.contains(q.id))
+        .toList();
+
     List<GrammarQuestion> quizList = [];
     if (uncompleted.isEmpty) {
       // Đã hoàn thành toàn bộ 50 câu! Reset lại và tải ngẫu nhiên từ toàn bộ kho
-      final allQuestions = List<GrammarQuestion>.from(grammarQuestions)..shuffle();
+      final allQuestions = List<GrammarQuestion>.from(grammarQuestions)
+        ..shuffle();
       quizList = allQuestions.take(10).toList();
     } else if (uncompleted.length >= 10) {
       // Có nhiều hơn hoặc bằng 10 câu chưa làm
-      final shuffledUncompleted = List<GrammarQuestion>.from(uncompleted)..shuffle();
+      final shuffledUncompleted = List<GrammarQuestion>.from(uncompleted)
+        ..shuffle();
       quizList = shuffledUncompleted.take(10).toList();
     } else {
       // Còn ít hơn 10 câu chưa làm: Lấy toàn bộ câu chưa làm, sau đó bồi thêm câu đã làm cho đủ 10 câu
-      final shuffledUncompleted = List<GrammarQuestion>.from(uncompleted)..shuffle();
+      final shuffledUncompleted = List<GrammarQuestion>.from(uncompleted)
+        ..shuffle();
       quizList.addAll(shuffledUncompleted);
-      
-      final completed = grammarQuestions.where((q) => completedIds.contains(q.id)).toList();
-      final shuffledCompleted = List<GrammarQuestion>.from(completed)..shuffle();
-      
+
+      final completed = grammarQuestions
+          .where((q) => completedIds.contains(q.id))
+          .toList();
+      final shuffledCompleted = List<GrammarQuestion>.from(completed)
+        ..shuffle();
+
       final needed = 10 - quizList.length;
       quizList.addAll(shuffledCompleted.take(needed));
     }
-    
+
     setState(() {
       _quizQuestions = quizList;
       _currentIndex = 0;
@@ -70,9 +78,9 @@ class _GrammarQuizScreenState extends State<GrammarQuizScreen> {
       _selectedOptionIndex = index;
       _isAnswered = true;
       final q = _quizQuestions[_currentIndex];
+      KanjiDatabase.saveGrammarProgress(q.id);
       if (index == q.correctOptionIndex) {
         _score++;
-        KanjiDatabase.saveGrammarProgress(q.id);
       }
     });
   }
@@ -92,21 +100,29 @@ class _GrammarQuizScreenState extends State<GrammarQuizScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: ThemeService.getBgColor(context),
-        appBar: AppBar(
-          title: const Text('Trắc Nghiệm Ngữ Pháp', style: TextStyle(fontWeight: FontWeight.bold)),
-          backgroundColor: ThemeService.getCardColor(context),
-          foregroundColor: ThemeService.getPrimaryTextColor(context),
-          elevation: 0,
-          shape: Border(
-            bottom: BorderSide(color: ThemeService.getBorderColor(context), width: 1.5),
+      backgroundColor: ThemeService.getBgColor(context),
+      appBar: AppBar(
+        title: const Text(
+          'Trắc Nghiệm Ngữ Pháp',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: ThemeService.getCardColor(context),
+        foregroundColor: ThemeService.getPrimaryTextColor(context),
+        elevation: 0,
+        shape: Border(
+          bottom: BorderSide(
+            color: ThemeService.getBorderColor(context),
+            width: 1.5,
           ),
         ),
-        body: _isLoading
-            ? const Center(child: CircularProgressIndicator(color: Color(0xFFE94560)))
-            : (_quizComplete ? _buildResult() : _buildQuiz()),
-      );
-    }
+      ),
+      body: _isLoading
+          ? const Center(
+              child: CircularProgressIndicator(color: Color(0xFFE94560)),
+            )
+          : (_quizComplete ? _buildResult() : _buildQuiz()),
+    );
+  }
 
   Widget _buildQuiz() {
     final q = _quizQuestions[_currentIndex];
@@ -122,18 +138,32 @@ class _GrammarQuizScreenState extends State<GrammarQuizScreen> {
               children: [
                 Text(
                   'Câu ${_currentIndex + 1}/${_quizQuestions.length}',
-                  style: TextStyle(color: ThemeService.getSecondaryTextColor(context), fontSize: 14, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    color: ThemeService.getSecondaryTextColor(context),
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: const Color(0xFFE94560),
                     borderRadius: BorderRadius.circular(6),
-                    border: Border.all(color: ThemeService.getBorderColor(context), width: 1.2),
+                    border: Border.all(
+                      color: ThemeService.getBorderColor(context),
+                      width: 1.2,
+                    ),
                   ),
                   child: Text(
                     'Bài ${q.lesson}',
-                    style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ],
@@ -153,7 +183,10 @@ class _GrammarQuizScreenState extends State<GrammarQuizScreen> {
               decoration: BoxDecoration(
                 color: ThemeService.getCardColor(context),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: ThemeService.getBorderColor(context), width: 2.0),
+                border: Border.all(
+                  color: ThemeService.getBorderColor(context),
+                  width: 2.0,
+                ),
                 boxShadow: [
                   BoxShadow(
                     color: ThemeService.getBorderColor(context),
@@ -171,7 +204,11 @@ class _GrammarQuizScreenState extends State<GrammarQuizScreen> {
                   const SizedBox(height: 12),
                   Text(
                     q.translation,
-                    style: TextStyle(color: ThemeService.getMutedTextColor(context), fontSize: 15, fontStyle: FontStyle.italic),
+                    style: TextStyle(
+                      color: ThemeService.getMutedTextColor(context),
+                      fontSize: 15,
+                      fontStyle: FontStyle.italic,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -184,24 +221,32 @@ class _GrammarQuizScreenState extends State<GrammarQuizScreen> {
               final optionText = entry.value;
               final isSelected = _selectedOptionIndex == index;
               final isCorrect = q.correctOptionIndex == index;
-              
+
               Color bg = ThemeService.getCardColor(context);
               Color border = ThemeService.getBorderColor(context);
               Color text = ThemeService.getPrimaryTextColor(context);
 
               if (_isAnswered) {
                 if (isCorrect) {
-                  bg = isDark ? Colors.green.withValues(alpha: 0.2) : const Color(0xFFDCFCE7);
+                  bg = isDark
+                      ? Colors.green.withValues(alpha: 0.2)
+                      : const Color(0xFFDCFCE7);
                   border = Colors.green.shade700;
                   text = isDark ? Colors.green : Colors.green.shade800;
                 } else if (isSelected) {
-                  bg = isDark ? Colors.red.withValues(alpha: 0.2) : const Color(0xFFFEE2E2);
+                  bg = isDark
+                      ? Colors.red.withValues(alpha: 0.2)
+                      : const Color(0xFFFEE2E2);
                   border = Colors.red.shade700;
                   text = isDark ? Colors.red : Colors.red.shade800;
                 } else {
-                  bg = ThemeService.getCardColor(context).withValues(alpha: 0.5);
+                  bg = ThemeService.getCardColor(
+                    context,
+                  ).withValues(alpha: 0.5);
                   text = ThemeService.getMutedTextColor(context);
-                  border = ThemeService.getBorderColor(context).withValues(alpha: 0.3);
+                  border = ThemeService.getBorderColor(
+                    context,
+                  ).withValues(alpha: 0.3);
                 }
               } else if (isSelected) {
                 bg = const Color(0xFFE94560).withValues(alpha: 0.15);
@@ -219,16 +264,25 @@ class _GrammarQuizScreenState extends State<GrammarQuizScreen> {
                     disabledBackgroundColor: bg,
                     disabledForegroundColor: text,
                     side: BorderSide(
-                      color: border, 
-                      width: (isSelected || (_isAnswered && (isCorrect || isSelected))) ? 2.2 : 1.5
+                      color: border,
+                      width:
+                          (isSelected ||
+                              (_isAnswered && (isCorrect || isSelected)))
+                          ? 2.2
+                          : 1.5,
                     ),
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     elevation: 0,
                   ),
                   child: Text(
                     optionText,
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               );
@@ -241,11 +295,18 @@ class _GrammarQuizScreenState extends State<GrammarQuizScreen> {
                 decoration: BoxDecoration(
                   color: ThemeService.getAccentColor(context),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: ThemeService.getBorderColor(context), width: 1.5),
+                  border: Border.all(
+                    color: ThemeService.getBorderColor(context),
+                    width: 1.5,
+                  ),
                 ),
                 child: Text(
                   q.explanation,
-                  style: TextStyle(color: ThemeService.getSecondaryTextColor(context), fontSize: 14, height: 1.4),
+                  style: TextStyle(
+                    color: ThemeService.getSecondaryTextColor(context),
+                    fontSize: 14,
+                    height: 1.4,
+                  ),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -258,13 +319,21 @@ class _GrammarQuizScreenState extends State<GrammarQuizScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
-                    side: BorderSide(color: ThemeService.getBorderColor(context), width: 1.5),
+                    side: BorderSide(
+                      color: ThemeService.getBorderColor(context),
+                      width: 1.5,
+                    ),
                   ),
                   elevation: 0,
                 ),
                 child: Text(
-                  _currentIndex == _quizQuestions.length - 1 ? 'Xem kết quả' : 'Tiếp theo',
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  _currentIndex == _quizQuestions.length - 1
+                      ? 'Xem kết quả'
+                      : 'Tiếp theo',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ],
@@ -290,12 +359,19 @@ class _GrammarQuizScreenState extends State<GrammarQuizScreen> {
             const SizedBox(height: 20),
             Text(
               '$percent%',
-              style: TextStyle(fontSize: 56, fontWeight: FontWeight.bold, color: ThemeService.getPrimaryTextColor(context)),
+              style: TextStyle(
+                fontSize: 56,
+                fontWeight: FontWeight.bold,
+                color: ThemeService.getPrimaryTextColor(context),
+              ),
             ),
             const SizedBox(height: 8),
             Text(
               '$_score đúng / ${_quizQuestions.length - _score} sai',
-              style: TextStyle(fontSize: 18, color: ThemeService.getSecondaryTextColor(context)),
+              style: TextStyle(
+                fontSize: 18,
+                color: ThemeService.getSecondaryTextColor(context),
+              ),
             ),
             const SizedBox(height: 32),
             ElevatedButton(
@@ -303,19 +379,33 @@ class _GrammarQuizScreenState extends State<GrammarQuizScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFE94560),
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 32),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 14,
+                  horizontal: 32,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
-                  side: BorderSide(color: ThemeService.getBorderColor(context), width: 1.5),
+                  side: BorderSide(
+                    color: ThemeService.getBorderColor(context),
+                    width: 1.5,
+                  ),
                 ),
                 elevation: 0,
               ),
-              child: const Text('Làm lại', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              child: const Text(
+                'Làm lại',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
             ),
             const SizedBox(height: 12),
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text('Về trang chính', style: TextStyle(color: ThemeService.getMutedTextColor(context))),
+              child: Text(
+                'Về trang chính',
+                style: TextStyle(
+                  color: ThemeService.getMutedTextColor(context),
+                ),
+              ),
             ),
           ],
         ),
@@ -340,7 +430,9 @@ class _GrammarQuizScreenState extends State<GrammarQuizScreen> {
             const TextSpan(
               text: ' ____ ',
               style: TextStyle(
-                color: Color(0xFFE94560), // Màu đỏ Neobrutalist chủ đạo cực kỳ nổi bật
+                color: Color(
+                  0xFFE94560,
+                ), // Màu đỏ Neobrutalist chủ đạo cực kỳ nổi bật
                 fontWeight: FontWeight.w900,
               ),
             ),
@@ -377,7 +469,9 @@ class _GrammarQuizScreenState extends State<GrammarQuizScreen> {
             const TextSpan(
               text: ' ____ ',
               style: TextStyle(
-                color: Color(0xFFE94560), // Màu đỏ đồng bộ cho ô trống điền khuyết
+                color: Color(
+                  0xFFE94560,
+                ), // Màu đỏ đồng bộ cho ô trống điền khuyết
                 fontWeight: FontWeight.w900,
               ),
             ),
