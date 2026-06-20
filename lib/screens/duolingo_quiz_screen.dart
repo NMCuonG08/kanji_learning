@@ -25,6 +25,7 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
   bool _showHint = false;
   bool _hasGivenUp = false;
   int _correctPositionsCount = 0;
+  Set<int> _completedChallengeIds = {};
 
   @override
   void initState() {
@@ -70,6 +71,7 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
       _score = 0;
       _isFinished = false;
       _isLoading = false;
+      _completedChallengeIds = completedIds.toSet();
     });
     _loadCurrentChallenge();
   }
@@ -205,6 +207,11 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
     // Play TTS speech of the Japanese sentence only if correct
     if (isCorrect) {
       await KanjiDatabase.saveDuolingoProgress(challenge.id);
+      if (!_completedChallengeIds.contains(challenge.id)) {
+        setState(() {
+          _completedChallengeIds.add(challenge.id);
+        });
+      }
       if (challenge.type == 'vi_to_jp') {
         TtsService.speak(challenge.target);
       } else {
@@ -238,9 +245,9 @@ class _DuolingoQuizScreenState extends State<DuolingoQuizScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFF1A1A2E),
       appBar: AppBar(
-        title: const Text(
-          'Ghép Câu Duolingo',
-          style: TextStyle(fontWeight: FontWeight.bold),
+        title: Text(
+          'Ghép Câu Duolingo (${_completedChallengeIds.length}/${duolingoChallenges.length})',
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         backgroundColor: const Color(0xFF16213E),
         foregroundColor: Colors.white,

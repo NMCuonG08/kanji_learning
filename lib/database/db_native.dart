@@ -284,3 +284,24 @@ Future<void> dbResetDuolingoProgress() async {
   final db = await _getDb();
   await db.delete('duolingo_progress');
 }
+
+Future<void> dbSaveKanjiEntry(Map<String, dynamic> entry) async {
+  final db = await _getDb();
+  await db.insert('progress', {
+    'kanjiId': entry['kanjiId'],
+    'correctCount': entry['correctCount'],
+    'wrongCount': entry['wrongCount'],
+    'lastReviewed': entry['lastReviewed'],
+    'masteryLevel': entry['masteryLevel'],
+    'nextReviewAt': entry['nextReviewAt'],
+    'status': entry['status'],
+  }, conflictAlgorithm: ConflictAlgorithm.replace);
+}
+
+Future<void> dbSaveVocabEntry(int vocabId, String timestamp) async {
+  final db = await _getDb();
+  await db.insert('vocab_progress', {
+    'vocabId': vocabId,
+    'lastCorrectAt': timestamp,
+  }, conflictAlgorithm: ConflictAlgorithm.replace);
+}

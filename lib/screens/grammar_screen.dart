@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../data/grammar_data.dart';
 import '../services/tts_service.dart';
 import '../services/theme_service.dart';
+import '../database/db.dart';
+import '../data/duolingo_data.dart';
 
 class GrammarScreen extends StatefulWidget {
   final Map<int, Map<String, dynamic>> progress;
@@ -12,10 +14,32 @@ class GrammarScreen extends StatefulWidget {
 }
 
 class _GrammarScreenState extends State<GrammarScreen> {
+  int _completedDuolingo = 0;
+  int _totalDuolingo = 0;
+  bool _loadingDuolingo = true;
+
   @override
   void initState() {
     super.initState();
     TtsService.init();
+    _loadDuolingoProgress();
+  }
+
+  Future<void> _loadDuolingoProgress() async {
+    try {
+      final completed = await KanjiDatabase.getDuolingoProgress();
+      if (mounted) {
+        setState(() {
+          _completedDuolingo = completed.length;
+          _totalDuolingo = duolingoChallenges.length;
+          _loadingDuolingo = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() => _loadingDuolingo = false);
+      }
+    }
   }
 
   @override
@@ -51,11 +75,17 @@ class _GrammarScreenState extends State<GrammarScreen> {
               const SizedBox(width: 8),
               Expanded(
                 child: ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/duolingo-quiz');
+                  onPressed: () async {
+                    await Navigator.pushNamed(context, '/duolingo-quiz');
+                    _loadDuolingoProgress();
                   },
                   icon: const Icon(Icons.style, size: 18),
-                  label: const Text('Ghép Câu Duolingo', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                  label: Text(
+                    _loadingDuolingo
+                        ? 'Ghép Câu Duolingo'
+                        : 'Ghép Câu ($_completedDuolingo/$_totalDuolingo)',
+                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.purple,
                     foregroundColor: Colors.white,

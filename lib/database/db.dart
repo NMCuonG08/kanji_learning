@@ -39,7 +39,48 @@ class KanjiDatabase {
     if (!ApiService.isLoggedIn.value) return local;
 
     final remote = await ApiService.getKanjiProgress();
-    return {...remote, ...local};
+    final merged = <int, Map<String, dynamic>>{};
+    final allKeys = {...local.keys, ...remote.keys};
+
+    for (final id in allKeys) {
+      final localEntry = local[id];
+      final remoteEntry = remote[id];
+
+      if (localEntry == null && remoteEntry != null) {
+        await local_db.dbSaveKanjiEntry(remoteEntry);
+        merged[id] = remoteEntry;
+      } else if (localEntry != null && remoteEntry == null) {
+        _syncInBackground(() => ApiService.saveKanjiProgress(localEntry));
+        merged[id] = localEntry;
+      } else if (localEntry != null && remoteEntry != null) {
+        final localTimeStr = localEntry['lastReviewed'] as String?;
+        final remoteTimeStr = remoteEntry['lastReviewed'] as String?;
+
+        DateTime? localTime = localTimeStr != null ? DateTime.tryParse(localTimeStr) : null;
+        DateTime? remoteTime = remoteTimeStr != null ? DateTime.tryParse(remoteTimeStr) : null;
+
+        if (localTime == null && remoteTime != null) {
+          await local_db.dbSaveKanjiEntry(remoteEntry);
+          merged[id] = remoteEntry;
+        } else if (localTime != null && remoteTime == null) {
+          _syncInBackground(() => ApiService.saveKanjiProgress(localEntry));
+          merged[id] = localEntry;
+        } else if (localTime != null && remoteTime != null) {
+          if (remoteTime.isAfter(localTime)) {
+            await local_db.dbSaveKanjiEntry(remoteEntry);
+            merged[id] = remoteEntry;
+          } else if (localTime.isAfter(remoteTime)) {
+            _syncInBackground(() => ApiService.saveKanjiProgress(localEntry));
+            merged[id] = localEntry;
+          } else {
+            merged[id] = localEntry;
+          }
+        } else {
+          merged[id] = localEntry;
+        }
+      }
+    }
+    return merged;
   }
 
   static Future<void> resetAllProgress() async {
@@ -63,7 +104,45 @@ class KanjiDatabase {
     if (!ApiService.isLoggedIn.value) return local;
 
     final remote = await ApiService.getVocabProgress();
-    return {...remote, ...local};
+    final merged = <int, String>{};
+    final allKeys = {...local.keys, ...remote.keys};
+
+    for (final id in allKeys) {
+      final localTimeStr = local[id];
+      final remoteTimeStr = remote[id];
+
+      if (localTimeStr == null && remoteTimeStr != null) {
+        await local_db.dbSaveVocabEntry(id, remoteTimeStr);
+        merged[id] = remoteTimeStr;
+      } else if (localTimeStr != null && remoteTimeStr == null) {
+        _syncInBackground(() => ApiService.saveVocabProgress(id, localTimeStr));
+        merged[id] = localTimeStr;
+      } else if (localTimeStr != null && remoteTimeStr != null) {
+        final localTime = DateTime.tryParse(localTimeStr);
+        final remoteTime = DateTime.tryParse(remoteTimeStr);
+
+        if (localTime == null && remoteTime != null) {
+          await local_db.dbSaveVocabEntry(id, remoteTimeStr);
+          merged[id] = remoteTimeStr;
+        } else if (localTime != null && remoteTime == null) {
+          _syncInBackground(() => ApiService.saveVocabProgress(id, localTimeStr));
+          merged[id] = localTimeStr;
+        } else if (localTime != null && remoteTime != null) {
+          if (remoteTime.isAfter(localTime)) {
+            await local_db.dbSaveVocabEntry(id, remoteTimeStr);
+            merged[id] = remoteTimeStr;
+          } else if (localTime.isAfter(remoteTime)) {
+            _syncInBackground(() => ApiService.saveVocabProgress(id, localTimeStr));
+            merged[id] = localTimeStr;
+          } else {
+            merged[id] = localTimeStr;
+          }
+        } else {
+          merged[id] = localTimeStr;
+        }
+      }
+    }
+    return merged;
   }
 
   static Future<void> deleteVocabProgress(int vocabId) async {
@@ -79,11 +158,27 @@ class KanjiDatabase {
   }
 
   static Future<List<int>> getListeningProgress() async {
-    final ids = <int>{...(await local_db.dbGetListeningProgress())};
-    if (ApiService.isLoggedIn.value) {
-      ids.addAll(await ApiService.getListeningProgress());
+    final localList = await local_db.dbGetListeningProgress();
+    if (!ApiService.isLoggedIn.value) return localList;
+
+    final remoteList = await ApiService.getListeningProgress();
+    final localSet = localList.toSet();
+    final remoteSet = remoteList.toSet();
+
+    for (final id in remoteSet) {
+      if (!localSet.contains(id)) {
+        await local_db.dbSaveListeningProgress(id);
+        localSet.add(id);
+      }
     }
-    return ids.toList();
+
+    for (final id in localSet) {
+      if (!remoteSet.contains(id)) {
+        _syncInBackground(() => ApiService.saveListeningProgress(id));
+      }
+    }
+
+    return localSet.toList();
   }
 
   static Future<void> resetListeningProgress() =>
@@ -95,11 +190,27 @@ class KanjiDatabase {
   }
 
   static Future<List<int>> getGrammarProgress() async {
-    final ids = <int>{...(await local_db.dbGetGrammarProgress())};
-    if (ApiService.isLoggedIn.value) {
-      ids.addAll(await ApiService.getGrammarProgress());
+    final localList = await local_db.dbGetGrammarProgress();
+    if (!ApiService.isLoggedIn.value) return localList;
+
+    final remoteList = await ApiService.getGrammarProgress();
+    final localSet = localList.toSet();
+    final remoteSet = remoteList.toSet();
+
+    for (final id in remoteSet) {
+      if (!localSet.contains(id)) {
+        await local_db.dbSaveGrammarProgress(id);
+        localSet.add(id);
+      }
     }
-    return ids.toList();
+
+    for (final id in localSet) {
+      if (!remoteSet.contains(id)) {
+        _syncInBackground(() => ApiService.saveGrammarProgress(id));
+      }
+    }
+
+    return localSet.toList();
   }
 
   static Future<void> resetGrammarProgress() =>
@@ -111,11 +222,27 @@ class KanjiDatabase {
   }
 
   static Future<List<int>> getDuolingoProgress() async {
-    final ids = <int>{...(await local_db.dbGetDuolingoProgress())};
-    if (ApiService.isLoggedIn.value) {
-      ids.addAll(await ApiService.getDuolingoProgress());
+    final localList = await local_db.dbGetDuolingoProgress();
+    if (!ApiService.isLoggedIn.value) return localList;
+
+    final remoteList = await ApiService.getDuolingoProgress();
+    final localSet = localList.toSet();
+    final remoteSet = remoteList.toSet();
+
+    for (final id in remoteSet) {
+      if (!localSet.contains(id)) {
+        await local_db.dbSaveDuolingoProgress(id);
+        localSet.add(id);
+      }
     }
-    return ids.toList();
+
+    for (final id in localSet) {
+      if (!remoteSet.contains(id)) {
+        _syncInBackground(() => ApiService.saveDuolingoProgress(id));
+      }
+    }
+
+    return localSet.toList();
   }
 
   static Future<void> resetDuolingoProgress() =>

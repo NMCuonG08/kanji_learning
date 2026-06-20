@@ -2,9 +2,11 @@
 Future<void> dbSetStatus(int kanjiId, String status) async {}
 Future<void> dbSaveProgress(int kanjiId, bool correct) async {}
 Future<Map<int, Map<String, dynamic>>> dbGetAllProgress() async => {};
+Future<void> dbSaveKanjiEntry(Map<String, dynamic> entry) async {}
 Future<void> dbResetAllProgress() async {}
 
 Future<void> dbSaveVocabProgress(int vocabId) async {}
+Future<void> dbSaveVocabEntry(int vocabId, String timestamp) async {}
 Future<Map<int, String>> dbGetVocabProgress() async => {};
 Future<void> dbDeleteVocabProgress(int vocabId) async {}
 Future<void> dbResetVocabProgress() async {}

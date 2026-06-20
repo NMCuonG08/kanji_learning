@@ -235,3 +235,32 @@ Future<void> dbResetDuolingoProgress() async {
   final prefs = await SharedPreferences.getInstance();
   await prefs.remove(_webDuolingoDbKey);
 }
+
+Future<void> dbSaveKanjiEntry(Map<String, dynamic> entry) async {
+  final data = await dbGetAllProgress();
+  final dynamic idVal = entry['kanjiId'];
+  final int? kanjiId = idVal is String ? int.tryParse(idVal) : (idVal as num?)?.toInt();
+  if (kanjiId != null) {
+    data[kanjiId] = {
+      'kanjiId': kanjiId,
+      'correctCount': entry['correctCount'],
+      'wrongCount': entry['wrongCount'],
+      'lastReviewed': entry['lastReviewed'],
+      'masteryLevel': entry['masteryLevel'],
+      'nextReviewAt': entry['nextReviewAt'],
+      'status': entry['status'],
+    };
+    await _saveKanjiData(data);
+  }
+}
+
+Future<void> dbSaveVocabEntry(int vocabId, String timestamp) async {
+  final data = await dbGetVocabProgress();
+  data[vocabId] = timestamp;
+  final prefs = await SharedPreferences.getInstance();
+  final Map<String, String> stringKeyedData = {};
+  data.forEach((key, value) {
+    stringKeyedData[key.toString()] = value;
+  });
+  await prefs.setString(_webVocabDbKey, jsonEncode(stringKeyedData));
+}
