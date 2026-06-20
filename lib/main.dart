@@ -9,6 +9,7 @@ import 'screens/duolingo_quiz_screen.dart';
 import 'screens/vocab_match_game_screen.dart';
 import 'screens/vocabulary_screen.dart';
 import 'screens/auth_screen.dart';
+import 'screens/conjugation_quiz_screen.dart';
 import 'models/kanji.dart';
 import 'models/listening_question.dart';
 import 'models/vocab.dart';
@@ -97,6 +98,11 @@ class KanjiApp extends StatelessWidget {
                 return MaterialPageRoute(
                   settings: settings,
                   builder: (context) => const DuolingoQuizScreen(),
+                );
+              case '/conjugation-quiz':
+                return MaterialPageRoute(
+                  settings: settings,
+                  builder: (context) => const ConjugationQuizScreen(),
                 );
               case '/listening-quiz':
                 final args = settings.arguments as Map<String, dynamic>? ?? {};

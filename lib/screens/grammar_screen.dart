@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../data/grammar_data.dart';
 import '../services/tts_service.dart';
 import '../services/theme_service.dart';
@@ -18,11 +19,16 @@ class _GrammarScreenState extends State<GrammarScreen> {
   int _totalDuolingo = 0;
   bool _loadingDuolingo = true;
 
+  int _masteredConjugation = 0;
+  final int _totalConjugation = 17;
+  bool _loadingConjugation = true;
+
   @override
   void initState() {
     super.initState();
     TtsService.init();
     _loadDuolingoProgress();
+    _loadConjugationProgress();
   }
 
   Future<void> _loadDuolingoProgress() async {
@@ -42,6 +48,23 @@ class _GrammarScreenState extends State<GrammarScreen> {
     }
   }
 
+  Future<void> _loadConjugationProgress() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final masteredList = prefs.getStringList('mastered_conjugation_verbs') ?? [];
+      if (mounted) {
+        setState(() {
+          _masteredConjugation = masteredList.length;
+          _loadingConjugation = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() => _loadingConjugation = false);
+      }
+    }
+  }
+
   @override
   void dispose() {
     TtsService.stop();
@@ -54,40 +77,68 @@ class _GrammarScreenState extends State<GrammarScreen> {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Row(
+          child: Column(
             children: [
-              Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/grammar-quiz');
-                  },
-                  icon: const Icon(Icons.quiz, size: 18),
-                  label: const Text('Trắc Nghiệm', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFE94560),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                    side: BorderSide(color: ThemeService.getBorderColor(context), width: 1.5),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/grammar-quiz');
+                      },
+                      icon: const Icon(Icons.quiz, size: 18),
+                      label: const Text('Trắc Nghiệm', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFE94560),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        side: BorderSide(color: ThemeService.getBorderColor(context), width: 1.5),
+                      ),
+                    ),
                   ),
-                ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () async {
+                        await Navigator.pushNamed(context, '/duolingo-quiz');
+                        _loadDuolingoProgress();
+                      },
+                      icon: const Icon(Icons.style, size: 18),
+                      label: Text(
+                        _loadingDuolingo
+                            ? 'Ghép Câu'
+                            : 'Ghép Câu ($_completedDuolingo/$_totalDuolingo)',
+                        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.purple,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        side: BorderSide(color: ThemeService.getBorderColor(context), width: 1.5),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: 8),
-              Expanded(
+              const SizedBox(height: 8),
+              SizedBox(
+                width: double.infinity,
                 child: ElevatedButton.icon(
                   onPressed: () async {
-                    await Navigator.pushNamed(context, '/duolingo-quiz');
-                    _loadDuolingoProgress();
+                    await Navigator.pushNamed(context, '/conjugation-quiz');
+                    _loadConjugationProgress();
                   },
-                  icon: const Icon(Icons.style, size: 18),
+                  icon: const Icon(Icons.change_circle, size: 18),
                   label: Text(
-                    _loadingDuolingo
-                        ? 'Ghép Câu Duolingo'
-                        : 'Ghép Câu ($_completedDuolingo/$_totalDuolingo)',
+                    _loadingConjugation
+                        ? 'Luyện Chia Thể Động Từ'
+                        : 'Luyện Chia Thể ($_masteredConjugation/$_totalConjugation)',
                     style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.purple,
+                    backgroundColor: const Color(0xFF0F3460),
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
