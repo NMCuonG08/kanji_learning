@@ -5,6 +5,8 @@ import '../services/tts_service.dart';
 import '../services/theme_service.dart';
 import '../database/db.dart';
 import '../data/duolingo_data.dart';
+import '../data/conjugation_data.dart';
+
 
 class GrammarScreen extends StatefulWidget {
   final Map<int, Map<String, dynamic>> progress;
@@ -20,7 +22,7 @@ class _GrammarScreenState extends State<GrammarScreen> {
   bool _loadingDuolingo = true;
 
   int _masteredConjugation = 0;
-  final int _totalConjugation = 17;
+  int _totalConjugation = 0;
   bool _loadingConjugation = true;
 
   @override
@@ -55,7 +57,9 @@ class _GrammarScreenState extends State<GrammarScreen> {
       if (mounted) {
         setState(() {
           _masteredConjugation = masteredList.length;
+          _totalConjugation = conjugationVerbs.length;
           _loadingConjugation = false;
+
         });
       }
     } catch (_) {
